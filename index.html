@@ -190,27 +190,26 @@
             border-radius: 2px;
         }
 
-        nav { display: flex; gap: 30px; align-items: center; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        nav { display: flex; gap: 8px; align-items: center; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         nav::-webkit-scrollbar { display: none; }
         nav a {
-            color: var(--text);
+            color: var(--text-muted);
             text-decoration: none;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             transition: all 0.3s;
-            position: relative;
             cursor: pointer;
+            padding: 8px 18px;
+            border-radius: 10px;
+            background: transparent;
+            border: 1px solid transparent;
+            white-space: nowrap;
         }
-        nav a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px; left: 0;
-            width: 0; height: 2px;
-            background: var(--gradient);
-            transition: width 0.3s;
+        nav a:hover {
+            color: var(--text);
+            background: var(--glass);
+            border-color: var(--glass-border);
         }
-        nav a:hover::after { width: 100%; }
-        nav a:hover { color: var(--primary); }
 
         .btn {
             padding: 10px 24px;
@@ -247,11 +246,11 @@
         }
 
         .theme-toggle {
-            background: none;
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
             width: 36px; height: 36px;
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
@@ -261,6 +260,7 @@
         }
         .theme-toggle:hover {
             border-color: var(--primary);
+            background: rgba(0, 212, 255, 0.1);
             transform: rotate(15deg);
         }
 
@@ -1033,7 +1033,7 @@
 
 <!-- Header -->
 <header id="header">
-    <div class="logo">ＰＯＣＯ Ｘ５</div>
+    <div class="logo">ＰＯＣＯ Ｘ５ ＰＲＯ</div>
         <nav>
             <a onclick="scrollToSection('roms')">ROMs</a>
             <a onclick="scrollToSection('about')">About</a>
@@ -1049,7 +1049,7 @@
     <div class="glow-orb glow-orb-2"></div>
     <div class="hero-content">
         <div class="hero-badge">Xiaomi POCO X5 Pro / Redwood</div>
-        <h1><span style="display:block">ＰＯＣＯ Ｘ５ ＰＲＯ</span><span style="display:block;font-size:0.45em;letter-spacing:10px;margin-top:-4px">ＲＯＭＳ</span></h1>
+        <h1><span style="display:block">ＰＯＣＯ Ｘ５ ＰＲＯ</span><span style="display:block;font-size:0.45em;letter-spacing:10px;margin-top:8px">ＲＯＭＳ</span></h1>
         <p>The ultimate destination for POCO X5 Pro (Redwood) custom ROMs. Download, explore, and experience the best Android has to offer.</p>
         <div class="hero-actions">
             <a class="btn btn-primary" onclick="scrollToSection('roms')">Browse ROMs</a>
