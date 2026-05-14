@@ -1114,10 +1114,8 @@ function switchVersion(idx, vi) {
 // === Show ROM Detail ===
 function showDetail(index) {
     const roms = getROMs();
+    if (!roms || !roms[index]) return;
     const r = roms[index];
-    const allRoms = getROMs();
-    const realIndex = allRoms.indexOf(r);
-    if (realIndex === -1) return;
 
     const versions = r.versions || [];
     const screenshots = r.screenshots && r.screenshots.length > 0
@@ -1140,7 +1138,7 @@ function showDetail(index) {
         ${versions.length > 1 ? `
         <div class="form-group">
             <label>Select Android Version</label>
-            <select id="verSelector" onchange="switchVersion(${idx}, this.value)">
+            <select id="verSelector" onchange="switchVersion(${index}, this.value)">
                 ${versionOptions}
             </select>
         </div>` : ''}
