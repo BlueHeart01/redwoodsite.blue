@@ -1033,21 +1033,19 @@ function renderROMs(filter) {
     grid.innerHTML = filtered.map((r, i) => {
         const idx = roms.indexOf(r);
         return `
-        <div class="rom-card">
-            <div onclick="showDetail(${idx})" style="cursor:pointer">
-                <div class="rom-icon">${r.icon || '📱'}</div>
-                <h3>${r.name}</h3>
-                <div class="rom-meta">
-                    <span class="status-badge status-${r.status}">${r.status}</span>
-                </div>
-                <p>${r.desc || ''}</p>
-                <div class="rom-dev">Maintainer: <span>${r.dev || 'Unknown'}</span></div>
-                <div class="rom-stats">
-                    <div>⬇️ <strong>${r.downloads || 0}</strong> downloads</div>
-                    ${r.screenshots && r.screenshots.length > 0 ? `<div>📷 <strong>${r.screenshots.length}</strong> screenshots</div>` : ''}
-                </div>
+        <div class="rom-card" onclick="handleCardClick(event, ${idx})">
+            <div class="rom-icon">${r.icon || '📱'}</div>
+            <h3>${r.name}</h3>
+            <div class="rom-meta">
+                <span class="status-badge status-${r.status}">${r.status}</span>
             </div>
-            ${r.links && r.links.rom && r.links.rom !== '#' ? `<a href="${r.links.rom}" target="_blank" class="btn btn-primary" style="width:100%;text-align:center;margin-top:16px;text-decoration:none">📥 Download ${r.name}</a>` : ''}
+            <p>${r.desc || ''}</p>
+            <div class="rom-dev">Maintainer: <span>${r.dev || 'Unknown'}</span></div>
+            <div class="rom-stats">
+                <div>⬇️ <strong>${r.downloads || 0}</strong> downloads</div>
+                ${r.screenshots && r.screenshots.length > 0 ? `<div>📷 <strong>${r.screenshots.length}</strong> screenshots</div>` : ''}
+            </div>
+            ${r.links && r.links.rom && r.links.rom !== '#' ? `<a href="${r.links.rom}" target="_blank" class="btn btn-primary dl-btn" style="width:100%;text-align:center;margin-top:16px;text-decoration:none">📥 Download ${r.name}</a>` : ''}
         </div>`;
     }).join('');
 }
@@ -1057,6 +1055,12 @@ function filterROMs(filter, btn) {
     document.querySelectorAll('.rom-filters button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     renderROMs(filter);
+}
+
+// === Card click handler (show detail unless clicking download) ===
+function handleCardClick(event, idx) {
+    if (event.target.classList.contains('dl-btn') || event.target.closest('.dl-btn')) return;
+    showDetail(idx);
 }
 
 // === Show ROM Detail ===
