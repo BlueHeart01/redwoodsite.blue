@@ -48,21 +48,29 @@
             --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
         .light-mode {
-            --bg-body: #e8ecf1;
+            --bg-body: #fefbff;
             --dark: #ffffff;
-            --darker: #e8ecf1;
-            --card: rgba(255, 255, 255, 0.7);
-            --text: #1a1a2e;
-            --text-primary: #1a1a2e;
-            --muted: #555570;
-            --text-muted: #555570;
+            --darker: #fefbff;
+            --card: rgba(255, 255, 255, 0.8);
+            --text: #1a1c1e;
+            --text-primary: #1a1c1e;
+            --muted: #6f797e;
+            --text-muted: #6f797e;
+            --primary: #006b8a;
+            --secondary: #4a6075;
+            --accent: #865b72;
+            --gold: #7a6500;
+            --neon: #006b4a;
+            --gradient: linear-gradient(135deg, #006b8a, #4a6075, #865b72);
+            --gradient-2: linear-gradient(135deg, #7a6500, #865b72, #4a6075);
+            --gradient-3: linear-gradient(135deg, #006b4a, #006b8a, #4a6075);
             --border-color: rgba(0, 0, 0, 0.08);
             --glass: rgba(0, 0, 0, 0.03);
-            --glass-border: rgba(0, 0, 0, 0.06);
-            --hero-gradient-1: rgba(0, 212, 255, 0.1);
-            --hero-gradient-2: rgba(123, 47, 247, 0.1);
-            --hero-gradient-3: rgba(255, 51, 102, 0.06);
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --glass-border: rgba(199, 199, 199, 0.4);
+            --hero-gradient-1: rgba(0, 107, 138, 0.08);
+            --hero-gradient-2: rgba(74, 96, 117, 0.08);
+            --hero-gradient-3: rgba(134, 91, 114, 0.06);
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
         }
         .light-mode .rom-card .rom-dev,
         .light-mode .section-subtitle,
@@ -70,25 +78,31 @@
         .light-mode .about-card p,
         .light-mode footer p,
         .light-mode .modal p,
-        .light-mode .form-group label { color: #555570 !important; }
-        .light-mode .rom-stats { border-top-color: rgba(0,0,0,0.06) !important; }
-        .light-mode .rom-stats div { color: #555570 !important; }
-        .light-mode .rom-stats div strong { color: #1a1a2e !important; }
+        .light-mode .form-group label { color: var(--muted) !important; }
+        .light-mode .rom-stats { border-top-color: var(--glass-border) !important; }
+        .light-mode .rom-stats div { color: var(--muted) !important; }
+        .light-mode .rom-stats div strong { color: var(--text) !important; }
+        .light-mode .status-official { background: rgba(0, 107, 138, 0.12); color: #006b8a; }
+        .light-mode .status-unofficial { background: rgba(134, 91, 114, 0.12); color: #865b72; }
+        .light-mode .rom-filters button { border-color: var(--glass-border); color: var(--muted); }
+        .light-mode .rom-filters button.active { background: var(--gradient); color: white; border-color: transparent; }
         .light-mode .modal .form-group input,
         .light-mode .modal .form-group textarea,
-        .light-mode .modal .form-group select { background: rgba(0,0,0,0.04); color: #1a1a2e; border-color: rgba(0,0,0,0.1); }
-        .light-mode .banner-preview { border: 1px solid rgba(0,0,0,0.1); }
-        .light-mode footer { border-top-color: rgba(0,0,0,0.06); }
-        .light-mode .rom-filters button { border-color: rgba(0,0,0,0.1); color: #555570; }
+        .light-mode .modal .form-group select { background: rgba(0,0,0,0.03); color: var(--text); border-color: var(--glass-border); }
+        .light-mode .banner-preview { border: 1px solid var(--glass-border); }
+        .light-mode footer { border-top-color: var(--glass-border); }
         .light-mode .version-entry input,
-        .light-mode .version-entry select { background: rgba(0,0,0,0.04); color: #1a1a2e; border-color: rgba(0,0,0,0.1); }
-        .light-mode .screenshot-grid img { border-color: rgba(0,0,0,0.1); }
-        .light-mode .modal .detail-item a { color: #0088cc; }
-        .light-mode .changelog-toggle { color: #0088cc; }
-        .light-mode select option { background: #e8ecf1; color: #1a1a2e; }
-        .light-mode .about-card { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.08) !important; }
-        .light-mode .glass-card { background: rgba(255,255,255,0.85) !important; border-color: rgba(0,0,0,0.08) !important; }
+        .light-mode .version-entry select { background: rgba(0,0,0,0.03); color: var(--text); border-color: var(--glass-border); }
+        .light-mode .screenshot-grid img { border-color: var(--glass-border); }
+        .light-mode .modal .detail-item a { color: #006b8a; }
+        .light-mode .changelog-toggle { color: #006b8a; }
+        .light-mode select option { background: #fefbff; color: var(--text); }
+        .light-mode .about-card { background: var(--card) !important; border-color: var(--glass-border) !important; }
+        .light-mode .glass-card { background: var(--card) !important; border-color: var(--glass-border) !important; }
         .light-mode .detail-item { background: rgba(0,0,0,0.03) !important; }
+        .light-mode nav a:hover { background: rgba(0,0,0,0.04); }
+        .light-mode .theme-toggle { background: rgba(0,0,0,0.03); border-color: var(--glass-border); }
+        .light-mode .theme-toggle:hover { background: rgba(0,0,0,0.06); }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
