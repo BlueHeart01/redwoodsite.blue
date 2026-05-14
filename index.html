@@ -918,9 +918,6 @@
         <a href="https://github.com/BlueHeart01" target="_blank" style="color:var(--text-muted);text-decoration:none;font-size:14px">🐙 GitHub</a>
     </div>
     <p style="color:var(--text-muted)">Built with ❤️ for the POCO X5 Pro community &copy; 2026</p>
-    <p style="margin-top:12px;font-size:12px">
-        <a onclick="if(confirm('Reset all data? This cannot be undone!')){localStorage.clear();location.reload()}" style="color:var(--accent);cursor:pointer;text-decoration:none;opacity:0.6">⚠️ Reset All Data</a>
-    </p>
 </footer>
 
 <!-- Login Modal -->
@@ -1257,7 +1254,7 @@ function renderROMs(filter) {
     const versions = r.versions || [];
         return `
         <div class="rom-card reveal" onclick="showDetail(${idx})">
-            <div class="rom-icon">📱</div>
+            ${r.banner ? `<div style="width:100%;height:120px;border-radius:12px;overflow:hidden;margin-bottom:16px;background:var(--gradient)"><img src="${r.banner}" style="width:100%;height:100%;object-fit:cover" onerror="this.outerHTML=''"></div>` : `<div style="width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:20px;background:var(--gradient)">📱</div>`}
             <h3>${r.name}</h3>
             <div class="rom-meta">
                 <span class="status-badge status-${r.status}">${r.status}</span>
