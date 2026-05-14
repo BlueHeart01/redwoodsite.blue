@@ -130,23 +130,60 @@
             z-index: 0;
             opacity: 0.8;
         }
-        /* Ambient gradient orbs */
-        .ambient-orb {
+        /* 3D Liquid Glass Blobs */
+        .liquid-blob {
             position: fixed;
             border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.12;
+            filter: blur(80px);
+            opacity: 0.15;
             pointer-events: none;
             z-index: 0;
-            animation: orbFloat 12s ease-in-out infinite;
+            animation: liquidMorph 18s ease-in-out infinite;
+            will-change: transform, border-radius;
         }
-        .ambient-orb-1 { width: 500px; height: 500px; top: -150px; right: -100px; background: var(--primary); }
-        .ambient-orb-2 { width: 400px; height: 400px; bottom: -100px; left: -100px; background: var(--secondary); animation-delay: -4s; }
-        .ambient-orb-3 { width: 350px; height: 350px; top: 50%; left: 50%; background: var(--accent); animation-delay: -8s; }
-        @keyframes orbFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(40px, -30px) scale(1.1); }
-            66% { transform: translate(-20px, 40px) scale(0.9); }
+        .liquid-blob-1 {
+            width: 550px; height: 450px;
+            top: -200px; right: -150px;
+            background: radial-gradient(circle at 30% 30%, var(--primary), var(--secondary));
+            animation-duration: 20s;
+        }
+        .liquid-blob-2 {
+            width: 400px; height: 500px;
+            bottom: -180px; left: -120px;
+            background: radial-gradient(circle at 70% 70%, var(--secondary), var(--accent));
+            animation-delay: -7s;
+            animation-duration: 22s;
+        }
+        .liquid-blob-3 {
+            width: 350px; height: 350px;
+            top: 40%; left: 60%;
+            background: radial-gradient(circle at 50% 50%, var(--accent), var(--primary));
+            animation-delay: -14s;
+            animation-duration: 25s;
+        }
+        .liquid-blob-4 {
+            width: 300px; height: 400px;
+            bottom: 30%; right: -80px;
+            background: radial-gradient(circle at 50% 50%, var(--gold), var(--accent));
+            animation-delay: -3s;
+            animation-duration: 18s;
+            opacity: 0.08;
+        }
+        @keyframes liquidMorph {
+            0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(0, 0) scale(1) rotate(0deg); }
+            25% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: translate(30px, -20px) scale(1.05) rotate(5deg); }
+            50% { border-radius: 50% 60% 30% 70% / 40% 50% 60% 40%; transform: translate(-20px, 30px) scale(0.95) rotate(-3deg); }
+            75% { border-radius: 70% 30% 50% 50% / 30% 60% 40% 70%; transform: translate(20px, 10px) scale(1.02) rotate(4deg); }
+        }
+        /* Extra liquid shimmer overlay */
+        .liquid-shimmer {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(ellipse at 20% 50%, rgba(0,212,255,0.03) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 20%, rgba(123,47,247,0.03) 0%, transparent 50%),
+                        radial-gradient(ellipse at 50% 80%, rgba(255,51,102,0.02) 0%, transparent 50%);
         }
 
         /* Glass card utility */
@@ -250,14 +287,15 @@
         .btn {
             padding: 10px 24px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-family: 'Inter', sans-serif;
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
             text-decoration: none;
             display: inline-block;
+            position: relative;
         }
 
         .btn-primary {
@@ -265,20 +303,24 @@
             color: white;
             background-size: 200% 200%;
             animation: gradientMove 3s ease infinite;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.2);
         }
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.3);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 212, 255, 0.3);
         }
 
         .btn-outline {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
         }
         .btn-outline:hover {
-            background: rgba(0, 212, 255, 0.1);
-            transform: translateY(-2px);
+            background: rgba(0, 212, 255, 0.08);
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.15);
         }
 
         .theme-toggle {
@@ -444,16 +486,18 @@
 
         .rom-card {
             background: var(--card);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 20px;
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 24px;
             padding: 32px;
             border: 1px solid var(--glass-border);
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             position: relative;
             overflow: hidden;
             cursor: pointer;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.1);
+            transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+            transform-style: preserve-3d;
         }
 
         .rom-card::before {
@@ -463,16 +507,30 @@
             right: 0;
             height: 3px;
             background: var(--gradient-2);
+            background-size: 200% 200%;
+            animation: gradientMove 3s ease infinite;
             transform: scaleX(0);
             transform-origin: left;
             transition: transform 0.5s;
         }
 
+        .rom-card::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.04) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.6s;
+            pointer-events: none;
+        }
+
         .rom-card:hover::before { transform: scaleX(1); }
+        .rom-card:hover::after { opacity: 1; }
         .rom-card:hover {
-            transform: translateY(-8px) scale(1.01);
+            transform: perspective(1000px) rotateX(2deg) rotateY(2deg) translateY(-10px) scale(1.02);
             border-color: rgba(0, 212, 255, 0.25);
-            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
         }
 
         .rom-card .rom-icon {
@@ -570,9 +628,9 @@
 
         .modal {
             background: var(--card);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border-radius: 24px;
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-radius: 28px;
             padding: 40px;
             width: 95%;
             max-width: 700px;
@@ -580,7 +638,8 @@
             position: relative;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.06);
+            transform: perspective(1000px) rotateX(0deg);
         }
 
         .modal-close {
@@ -746,18 +805,21 @@
 
         .about-card {
             background: var(--card);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
+            backdrop-filter: blur(30px);
+            border-radius: 24px;
             padding: 32px;
             text-align: center;
             border: 1px solid var(--glass-border);
-            transition: all 0.4s;
-            box-shadow: var(--shadow);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.06);
+            transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+            transform-style: preserve-3d;
         }
 
         .about-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(0, 212, 255, 0.25);
+            transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateY(-6px) scale(1.02);
+            border-color: rgba(0, 212, 255, 0.2);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.1);
         }
 
         .about-card .avatar {
@@ -1060,9 +1122,11 @@
 <body>
 
 <canvas id="particles"></canvas>
-<div class="ambient-orb ambient-orb-1"></div>
-<div class="ambient-orb ambient-orb-2"></div>
-<div class="ambient-orb ambient-orb-3"></div>
+<div class="liquid-blob liquid-blob-1"></div>
+<div class="liquid-blob liquid-blob-2"></div>
+<div class="liquid-blob liquid-blob-3"></div>
+<div class="liquid-blob liquid-blob-4"></div>
+<div class="liquid-shimmer"></div>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
@@ -1081,8 +1145,6 @@
 
 <!-- Hero -->
 <section class="hero">
-    <div class="glow-orb glow-orb-1"></div>
-    <div class="glow-orb glow-orb-2"></div>
     <div class="hero-content">
         <div class="hero-badge">Xiaomi POCO X5 Pro / Redwood</div>
         <h1><span style="display:block">ＰＯＣＯ Ｘ５ ＰＲＯ</span><span style="display:block;font-size:0.45em;letter-spacing:10px;margin-top:8px">ＲＯＭＳ</span></h1>
