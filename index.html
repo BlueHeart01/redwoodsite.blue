@@ -1244,10 +1244,7 @@ function showDetail(index) {
         `<option value="${vi}">${v.ver} — ${v.date}</option>`
     ).join('') || '<option>No versions</option>';
 
-    // Reset changelog state
     window._changelogExpanded = false;
-    const bannerHtml = r.banner ? `<img src="${r.banner}" style="width:100%;border-radius:12px;margin:8px 0 16px;max-height:200px;object-fit:cover" onerror="this.style.display='none'">` : '';
-
     document.getElementById('detailContent').innerHTML = `
         <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:12px">
             <div>
@@ -1307,9 +1304,9 @@ function showDetail(index) {
 
         ${r.changelog ? `
         <div style="background:var(--dark);border-radius:12px;padding:16px;margin:16px 0;border:1px solid var(--border-color)">
-            <h4 style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px">📋 What's New</h4>
-            <div class="changelog" id="changelogText">${r.changelog}</div>
-            <button class="changelog-toggle" onclick="toggleChangelog()">Show more ▼</button>
+            <h4 style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px">What's New</h4>
+            <div class="changelog" id="changelogText"></div>
+            <button class="changelog-toggle" onclick="toggleChangelog()" style="display:${r.changelog.length > 100 ? 'inline-block' : 'none'}">Show more ▼</button>
         </div>` : ''}
 
         <h4 style="font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin:20px 0 12px">📸 Screenshots</h4>
@@ -1319,6 +1316,18 @@ function showDetail(index) {
             <span style="color:var(--text-muted);font-size:13px">⬇️ ${r.downloads || 0} total downloads</span>
         </div>
     `;
+    // Set changelog text safely (avoid encoding issues)
+    const clEl = document.getElementById('changelogText');
+    if (clEl && r.changelog) {
+        const safe = r.changelog
+            .replace(/[^\x20-\x7E\n]/g, '') // remove non-ASCII
+            .replace(/^[-\s]+/gm, '') // clean bullet leftovers
+            .split('\n').filter(l => l.trim())
+            .map(l => '- ' + l.trim())
+            .join('\n');
+        clEl.textContent = safe || 'No details';
+    }
+
     openModal('detailModal');
 }
 
