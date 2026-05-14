@@ -13,7 +13,7 @@
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#060612">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Orbitron:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Orbitron:wght@400;700;900&family=Google+Sans:wght@400;500;700&display=swap');
 
         * {
             margin: 0;
@@ -38,7 +38,7 @@
             padding: 0;
             background-color: var(--bg-base);
             color: var(--text-white);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Google Sans', 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
             position: relative;
@@ -97,6 +97,15 @@
         .light-mode .hero h1 { background: linear-gradient(180deg, #1c1b1f 0%, #6b6a72 100%); -webkit-background-clip: text; }
         .light-mode .rom-card .rom-icon { background: rgba(0,0,0,0.05); }
         .light-mode .rom-filters button:hover { background: rgba(0,0,0,0.04); }
+        .light-mode .rom-card .rom-name,
+        .light-mode .rom-card p,
+        .light-mode .rom-card .rom-dev,
+        .light-mode .rom-card .rom-stats,
+        .light-mode .modal h2,
+        .light-mode .modal h4,
+        .light-mode .detail-item h4,
+        .light-mode .detail-item a { color: var(--text-white); }
+        .light-mode .detail-item p { color: var(--text-muted); }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -622,9 +631,9 @@
         /* ROM Grid */
         .rom-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-            max-width: 1200px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -899,10 +908,11 @@
             display: inline-block;
             margin-top: 8px;
             font-size: 12px;
-            color: var(--primary);
+            color: var(--brand-cyan);
             cursor: pointer;
             background: none;
             border: none;
+            font-family: 'Google Sans', 'Inter', sans-serif;
             font-family: 'Inter', sans-serif;
             font-weight: 600;
             transition: opacity 0.3s;
@@ -1655,7 +1665,9 @@ if (localStorage.getItem('blueredwood_theme') === 'light') {
 // === Changelog expand/collapse ===
 function toggleChangelog() {
     const el = document.getElementById('changelogText');
-    const btn = el.nextElementSibling;
+    if (!el) return;
+    const btn = document.querySelector('.changelog-toggle');
+    if (!btn) return;
     window._changelogExpanded = !window._changelogExpanded;
     el.classList.toggle('expanded', window._changelogExpanded);
     btn.textContent = window._changelogExpanded ? 'Show less ▲' : 'Show more ▼';
@@ -1944,7 +1956,7 @@ function showDetail(index) {
         <div style="background:var(--bg-card);border-radius:12px;padding:16px;margin:16px 0;border:1px solid var(--border-hairline)">
             <h4 style="font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px">What's New</h4>
             <div class="changelog" id="changelogText"></div>
-            <button class="changelog-toggle" onclick="toggleChangelog()" style="display:${r.changelog.length > 100 ? 'inline-block' : 'none'}">Show more ▼</button>
+            <button class="changelog-toggle" onclick="toggleChangelog()">Show more ▼</button>
         </div>` : ''}
 
         <h4 style="font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin:20px 0 12px">📸 Screenshots</h4>
