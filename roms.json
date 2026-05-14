@@ -1,0 +1,111 @@
+[
+  {
+    "name": "Infinity X",
+    "status": "official",
+    "dev": "BlueHeart016",
+    "desc": "A feature-packed ROM with endless customization options. Smooth, stable, and refined for daily use.",
+    "icon": "∞",
+    "downloads": 1240,
+    "screenshots": [
+      "https://picsum.photos/seed/inf1/300/600",
+      "https://picsum.photos/seed/inf2/300/600"
+    ],
+    "changelog": "• Initial official release\n• Pixel features + custom additions\n• Enhanced performance tweaks",
+    "banner": "https://picsum.photos/seed/infbanner/800/200",
+    "versions": [
+      { "ver": "Android 16", "date": "2026-05-10", "rom": "https://sourceforge.net/projects/infinity-x/files/redwood/", "boot": "#", "vendor_boot": "#", "dtbo": "#" },
+      { "ver": "Android 15", "date": "2026-02-14", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
+    ]
+  },
+  {
+    "name": "Infinity X",
+    "status": "unofficial",
+    "dev": "BlueHeart016",
+    "desc": "Unofficial build with experimental features and the latest patches.",
+    "icon": "∞",
+    "downloads": 580,
+    "screenshots": [],
+    "changelog": "• Test builds with latest CAF tags\n• Experimental kernel changes",
+    "banner": "",
+    "versions": [
+      { "ver": "Android 16", "date": "2026-05-08", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
+    ]
+  },
+  {
+    "name": "AxionOS",
+    "status": "official",
+    "dev": "BlueHeart016",
+    "desc": "A smooth AOSP-based ROM focused on performance, battery life, and minimalism.",
+    "icon": "A",
+    "downloads": 980,
+    "screenshots": [],
+    "changelog": "• Official release\n• AOSP base with optimizations",
+    "banner": "",
+    "versions": [
+      { "ver": "Android 16", "date": "2026-05-05", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" },
+      { "ver": "Android 15", "date": "2026-01-20", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
+    ]
+  },
+  {
+    "name": "Evolution X",
+    "status": "official",
+    "dev": "BlueHeart016",
+    "desc": "Pixel-like experience with custom features. Elegant UI and rock-solid performance.",
+    "icon": "E",
+    "downloads": 2100,
+    "screenshots": [],
+    "changelog": "• Latest EvoX sources\n• Pixel features included",
+    "banner": "",
+    "versions": [
+      { "ver": "Android 16", "date": "2026-05-12", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" },
+      { "ver": "Android 15", "date": "2026-03-01", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" },
+      { "ver": "Android 14", "date": "2025-10-15", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
+    ]
+  },
+  {
+    "name": "RisingOS",
+    "status": "official",
+    "dev": "BlueHeart016",
+    "desc": "Rising from the ashes — a powerful, customizable ROM built for enthusiasts.",
+    "icon": "R",
+    "downloads": 760,
+    "screenshots": [],
+    "changelog": "• Official build\n• RisingOS features",
+    "banner": "",
+    "versions": [
+      { "ver": "Android 16", "date": "2026-05-09", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
+    ]
+  },
+  {
+    "name": "CloverOS",
+    "status": "official",
+    "dev": "Harshit",
+    "desc": "Lightweight, fast, and efficient. CloverOS delivers a clean Android experience.",
+    "icon": "C",
+    "downloads": 450,
+    "screenshots": [],
+    "changelog": "• Initial release\n• Clean AOSP experience",
+    "banner": "",
+    "versions": [
+      { "ver": "Android 16", "date": "2026-05-07", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
+    ]
+  },
+  {
+    "name": "ASCP OS",
+    "status": "official",
+    "dev": "BlueHeart016",
+    "desc": "The flagship ROM of BlueREDWOOD. Premium features, maximum performance.",
+    "icon": "A",
+    "downloads": 3200,
+    "screenshots": [
+      "https://picsum.photos/seed/ascp1/300/600",
+      "https://picsum.photos/seed/ascp2/300/600",
+      "https://picsum.photos/seed/ascp3/300/600"
+    ],
+    "changelog": "• Latest ASCP v5.3\n• Scene container disabled for smooth QS\n• Dolby Atmos support\n• ReVanced included",
+    "banner": "banner.png",
+    "versions": [
+      { "ver": "Android 16", "date": "2026-05-14", "rom": "https://gofile.io/d/TDRRjM", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
+    ]
+  }
+]
