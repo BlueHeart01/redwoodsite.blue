@@ -1122,8 +1122,17 @@ function openLogin() { openModal('loginModal'); }
 
 // === ROM Data (from roms.json + localStorage) ===
 function getROMs() {
-    try { return JSON.parse(localStorage.getItem('blueredwood_roms')) || []; }
-    catch { return []; }
+    try {
+        const raw = localStorage.getItem('blueredwood_roms');
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed;
+    } catch {
+        // Corrupted data - reset
+        localStorage.removeItem('blueredwood_roms');
+        return [];
+    }
 }
 function saveROMs(data) {
     localStorage.setItem('blueredwood_roms', JSON.stringify(data));
@@ -1135,7 +1144,7 @@ function saveROMs(data) {
         const res = await fetch('roms.json');
         const defaultROMs = await res.json();
         const romsVer = localStorage.getItem('blueredwood_roms_ver') || '0';
-        const curVer = '3';
+        const curVer = '4';
         if (!localStorage.getItem('blueredwood_roms_init') || romsVer !== curVer) {
             localStorage.setItem('blueredwood_roms', JSON.stringify(defaultROMs));
             localStorage.setItem('blueredwood_roms_init', '1');
