@@ -1218,7 +1218,7 @@ function saveROMs(data) {
         const res = await fetch('roms.json');
         const defaultROMs = await res.json();
         const romsVer = localStorage.getItem('blueredwood_roms_ver') || '0';
-        const curVer = '6';
+        const curVer = '7';
         if (!localStorage.getItem('blueredwood_roms_init') || romsVer !== curVer) {
             localStorage.setItem('blueredwood_roms', JSON.stringify(defaultROMs));
             localStorage.setItem('blueredwood_roms_init', '1');
@@ -1622,19 +1622,83 @@ async function fetchGitBanner() {
 }
 
 // === Quick import from Telegram link ===
-function quickImport() {
+async function quickImport() {
     const link = document.getElementById('quickLink').value.trim();
     if (!link) { showToast('Paste a Telegram post link!', 'error'); return; }
-    // Auto-fill the form with the link
-    document.getElementById('romName').value = 'New ROM';
-    document.getElementById('romDev').value = 'BlueHeart016';
-    document.getElementById('romDesc').value = 'ROM shared via Telegram';
-    // Fill first version entry
-    const verRom = document.querySelector('.verRom');
-    const verDate = document.querySelector('.verDate');
-    if (verRom) verRom.value = link;
-    if (verDate) verDate.value = new Date().toISOString().split('T')[0];
-    showToast('Link added! Fill in the remaining details.', 'success');
+    const match = link.match(/t\.me\/([^\/\?]+)\/(\d+)/);
+    if (!match) { showToast('Invalid Telegram link! Use format: https://t.me/channel/123', 'error'); return; }
+    const channel = match[1], postId = match[2];
+    const btn = document.querySelector('[onclick="quickImport()"]');
+    btn.textContent = 'Fetching...';
+    btn.disabled = true;
+
+    try {
+        // Fetch Telegram post via CORS proxy
+        const proxy = 'https://api.allorigins.win/raw?url=';
+        const resp = await fetch(proxy + encodeURIComponent(`https://t.me/${channel}/${postId}?embed=1`));
+        const html = await resp.text();
+        const d = new DOMParser().parseFromString(html, 'text/html');
+
+        // Extract message text (changelog)
+        const msgEl = d.querySelector('.tgme_widget_message_text, .tgme_widget_message_bubble');
+        const msgText = msgEl ? msgEl.textContent.trim() : '';
+
+        // Extract images (screenshots)
+        const screenshots = [];
+        d.querySelectorAll('.tgme_widget_message_photo_wrap').forEach(el => {
+            const s = el.getAttribute('style');
+            if (s) {
+                const u = s.match(/url\(['"]?([^'"]+)['"]?\)/);
+                if (u) screenshots.push(u[1].replace(/\/[a-z0-9]+_[a-z0-9]+\.[a-z]+$/,
+                    m => '/' + m.split('_')[0] + '_800x800' + m.match(/\.[a-z]+$/)[0]));
+            }
+        });
+        // Also check for <img> tags in the message
+        d.querySelectorAll('.tgme_widget_message_text img').forEach(el => {
+            if (el.src && el.src.startsWith('http')) screenshots.push(el.src);
+        });
+
+        // Extract download links (skip tg:// and t.me internal links)
+        const links = [];
+        d.querySelectorAll('.tgme_widget_message_text a').forEach(el => {
+            const h = el.getAttribute('href');
+            if (h && !h.startsWith('tg://') && !h.match(/t\.me\//)) links.push(h);
+        });
+
+        // Guess ROM name from first line of text or bold elements
+        let romName = 'New ROM';
+        const boldEl = d.querySelector('.tgme_widget_message_text b, .tgme_widget_message_text strong');
+        if (boldEl) romName = boldEl.textContent.trim();
+        else if (msgText) romName = msgText.split('\n')[0].replace(/^[\s•\-*]+/, '').trim() || channel;
+
+        // Auto-fill the form
+        document.getElementById('romName').value = romName;
+        document.getElementById('romDev').value = 'Unknown';
+        document.getElementById('romDesc').value = msgText ? msgText.split('\n').slice(0, 3).join(' ').substring(0, 150) : 'ROM shared via Telegram';
+        if (msgText) document.getElementById('romChangelog').value = msgText;
+        if (screenshots.length) document.getElementById('romScreenshots').value = screenshots.join('\n');
+
+        // Fill first version entry with first external link
+        const verRom = document.querySelector('.verRom');
+        const verDate = document.querySelector('.verDate');
+        if (verRom && links.length) verRom.value = links[0];
+        else if (verRom) verRom.value = link;
+        if (verDate) verDate.value = new Date().toISOString().split('T')[0];
+
+        showToast(`Imported "${romName}" — ${screenshots.length} screenshots, ${links.length} links`, 'success');
+    } catch (e) {
+        // Fallback: just fill the link
+        document.getElementById('romName').value = 'New ROM';
+        document.getElementById('romDev').value = 'Unknown';
+        document.getElementById('romDesc').value = 'ROM shared via Telegram';
+        const verRom = document.querySelector('.verRom');
+        const verDate = document.querySelector('.verDate');
+        if (verRom) verRom.value = link;
+        if (verDate) verDate.value = new Date().toISOString().split('T')[0];
+        showToast('Could not fetch post details — link added manually', 'success');
+    }
+    btn.textContent = 'Import';
+    btn.disabled = false;
 }
 
 // === Banner file upload ===
