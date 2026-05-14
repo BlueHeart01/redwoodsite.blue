@@ -844,20 +844,20 @@
     <p class="section-subtitle">The developers behind <span>BlueREDWOOD</span></p>
     <div class="about-grid">
         <div class="about-card">
-            <div class="avatar">B</div>
-            <h3>BlueHeart016</h3>
+            <div class="avatar">⚝</div>
+            <h3>⚝BlueHeart 💙「ᴘʟᴇxᴜꜱ」</h3>
             <div class="role">Lead Developer</div>
             <p>ROM builder, kernel maintainer, and creator of ASCP and BlueFlash tools.</p>
         </div>
         <div class="about-card">
             <div class="avatar">H</div>
-            <h3>Harshit</h3>
+            <h3>𝙷𝙰𝚁𝚂𝙷𝙸𝚃</h3>
             <div class="role">Core Developer</div>
             <p>Device tree maintainer and audio tuning specialist for Redwood.</p>
         </div>
         <div class="about-card">
             <div class="avatar">P</div>
-            <h3>Priyangshu</h3>
+            <h3>𝓟𝓻𝓲𝔂𝓪𝓷𝓼𝓱𝓾 𝓙𝓪𝓷𝓰𝓲𝓭</h3>
             <div class="role">Contributor</div>
             <p>Testing, debugging, and quality assurance for all Redwood ROMs.</p>
         </div>
@@ -1176,7 +1176,6 @@ function renderROMs(filter) {
 
     grid.innerHTML = filtered.map((r, i) => {
         const idx = roms.indexOf(r);
-    const bannerHtml = r.banner ? `<img src="${r.banner}" style="width:100%;border-radius:12px;margin:8px 0 16px;max-height:200px;object-fit:cover" onerror="this.style.display='none'">` : '';
     const versions = r.versions || [];
         return `
         <div class="rom-card" onclick="showDetail(${idx})">
@@ -1271,7 +1270,7 @@ function showDetail(index) {
             </div>
         </div>
 
-        ${bannerHtml}
+        ${r.banner ? `<img src="${r.banner}" style="width:100%;border-radius:12px;margin:8px 0 16px;max-height:200px;object-fit:cover" onerror="this.style.display='none'">` : ''}
         <p style="color:var(--text-muted);margin-bottom:20px;line-height:1.6">${r.desc || ''}</p>
 
         <div style="background:var(--dark);border-radius:16px;padding:20px;margin:16px 0;border:1px solid var(--border-color)">
