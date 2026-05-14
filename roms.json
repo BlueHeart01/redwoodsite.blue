@@ -2,13 +2,13 @@
   {
     "name": "Infinity X",
     "status": "official",
-    "dev": "BlueHeart016",
+    "dev": "Unknown",
     "desc": "A feature-packed ROM with endless customization options. Smooth, stable, and refined for daily use.",
     "icon": "∞",
     "downloads": 1240,
     "screenshots": ["https://picsum.photos/seed/infinity1/300/600", "https://picsum.photos/seed/infinity2/300/600"],
     "changelog": "• Initial official release\n• Pixel features + custom additions\n• Enhanced performance tweaks",
-    "banner": "",
+    "banner": "https://raw.githubusercontent.com/ProjectInfinity-X/.github/main/profile/Infinity.png",
     "versions": [
       { "ver": "Android 16", "date": "2026-05-10", "rom": "https://sourceforge.net/projects/infinity-x/files/redwood/", "boot": "#", "vendor_boot": "#", "dtbo": "#" },
       { "ver": "Android 15", "date": "2026-02-14", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
@@ -17,13 +17,13 @@
   {
     "name": "Infinity X",
     "status": "unofficial",
-    "dev": "BlueHeart016",
+    "dev": "Unknown",
     "desc": "Unofficial build with experimental features and the latest patches.",
     "icon": "∞",
     "downloads": 580,
     "screenshots": ["https://picsum.photos/seed/infinity3/300/600"],
     "changelog": "• Test builds with latest CAF tags\n• Experimental kernel changes",
-    "banner": "",
+    "banner": "https://raw.githubusercontent.com/ProjectInfinity-X/.github/main/profile/Infinity.png",
     "versions": [
       { "ver": "Android 16", "date": "2026-05-08", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
     ]
@@ -31,7 +31,7 @@
   {
     "name": "AxionOS",
     "status": "official",
-    "dev": "BlueHeart016",
+    "dev": "Unknown",
     "desc": "A smooth AOSP-based ROM focused on performance, battery life, and minimalism.",
     "icon": "A",
     "downloads": 980,
@@ -46,13 +46,13 @@
   {
     "name": "Evolution X",
     "status": "official",
-    "dev": "BlueHeart016",
+    "dev": "Unknown",
     "desc": "Pixel-like experience with custom features. Elegant UI and rock-solid performance.",
     "icon": "E",
     "downloads": 2100,
     "screenshots": ["https://picsum.photos/seed/evox1/300/600", "https://picsum.photos/seed/evox2/300/600", "https://picsum.photos/seed/evox3/300/600"],
     "changelog": "• Latest EvoX sources\n• Pixel features included",
-    "banner": "",
+    "banner": "https://raw.githubusercontent.com/Evolution-X/manifest/bq2/Banner.png",
     "versions": [
       { "ver": "Android 16", "date": "2026-05-12", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" },
       { "ver": "Android 15", "date": "2026-03-01", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" },
@@ -62,13 +62,13 @@
   {
     "name": "RisingOS",
     "status": "official",
-    "dev": "BlueHeart016",
+    "dev": "Unknown",
     "desc": "Rising from the ashes — a powerful, customizable ROM built for enthusiasts.",
     "icon": "R",
     "downloads": 760,
     "screenshots": ["https://picsum.photos/seed/rising1/300/600"],
     "changelog": "• Official build\n• RisingOS features",
-    "banner": "",
+    "banner": "https://raw.githubusercontent.com/RisingOS-OSS/android/fifteen/risingOS_banner.png",
     "versions": [
       { "ver": "Android 16", "date": "2026-05-09", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
     ]
@@ -76,15 +76,44 @@
   {
     "name": "CloverOS",
     "status": "official",
-    "dev": "Harshit",
+    "dev": "Unknown",
     "desc": "Lightweight, fast, and efficient. CloverOS delivers a clean Android experience.",
     "icon": "C",
     "downloads": 450,
     "screenshots": ["https://picsum.photos/seed/clover1/300/600"],
     "changelog": "• Initial release\n• Clean AOSP experience",
-    "banner": "",
+    "banner": "https://raw.githubusercontent.com/The-Clover-Project/.github/main/banner5.png",
     "versions": [
       { "ver": "Android 16", "date": "2026-05-07", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
+    ]
+  },
+  {
+    "name": "DerpFest OS",
+    "status": "official",
+    "dev": "Unknown",
+    "desc": "A powerful custom ROM focused on customization, performance, and unique features.",
+    "icon": "D",
+    "downloads": 890,
+    "screenshots": ["https://picsum.photos/seed/derp1/300/600"],
+    "changelog": "• Initial release\n• DerpFest features",
+    "banner": "https://raw.githubusercontent.com/DerpFest-AOSP/manifest/13/derp.png",
+    "versions": [
+      { "ver": "Android 16", "date": "2026-05-11", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
+    ]
+  },
+  {
+    "name": "Pixel OS",
+    "status": "official",
+    "dev": "Unknown",
+    "desc": "Stock Pixel experience with optimizations for the best Google integration.",
+    "icon": "P",
+    "downloads": 1560,
+    "screenshots": ["https://picsum.photos/seed/pixel1/300/600", "https://picsum.photos/seed/pixel2/300/600"],
+    "changelog": "• Initial release\n• Stock Pixel experience",
+    "banner": "https://avatars.githubusercontent.com/u/82160282?s=200&v=4",
+    "versions": [
+      { "ver": "Android 16", "date": "2026-05-13", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" },
+      { "ver": "Android 15", "date": "2026-03-20", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
     ]
   },
   {

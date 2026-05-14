@@ -57,10 +57,25 @@
         .light-mode .section-subtitle,
         .light-mode .rom-card p,
         .light-mode .about-card p,
-        .light-mode footer p { color: #555570; }
+        .light-mode footer p,
+        .light-mode .modal p,
+        .light-mode .form-group label { color: #555570 !important; }
+        .light-mode .rom-stats { border-top-color: rgba(0,0,0,0.06) !important; }
+        .light-mode .rom-stats div { color: #555570 !important; }
+        .light-mode .rom-stats div strong { color: #1a1a2e !important; }
+        .light-mode .rom-card .rom-meta span[style*="purple"] { border-color: rgba(123,47,247,0.3) !important; }
         .light-mode .modal .form-group input,
         .light-mode .modal .form-group textarea,
-        .light-mode .modal .form-group select { background: #f0f2f5; color: #1a1a2e; }
+        .light-mode .modal .form-group select { background: #e8eaed; color: #1a1a2e; border-color: rgba(0,0,0,0.12); }
+        .light-mode .banner-preview { border: 1px solid rgba(0,0,0,0.1); }
+        .light-mode footer { border-top-color: rgba(0,0,0,0.06); }
+        .light-mode .rom-filters button { border-color: rgba(0,0,0,0.1); color: #555570; }
+        .light-mode .version-entry input,
+        .light-mode .version-entry select { background: #e8eaed; color: #1a1a2e; border-color: rgba(0,0,0,0.12); }
+        .light-mode .screenshot-grid img { border-color: rgba(0,0,0,0.1); }
+        .light-mode .modal .detail-item a { color: #0088cc; }
+        .light-mode .changelog-toggle { color: #0088cc; }
+        .light-mode select option { background: #f0f2f5; color: #1a1a2e; }
 
         body {
             font-family: 'Google Sans', 'Product Sans', 'Inter', sans-serif;
@@ -389,7 +404,7 @@
             justify-content: center;
             font-size: 28px;
             margin-bottom: 20px;
-            background: rgba(0, 212, 255, 0.1);
+            background: var(--gradient);
         }
 
         .rom-card h3 {
@@ -1206,7 +1221,7 @@ function saveROMs(data) {
         const res = await fetch('roms.json');
         const defaultROMs = await res.json();
         const romsVer = localStorage.getItem('blueredwood_roms_ver') || '0';
-        const curVer = '5';
+        const curVer = '6';
         if (!localStorage.getItem('blueredwood_roms_init') || romsVer !== curVer) {
             localStorage.setItem('blueredwood_roms', JSON.stringify(defaultROMs));
             localStorage.setItem('blueredwood_roms_init', '1');
@@ -1242,11 +1257,16 @@ function renderROMs(filter) {
     const versions = r.versions || [];
         return `
         <div class="rom-card reveal" onclick="showDetail(${idx})">
-            <div class="rom-icon">${r.icon || '📱'}</div>
+            <div class="rom-icon">📱</div>
             <h3>${r.name}</h3>
             <div class="rom-meta">
                 <span class="status-badge status-${r.status}">${r.status}</span>
-                ${versions.map(v => `<span style="padding:4px 10px;border-radius:50px;font-size:10px;background:rgba(123,47,247,0.15);color:#b388ff;border:1px solid rgba(123,47,247,0.3)">${v.ver}</span>`).join('')}
+                ${versions.map(v => {
+                    const vcolor = v.ver === 'Android 16' ? '#00d4ff' : v.ver === 'Android 15' ? '#7b2ff7' : '#ff3366';
+                    const vbg = v.ver === 'Android 16' ? 'rgba(0,212,255,0.15)' : v.ver === 'Android 15' ? 'rgba(123,47,247,0.15)' : 'rgba(255,51,102,0.15)';
+                    const vborder = v.ver === 'Android 16' ? 'rgba(0,212,255,0.3)' : v.ver === 'Android 15' ? 'rgba(123,47,247,0.3)' : 'rgba(255,51,102,0.3)';
+                    return `<span style="padding:4px 10px;border-radius:50px;font-size:10px;font-weight:700;background:${vbg};color:${vcolor};border:1px solid ${vborder}">${v.ver}</span>`;
+                }).join('')}
             </div>
             <p>${r.desc || ''}</p>
             <div class="rom-dev">Maintainer: <span>${r.dev || 'Unknown'}</span></div>
@@ -1374,7 +1394,7 @@ function showDetail(index) {
                 </div>
             </div>
             <div style="text-align:right">
-                <div style="font-size:28px;background:var(--gradient);width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center">${r.icon || '📱'}</div>
+                <div style="font-size:28px;background:var(--gradient);width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center">📱</div>
             </div>
         </div>
 
