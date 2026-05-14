@@ -936,11 +936,16 @@
         <h2>Upload ROM</h2>
         <p>Submit a new ROM for POCO X5 Pro</p>
         <div style="background:var(--dark);border-radius:12px;padding:16px;margin-bottom:20px;border:1px solid rgba(0,212,255,0.15)">
-            <p style="font-size:13px;margin-bottom:8px;color:var(--text-muted)">📎 <strong>Quick Share from Telegram:</strong> Paste your post link and we'll arrange the rest</p>
-            <div style="display:flex;gap:8px">
-                <input type="url" id="quickLink" placeholder="https://t.me/bluehearts_Builds016/..." style="flex:1;padding:10px 14px;background:var(--bg-body);border:1px solid var(--border-color);border-radius:8px;color:var(--text-primary)">
-                <button class="btn btn-primary" onclick="quickImport()" style="white-space:nowrap">Import</button>
+            <p style="font-size:13px;margin-bottom:8px;color:var(--text-muted)">📎 <strong>Quick import:</strong></p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+                <input type="url" id="quickLink" placeholder="https://t.me/bluehearts_Builds016/..." style="flex:1;min-width:200px;padding:10px 14px;background:var(--bg-body);border:1px solid var(--border-color);border-radius:8px;color:var(--text-primary)">
+                <button class="btn btn-primary" onclick="quickImport()" style="white-space:nowrap">Import Link</button>
             </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <input type="url" id="gitRepoUrl" placeholder="https://github.com/org/repo (auto-fetch banner)" style="flex:1;min-width:200px;padding:10px 14px;background:var(--bg-body);border:1px solid var(--border-color);border-radius:8px;color:var(--text-primary)">
+                <button class="btn btn-outline" onclick="fetchGitBanner()" style="white-space:nowrap">Fetch Banner</button>
+            </div>
+            <p style="font-size:11px;color:var(--text-muted);margin-top:6px">Paste a GitHub repo link and we'll auto-detect the banner image</p>
         </div>
         <div class="form-group">
             <label>ROM Name</label>
@@ -1424,6 +1429,53 @@ function registerDev() {
     document.getElementById('loginUser').value = user;
     document.getElementById('loginPass').value = '';
     showToast('Account created! You can now login.', 'success');
+}
+
+// === Fetch banner from GitHub repo ===
+async function fetchGitBanner() {
+    const url = document.getElementById('gitRepoUrl').value.trim();
+    if (!url) { showToast('Paste a GitHub repo URL!', 'error'); return; }
+    const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+    if (!match) { showToast('Invalid GitHub URL!', 'error'); return; }
+    const [, owner, repo] = match;
+    const cleanRepo = repo.replace(/\.git$/, '');
+    const btn = document.querySelector('[onclick="fetchGitBanner()"]');
+    btn.textContent = 'Fetching...';
+    btn.disabled = true;
+
+    try {
+        // Try common banner paths
+        const paths = ['banner.png', 'banner.webp', '.github/banner.png', '.github/banner.webp', 'assets/banner.png', 'assets/banner.webp', 'logo.png', 'assets/logo.png'];
+        let found = null;
+        for (const path of paths) {
+            const r = await fetch(`https://raw.githubusercontent.com/${owner}/${cleanRepo}/main/${path}`, { method: 'HEAD' });
+            if (r.ok) { found = `https://raw.githubusercontent.com/${owner}/${cleanRepo}/main/${path}`; break; }
+            const r2 = await fetch(`https://raw.githubusercontent.com/${owner}/${cleanRepo}/master/${path}`, { method: 'HEAD' });
+            if (r2.ok) { found = `https://raw.githubusercontent.com/${owner}/${cleanRepo}/master/${path}`; break; }
+        }
+        if (found) {
+            document.getElementById('romBanner').value = found;
+            document.getElementById('bannerPreview').src = found;
+            document.getElementById('bannerPreview').style.display = 'block';
+            showToast('Banner fetched from repo!', 'success');
+        } else {
+            // Fallback: use repo owner avatar
+            const api = await fetch(`https://api.github.com/repos/${owner}/${cleanRepo}`);
+            if (api.ok) {
+                const data = await api.json();
+                if (data.owner && data.owner.avatar_url) {
+                    document.getElementById('romBanner').value = data.owner.avatar_url;
+                    document.getElementById('bannerPreview').src = data.owner.avatar_url;
+                    document.getElementById('bannerPreview').style.display = 'block';
+                    showToast('Using repo owner avatar as banner', 'success');
+                }
+            }
+        }
+    } catch (e) {
+        showToast('Could not fetch banner from repo', 'error');
+    }
+    btn.textContent = 'Fetch Banner';
+    btn.disabled = false;
 }
 
 // === Quick import from Telegram link ===
