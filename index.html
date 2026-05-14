@@ -876,29 +876,49 @@
             <p style="font-size:11px;color:var(--muted);margin-top:4px">Telegram, Telegraph, PostImage, ImgBB links all work</p>
             <img class="banner-preview" id="bannerPreview">
         </div>
-        <div class="upload-row">
-            <div class="form-group">
-                <label>ROM Download Link</label>
-                <input type="url" id="romLink" placeholder="https://...">
+        <div class="form-group">
+            <label>Android Versions & Downloads</label>
+            <div id="versionEntries">
+                <div class="version-entry" style="background:var(--dark);padding:16px;border-radius:12px;margin-bottom:12px">
+                    <div class="upload-row">
+                        <div class="form-group" style="margin-bottom:0">
+                            <label style="font-size:11px">Version</label>
+                            <select class="verSelect" style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+                                <option>Android 16</option>
+                                <option>Android 15</option>
+                                <option>Android 14</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <label style="font-size:11px">Release Date</label>
+                            <input type="date" class="verDate" style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:8px;margin-bottom:0">
+                        <label style="font-size:11px">ROM Download Link</label>
+                        <input type="url" class="verRom" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+                    </div>
+                    <div class="upload-row" style="margin-top:8px">
+                        <div class="form-group" style="margin-bottom:0">
+                            <label style="font-size:11px">boot.img</label>
+                            <input type="url" class="verBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <label style="font-size:11px">vendor_boot.img</label>
+                            <input type="url" class="verVendorBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:8px;margin-bottom:0">
+                        <label style="font-size:11px">dtbo.img</label>
+                        <input type="url" class="verDtbo" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Recovery - boot.img</label>
-                <input type="url" id="bootLink" placeholder="https://...">
-            </div>
-        </div>
-        <div class="upload-row">
-            <div class="form-group">
-                <label>Recovery - vendor_boot.img</label>
-                <input type="url" id="vendorBootLink" placeholder="https://...">
-            </div>
-            <div class="form-group">
-                <label>Recovery - dtbo.img</label>
-                <input type="url" id="dtboLink" placeholder="https://...">
-            </div>
+            <button type="button" class="btn btn-outline" onclick="addVersionEntry()" style="width:100%;font-size:12px">+ Add Another Version</button>
         </div>
         <div class="form-group">
             <label>Screenshots (one per line, PNG URLs)</label>
-            <textarea id="romScreenshots" placeholder="https://example.com/screen1.png&#10;https://example.com/screen2.png"></textarea>
+            <textarea id="romScreenshots" placeholder="https://telegra.ph/file/...&#10;https://i.postimg.cc/..."></textarea>
         </div>
         <div class="form-group">
             <label>Change Logs</label>
@@ -999,13 +1019,13 @@ function saveROMs(data) {
 
 // Default ROMs + custom uploaded ones
 const defaultROMs = [
-    { name: 'Infinity X', status: 'official', dev: 'BlueHeart016', desc: 'A feature-packed ROM with endless customization options. Smooth, stable, and refined for daily use.', icon: '∞', downloads: 1240, screenshots: ['https://via.placeholder.com/300x600/111128/00d4ff?text=Screen1', 'https://via.placeholder.com/300x600/111128/7b2ff7?text=Screen2'], changelog: '• Initial official release\n• Based on Android 16\n• Pixel features + custom additions\n• Enhanced performance tweaks', banner: 'https://via.placeholder.com/800x200/111128/00d4ff?text=Infinity+X+Banner', links: { rom: 'https://sourceforge.net/projects/infinity-x/files/redwood/', boot: '#', vendor_boot: '#', dtbo: '#' } },
-    { name: 'Infinity X', status: 'unofficial', dev: 'BlueHeart016', desc: 'Unofficial build with experimental features and the latest patches.', icon: '∞', downloads: 580, screenshots: [], changelog: '• Test builds with latest CAF tags\n• Experimental kernel changes', banner: 'https://via.placeholder.com/800x200/111128/ff3366?text=Infinity+X+Unofficial', links: { rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' } },
-    { name: 'AxionOS', status: 'official', dev: 'BlueHeart016', desc: 'A smooth AOSP-based ROM focused on performance, battery life, and minimalism.', icon: 'A', downloads: 980, screenshots: [], changelog: '• Official release\n• AOSP base with optimizations', banner: '', links: { rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' } },
-    { name: 'Evolution X', status: 'official', dev: 'BlueHeart016', desc: 'Pixel-like experience with custom features. Elegant UI and rock-solid performance.', icon: 'E', downloads: 2100, screenshots: [], changelog: '• Latest EvoX sources\n• Pixel features included', banner: '', links: { rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' } },
-    { name: 'RisingOS', status: 'official', dev: 'BlueHeart016', desc: 'Rising from the ashes — a powerful, customizable ROM built for enthusiasts.', icon: 'R', downloads: 760, screenshots: [], changelog: '• Official build\n• RisingOS features', banner: '', links: { rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' } },
-    { name: 'CloverOS', status: 'official', dev: 'Harshit', desc: 'Lightweight, fast, and efficient. CloverOS delivers a clean Android experience.', icon: 'C', downloads: 450, screenshots: [], changelog: '• Initial release\n• Clean AOSP experience', banner: '', links: { rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' } },
-    { name: 'ASCP OS', status: 'official', dev: 'BlueHeart016', desc: 'The flagship ROM of BlueREDWOOD. Premium features, maximum performance.', icon: 'A', downloads: 3200, screenshots: ['https://via.placeholder.com/300x600/111128/00d4ff?text=ASCP+Home', 'https://via.placeholder.com/300x600/111128/7b2ff7?text=ASCP+QS', 'https://via.placeholder.com/300x600/111128/ff3366?text=ASCP+Settings'], changelog: '• Latest ASCP v5.3\n• Scene container disabled for smooth QS\n• Dolby Atmos support\n• ReVanced included', banner: 'https://via.placeholder.com/800x200/0a0a1a/00d4ff?text=ASCP+OS+v5.3', links: { rom: 'https://gofile.io/d/TDRRjM', boot: '#', vendor_boot: '#', dtbo: '#' } }
+    { name: 'Infinity X', status: 'official', dev: 'BlueHeart016', desc: 'A feature-packed ROM with endless customization options. Smooth, stable, and refined for daily use.', icon: '∞', downloads: 1240, screenshots: ['https://via.placeholder.com/300x600/111128/00d4ff?text=Screen1', 'https://via.placeholder.com/300x600/111128/7b2ff7?text=Screen2'], changelog: '• Initial official release\n• Pixel features + custom additions\n• Enhanced performance tweaks', banner: 'https://via.placeholder.com/800x200/111128/00d4ff?text=Infinity+X+Banner', versions: [{ ver: 'Android 16', date: '2026-05-10', rom: 'https://sourceforge.net/projects/infinity-x/files/redwood/', boot: '#', vendor_boot: '#', dtbo: '#' }] },
+    { name: 'Infinity X', status: 'unofficial', dev: 'BlueHeart016', desc: 'Unofficial build with experimental features and the latest patches.', icon: '∞', downloads: 580, screenshots: [], changelog: '• Test builds with latest CAF tags\n• Experimental kernel changes', banner: 'https://via.placeholder.com/800x200/111128/ff3366?text=Infinity+X+Unofficial', versions: [{ ver: 'Android 16', date: '2026-05-08', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }] },
+    { name: 'AxionOS', status: 'official', dev: 'BlueHeart016', desc: 'A smooth AOSP-based ROM focused on performance, battery life, and minimalism.', icon: 'A', downloads: 980, screenshots: [], changelog: '• Official release\n• AOSP base with optimizations', banner: '', versions: [{ ver: 'Android 16', date: '2026-05-05', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }] },
+    { name: 'Evolution X', status: 'official', dev: 'BlueHeart016', desc: 'Pixel-like experience with custom features. Elegant UI and rock-solid performance.', icon: 'E', downloads: 2100, screenshots: [], changelog: '• Latest EvoX sources\n• Pixel features included', banner: '', versions: [{ ver: 'Android 16', date: '2026-05-12', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }] },
+    { name: 'RisingOS', status: 'official', dev: 'BlueHeart016', desc: 'Rising from the ashes — a powerful, customizable ROM built for enthusiasts.', icon: 'R', downloads: 760, screenshots: [], changelog: '• Official build\n• RisingOS features', banner: '', versions: [{ ver: 'Android 16', date: '2026-05-09', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }] },
+    { name: 'CloverOS', status: 'official', dev: 'Harshit', desc: 'Lightweight, fast, and efficient. CloverOS delivers a clean Android experience.', icon: 'C', downloads: 450, screenshots: [], changelog: '• Initial release\n• Clean AOSP experience', banner: '', versions: [{ ver: 'Android 16', date: '2026-05-07', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }] },
+    { name: 'ASCP OS', status: 'official', dev: 'BlueHeart016', desc: 'The flagship ROM of BlueREDWOOD. Premium features, maximum performance.', icon: 'A', downloads: 3200, screenshots: ['https://via.placeholder.com/300x600/111128/00d4ff?text=ASCP+Home', 'https://via.placeholder.com/300x600/111128/7b2ff7?text=ASCP+QS', 'https://via.placeholder.com/300x600/111128/ff3366?text=ASCP+Settings'], changelog: '• Latest ASCP v5.3\n• Scene container disabled for smooth QS\n• Dolby Atmos support\n• ReVanced included', banner: 'https://via.placeholder.com/800x200/0a0a1a/00d4ff?text=ASCP+OS+v5.3', versions: [{ ver: 'Android 16', date: '2026-05-14', rom: 'https://gofile.io/d/TDRRjM', boot: '#', vendor_boot: '#', dtbo: '#' }] }
 ];
 
 // Init ROMs
@@ -1032,20 +1052,22 @@ function renderROMs(filter) {
 
     grid.innerHTML = filtered.map((r, i) => {
         const idx = roms.indexOf(r);
+        const versions = r.versions || [];
         return `
-        <div class="rom-card" onclick="handleCardClick(event, ${idx})">
+        <div class="rom-card" onclick="showDetail(${idx})">
             <div class="rom-icon">${r.icon || '📱'}</div>
             <h3>${r.name}</h3>
             <div class="rom-meta">
                 <span class="status-badge status-${r.status}">${r.status}</span>
+                ${versions.map(v => `<span style="padding:4px 10px;border-radius:50px;font-size:10px;background:rgba(123,47,247,0.15);color:#b388ff;border:1px solid rgba(123,47,247,0.3)">${v.ver}</span>`).join('')}
             </div>
             <p>${r.desc || ''}</p>
             <div class="rom-dev">Maintainer: <span>${r.dev || 'Unknown'}</span></div>
             <div class="rom-stats">
                 <div>⬇️ <strong>${r.downloads || 0}</strong> downloads</div>
+                <div>📅 <strong>${versions.length ? versions[0].date : 'N/A'}</strong></div>
                 ${r.screenshots && r.screenshots.length > 0 ? `<div>📷 <strong>${r.screenshots.length}</strong> screenshots</div>` : ''}
             </div>
-            ${r.links && r.links.rom && r.links.rom !== '#' ? `<a href="${r.links.rom}" target="_blank" class="btn btn-primary dl-btn" style="width:100%;text-align:center;margin-top:16px;text-decoration:none">📥 Download ${r.name}</a>` : ''}
         </div>`;
     }).join('');
 }
@@ -1057,10 +1079,36 @@ function filterROMs(filter, btn) {
     renderROMs(filter);
 }
 
-// === Card click handler (show detail unless clicking download) ===
-function handleCardClick(event, idx) {
-    if (event.target.classList.contains('dl-btn') || event.target.closest('.dl-btn')) return;
-    showDetail(idx);
+// === Switch Android version in detail view ===
+function switchVersion(idx, vi) {
+    const roms = getROMs();
+    const r = roms[idx];
+    if (!r || !r.versions || !r.versions[vi]) return;
+    const v = r.versions[vi];
+
+    const html = `
+        <div class="rom-detail-grid">
+            <div class="detail-item">
+                <h4>📱 ROM</h4>
+                <a href="${v.rom || '#'}" target="_blank">${v.rom !== '#' ? 'Download ROM' : 'Not available'}</a>
+            </div>
+            <div class="detail-item">
+                <h4>📦 boot.img</h4>
+                <a href="${v.boot || '#'}" target="_blank">${v.boot !== '#' ? 'Download' : 'Not available'}</a>
+            </div>
+            <div class="detail-item">
+                <h4>📦 vendor_boot.img</h4>
+                <a href="${v.vendor_boot || '#'}" target="_blank">${v.vendor_boot !== '#' ? 'Download' : 'Not available'}</a>
+            </div>
+            <div class="detail-item">
+                <h4>📦 dtbo.img</h4>
+                <a href="${v.dtbo || '#'}" target="_blank">${v.dtbo !== '#' ? 'Download' : 'Not available'}</a>
+            </div>
+        </div>
+        <div style="text-align:center;margin:20px 0">
+            <a href="${v.rom !== '#' ? v.rom : 'javascript:void(0)'}" target="${v.rom !== '#' ? '_blank' : ''}" class="btn btn-primary" style="padding:14px 40px;font-size:16px;text-decoration:none;${v.rom === '#' ? 'opacity:0.5;cursor:not-allowed' : ''}">📥 Download ${r.name} (${v.ver})</a>
+        </div>`;
+    document.getElementById('versionDownloads').innerHTML = html;
 }
 
 // === Show ROM Detail ===
@@ -1071,52 +1119,68 @@ function showDetail(index) {
     const realIndex = allRoms.indexOf(r);
     if (realIndex === -1) return;
 
+    const versions = r.versions || [];
     const screenshots = r.screenshots && r.screenshots.length > 0
         ? r.screenshots.map(s => `<img src="${s}" alt="screenshot" onerror="this.style.display='none'">`).join('')
         : '<p style="color:var(--muted);font-size:13px">No screenshots available</p>';
 
-    document.getElementById('detailContent').innerHTML = `
-        <h2 style="font-family:'Orbitron',monospace">${r.name}</h2>
-        <div style="margin:12px 0">
-            <span class="status-badge status-${r.status}">${r.status}</span>
-            <span style="color:var(--muted);margin-left:12px;font-size:13px">by ${r.dev || 'Unknown'}</span>
-        </div>
-        ${r.banner ? `<img src="${r.banner}" style="width:100%;border-radius:12px;margin:16px 0;max-height:200px;object-fit:cover">` : ''}
-        <p style="color:var(--muted);margin-bottom:16px">${r.desc || ''}</p>
+    let versionOptions = versions.map((v, vi) =>
+        `<option value="${vi}">${v.ver} — ${v.date}</option>`
+    ).join('') || '<option>No versions</option>';
 
-        <div class="rom-detail-grid">
-            <div class="detail-item">
-                <h4>ROM Download</h4>
-                <a href="${r.links.rom || '#'}" target="_blank">${r.links.rom ? 'Download Link' : 'Not available'}</a>
+    document.getElementById('detailContent').innerHTML = `
+        <h2 style="font-family:'Orbitron',monospace;margin-bottom:4px">${r.name}</h2>
+        <div style="margin-bottom:16px">
+            <span class="status-badge status-${r.status}">${r.status}</span>
+            <span style="color:var(--muted);margin-left:12px;font-size:13px">Maintainer: <strong style="color:var(--text)">${r.dev || 'Unknown'}</strong></span>
+        </div>
+        ${r.banner ? `<img src="${r.banner}" style="width:100%;border-radius:12px;margin:8px 0 16px;max-height:180px;object-fit:cover">` : ''}
+        <p style="color:var(--muted);margin-bottom:20px">${r.desc || ''}</p>
+
+        ${versions.length > 1 ? `
+        <div class="form-group">
+            <label>Select Android Version</label>
+            <select id="verSelector" onchange="switchVersion(${idx}, this.value)">
+                ${versionOptions}
+            </select>
+        </div>` : ''}
+
+        <div id="versionDownloads">
+            ${versions.length ? `
+            <div class="rom-detail-grid">
+                <div class="detail-item">
+                    <h4>📱 ROM</h4>
+                    <a href="${versions[0].rom || '#'}" target="_blank">${versions[0].rom !== '#' ? 'Download ROM' : 'Not available'}</a>
+                </div>
+                <div class="detail-item">
+                    <h4>📦 boot.img</h4>
+                    <a href="${versions[0].boot || '#'}" target="_blank">${versions[0].boot !== '#' ? 'Download' : 'Not available'}</a>
+                </div>
+                <div class="detail-item">
+                    <h4>📦 vendor_boot.img</h4>
+                    <a href="${versions[0].vendor_boot || '#'}" target="_blank">${versions[0].vendor_boot !== '#' ? 'Download' : 'Not available'}</a>
+                </div>
+                <div class="detail-item">
+                    <h4>📦 dtbo.img</h4>
+                    <a href="${versions[0].dtbo || '#'}" target="_blank">${versions[0].dtbo !== '#' ? 'Download' : 'Not available'}</a>
+                </div>
             </div>
-            <div class="detail-item">
-                <h4>boot.img</h4>
-                <a href="${r.links.boot || '#'}" target="_blank">${r.links.boot ? 'Download' : 'Not available'}</a>
-            </div>
-            <div class="detail-item">
-                <h4>vendor_boot.img</h4>
-                <a href="${r.links.vendor_boot || '#'}" target="_blank">${r.links.vendor_boot ? 'Download' : 'Not available'}</a>
-            </div>
-            <div class="detail-item">
-                <h4>dtbo.img</h4>
-                <a href="${r.links.dtbo || '#'}" target="_blank">${r.links.dtbo ? 'Download' : 'Not available'}</a>
-            </div>
+            <div style="text-align:center;margin:20px 0">
+                <a href="${versions[0].rom !== '#' ? versions[0].rom : 'javascript:void(0)'}" target="${versions[0].rom !== '#' ? '_blank' : ''}" class="btn btn-primary" style="padding:14px 40px;font-size:16px;text-decoration:none;${versions[0].rom === '#' ? 'opacity:0.5;cursor:not-allowed' : ''}">📥 Download ${r.name}</a>
+            </div>` : '<p style="color:var(--muted)">No downloads available</p>'}
         </div>
 
         ${r.changelog ? `
         <div class="detail-item" style="background:var(--dark);border-radius:12px;padding:16px;margin:16px 0">
-            <h4 style="font-size:12px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Change Log</h4>
+            <h4 style="font-size:12px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">What's New</h4>
             <div class="changelog">${r.changelog}</div>
         </div>` : ''}
 
         <h4 style="font-size:13px;text-transform:uppercase;color:var(--muted);margin:16px 0 8px">Screenshots</h4>
         <div class="screenshot-grid">${screenshots}</div>
 
-        <div style="text-align:center;margin:20px 0">
-            ${r.links && r.links.rom && r.links.rom !== '#' ? `<a href="${r.links.rom}" target="_blank" class="btn btn-primary" style="padding:14px 40px;font-size:16px;text-decoration:none">📥 Download ${r.name} Now</a>` : ''}
-        </div>
-        <div style="text-align:center">
-            <strong style="color:var(--muted)">⬇️ ${r.downloads || 0} downloads</strong>
+        <div style="text-align:center;margin-top:16px">
+            <strong style="color:var(--muted)">⬇️ ${r.downloads || 0} total downloads</strong>
         </div>
     `;
     openModal('detailModal');
@@ -1217,22 +1281,79 @@ function previewBanner(url) {
     }
 }
 
+// === Add version entry in upload form ===
+function addVersionEntry() {
+    const container = document.getElementById('versionEntries');
+    const entry = document.createElement('div');
+    entry.className = 'version-entry';
+    entry.style.cssText = 'background:var(--dark);padding:16px;border-radius:12px;margin-bottom:12px;position:relative';
+    entry.innerHTML = `
+        <button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--accent);cursor:pointer;font-size:18px">&times;</button>
+        <div class="upload-row">
+            <div class="form-group" style="margin-bottom:0">
+                <label style="font-size:11px">Version</label>
+                <select class="verSelect" style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+                    <option>Android 16</option>
+                    <option>Android 15</option>
+                    <option>Android 14</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+                <label style="font-size:11px">Release Date</label>
+                <input type="date" class="verDate" style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+            </div>
+        </div>
+        <div class="form-group" style="margin-top:8px;margin-bottom:0">
+            <label style="font-size:11px">ROM Download Link</label>
+            <input type="url" class="verRom" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+        </div>
+        <div class="upload-row" style="margin-top:8px">
+            <div class="form-group" style="margin-bottom:0">
+                <label style="font-size:11px">boot.img</label>
+                <input type="url" class="verBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+                <label style="font-size:11px">vendor_boot.img</label>
+                <input type="url" class="verVendorBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+            </div>
+        </div>
+        <div class="form-group" style="margin-top:8px;margin-bottom:0">
+            <label style="font-size:11px">dtbo.img</label>
+            <input type="url" class="verDtbo" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+        </div>`;
+    container.appendChild(entry);
+}
+
 // === Submit ROM ===
 function submitROM() {
     const name = document.getElementById('romName').value.trim();
     const status = document.getElementById('romStatus').value;
     const dev = document.getElementById('romDev').value.trim();
     const banner = document.getElementById('romBanner').value.trim();
-    const romLink = document.getElementById('romLink').value.trim();
-    const bootLink = document.getElementById('bootLink').value.trim();
-    const vendorBootLink = document.getElementById('vendorBootLink').value.trim();
-    const dtboLink = document.getElementById('dtboLink').value.trim();
     const screenshotsRaw = document.getElementById('romScreenshots').value.trim();
     const changelog = document.getElementById('romChangelog').value.trim();
     const desc = document.getElementById('romDesc').value.trim();
 
-    if (!name || !dev || !romLink) {
-        showToast('Please fill in ROM name, developer, and download link!', 'error');
+    if (!name || !dev) {
+        showToast('Please fill in ROM name and developer!', 'error');
+        return;
+    }
+
+    // Collect versions
+    const versionEntries = document.querySelectorAll('#versionEntries .version-entry');
+    const versions = [];
+    versionEntries.forEach(el => {
+        const ver = el.querySelector('.verSelect')?.value || 'Unknown';
+        const date = el.querySelector('.verDate')?.value || '';
+        const rom = el.querySelector('.verRom')?.value?.trim() || '';
+        const boot = el.querySelector('.verBoot')?.value?.trim() || '';
+        const vendor_boot = el.querySelector('.verVendorBoot')?.value?.trim() || '';
+        const dtbo = el.querySelector('.verDtbo')?.value?.trim() || '';
+        if (rom) versions.push({ ver, date, rom, boot, vendor_boot, dtbo });
+    });
+
+    if (versions.length === 0) {
+        showToast('Please add at least one version with a download link!', 'error');
         return;
     }
 
@@ -1246,7 +1367,7 @@ function submitROM() {
         banner,
         screenshots,
         changelog: changelog || 'No changelog provided.',
-        links: { rom: romLink, boot: bootLink, vendor_boot: vendorBootLink, dtbo: dtboLink }
+        versions
     });
     saveROMs(roms);
     renderROMs(currentFilter);
@@ -1254,10 +1375,49 @@ function submitROM() {
     showToast(`${name} uploaded successfully! 🎉`, 'success');
 
     // Clear form
-    ['romName','romDev','romBanner','romLink','bootLink','vendorBootLink','dtboLink','romScreenshots','romChangelog','romDesc'].forEach(id => {
-        document.getElementById(id).value = '';
-    });
+    document.getElementById('romName').value = '';
+    document.getElementById('romDev').value = '';
+    document.getElementById('romBanner').value = '';
+    document.getElementById('romScreenshots').value = '';
+    document.getElementById('romChangelog').value = '';
+    document.getElementById('romDesc').value = '';
     document.getElementById('bannerPreview').style.display = 'none';
+    // Reset to one version entry
+    document.getElementById('versionEntries').innerHTML = `
+        <div class="version-entry" style="background:var(--dark);padding:16px;border-radius:12px;margin-bottom:12px">
+            <div class="upload-row">
+                <div class="form-group" style="margin-bottom:0">
+                    <label style="font-size:11px">Version</label>
+                    <select class="verSelect" style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+                        <option>Android 16</option>
+                        <option>Android 15</option>
+                        <option>Android 14</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                    <label style="font-size:11px">Release Date</label>
+                    <input type="date" class="verDate" style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+                </div>
+            </div>
+            <div class="form-group" style="margin-top:8px;margin-bottom:0">
+                <label style="font-size:11px">ROM Download Link</label>
+                <input type="url" class="verRom" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+            </div>
+            <div class="upload-row" style="margin-top:8px">
+                <div class="form-group" style="margin-bottom:0">
+                    <label style="font-size:11px">boot.img</label>
+                    <input type="url" class="verBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                    <label style="font-size:11px">vendor_boot.img</label>
+                    <input type="url" class="verVendorBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+                </div>
+            </div>
+            <div class="form-group" style="margin-top:8px;margin-bottom:0">
+                <label style="font-size:11px">dtbo.img</label>
+                <input type="url" class="verDtbo" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text)">
+            </div>
+        </div>`;
 }
 
 // Initial render
