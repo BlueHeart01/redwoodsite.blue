@@ -734,6 +734,18 @@
             color: white;
             animation: gradientMove 3s ease infinite;
             background-size: 200% 200%;
+            overflow: hidden;
+            position: relative;
+        }
+        .about-card .avatar img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0; left: 0;
+        }
+        .about-card .avatar span {
+            position: relative;
+            z-index: 1;
         }
 
         .about-card h3 { margin-bottom: 4px; color: var(--text-primary); }
@@ -1057,20 +1069,20 @@
     <h2 class="section-title">About Us</h2>
     <p class="section-subtitle">The developers behind <span>BlueREDWOOD</span></p>
     <div class="about-grid">
-        <div class="about-card reveal">
-            <div class="avatar">⚝</div>
+        <div class="about-card reveal" data-tg="BlueHeart016">
+            <div class="avatar" id="av-bh"><span>⚝</span></div>
             <h3>⚝BlueHeart 💙「ᴘʟᴇxᴜꜱ」</h3>
             <div class="role">Core Developer</div>
             <p>ASCP Official maintainer — DerpFest, Clover, Axion unofficial maintainer for Redwood.</p>
         </div>
-        <div class="about-card reveal">
-            <div class="avatar">H</div>
+        <div class="about-card reveal" data-tg="itsraiharshit">
+            <div class="avatar" id="av-hr"><span>H</span></div>
             <h3>𝙷𝙰𝚁𝚂𝙷𝙸𝚃</h3>
             <div class="role">Core Team · Kernel Developer</div>
             <p>Kernel developer and device tree maintainer. Maintains Pixel OS unofficial and Infinity X official for Redwood.</p>
         </div>
-        <div class="about-card reveal">
-            <div class="avatar">P</div>
+        <div class="about-card reveal" data-tg="thepriyanshujangid">
+            <div class="avatar" id="av-pr"><span>P</span></div>
             <h3>𝓟𝓻𝓲𝔂𝓪𝓷𝓼𝓱𝓾 𝓙𝓪𝓷𝓰𝓲𝓭</h3>
             <div class="role">Core Team · Kernel Developer</div>
             <p>Kernel developer. Evolution X official maintainer and Project Matrix OS official maintainer for Redwood.</p>
@@ -1258,6 +1270,38 @@ function escapeHtml(text) {
     return d.innerHTML;
 }
 
+// === Fetch Telegram profile photos ===
+async function fetchTgProfilePic(username, imgId) {
+    try {
+        const proxy = 'https://api.allorigins.win/raw?url=';
+        const resp = await fetch(proxy + encodeURIComponent('https://t.me/' + username));
+        const html = await resp.text();
+        const d = new DOMParser().parseFromString(html, 'text/html');
+        let src = '';
+        const img = d.querySelector('.tgme_page_photo_image');
+        if (img) src = img.getAttribute('src');
+        if (!src) {
+            const meta = d.querySelector('meta[property="og:image"]');
+            if (meta) src = meta.getAttribute('content');
+        }
+        if (src && src.startsWith('http')) {
+            const el = document.getElementById(imgId);
+            if (el) {
+                const imgEl = document.createElement('img');
+                imgEl.src = src;
+                imgEl.alt = username;
+                imgEl.onload = () => { el.querySelector('span').style.display = 'none'; };
+                el.appendChild(imgEl);
+            }
+        }
+    } catch (e) { /* silent fail, keep letter avatar */ }
+}
+// Load profile pics on page load
+['av-bh', 'av-hr', 'av-pr'].forEach(id => {
+    const card = document.getElementById(id)?.closest('[data-tg]');
+    if (card) fetchTgProfilePic(card.dataset.tg, id);
+});
+
 // === Particles ===
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
@@ -1394,7 +1438,7 @@ function saveROMs(data) {
         const res = await fetch('roms.json');
         const defaultROMs = await res.json();
         const romsVer = localStorage.getItem('blueredwood_roms_ver') || '0';
-        const curVer = '9';
+        const curVer = '10';
         if (!localStorage.getItem('blueredwood_roms_init') || romsVer !== curVer) {
             localStorage.setItem('blueredwood_roms', JSON.stringify(defaultROMs));
             localStorage.setItem('blueredwood_roms_init', '1');
