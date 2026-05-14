@@ -218,16 +218,17 @@
             font-size: 16px;
             font-weight: 600;
             letter-spacing: 1px;
-            color: var(--text-white);
             white-space: nowrap;
             flex-shrink: 0;
-            -webkit-text-fill-color: var(--text-white);
-            background: none;
-            animation: none;
+            background: linear-gradient(135deg, #c084fc, #818cf8, #e879f9, #c084fc);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientBG 6s ease infinite;
+            filter: drop-shadow(0 0 20px rgba(192, 132, 252, 0.3)) drop-shadow(0 0 40px rgba(129, 140, 248, 0.15));
         }
         .logo::before { display: none; }
-
-        .logo span { color: var(--brand-purple); }
 
         nav { display: flex; gap: 40px; align-items: center; overflow: visible; }
         nav::-webkit-scrollbar { display: none; }
