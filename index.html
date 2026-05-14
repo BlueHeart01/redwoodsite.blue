@@ -1668,7 +1668,7 @@ function showDetail(index) {
             <span style="color:var(--text-muted);font-size:13px">⬇️ ${r.downloads || 0} total downloads</span>
         </div>
 
-        ${getCurrentUser() ? `
+        ${getCurrentUser() === 'admin' ? `
         <div style="display:flex;gap:12px;margin-top:16px">
             <button class="btn btn-outline" onclick="editROM(${index})" style="flex:1;font-size:13px">✏️ Edit</button>
             <button class="btn btn-danger" onclick="deleteROM(${index})" style="flex:1;font-size:13px">🗑️ Delete</button>
