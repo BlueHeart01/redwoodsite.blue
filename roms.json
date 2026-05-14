@@ -37,7 +37,7 @@
     "downloads": 980,
     "screenshots": [],
     "changelog": "• Official release\n• AOSP base with optimizations",
-    "banner": "",
+    "banner": "https://avatars.githubusercontent.com/u/197447202?s=200&v=4",
     "versions": [
       { "ver": "Android 16", "date": "2026-05-05", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" },
       { "ver": "Android 15", "date": "2026-01-20", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
