@@ -13,8 +13,7 @@
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#060612">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&family=Google+Sans:wght@400;500;700&display=swap');
-@import url('https://fonts.cdnfonts.com/css/product-sans');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
 
         * {
             margin: 0;
@@ -30,14 +29,14 @@
             --neon: #00ff88;
             --dark: #0a0a1a;
             --darker: #060612;
-            --card: rgba(17, 17, 40, 0.7);
+            --card: rgba(10, 10, 30, 0.5);
             --text: #e0e0ff;
             --muted: #8888aa;
             --gradient: linear-gradient(135deg, #00d4ff, #7b2ff7, #ff3366);
             --gradient-2: linear-gradient(135deg, #ffd700, #ff3366, #7b2ff7);
             --gradient-3: linear-gradient(135deg, #00ff88, #00d4ff, #7b2ff7);
             --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.08);
             --bg-body: var(--darker);
             --bg-card: var(--card);
             --text-primary: var(--text);
@@ -52,7 +51,7 @@
             --bg-body: #e8ecf1;
             --dark: #ffffff;
             --darker: #e8ecf1;
-            --card: rgba(255, 255, 255, 0.85);
+            --card: rgba(255, 255, 255, 0.7);
             --text: #1a1a2e;
             --text-primary: #1a1a2e;
             --muted: #555570;
@@ -92,15 +91,17 @@
         .light-mode .detail-item { background: rgba(0,0,0,0.03) !important; }
 
         body {
-            font-family: 'Google Sans', 'Product Sans', 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-body);
             color: var(--text-primary);
             overflow-x: hidden;
             scroll-behavior: smooth;
             transition: background 0.5s, color 0.3s;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        h1, h2, h3, h4, h5 { font-family: 'Google Sans', 'Product Sans', 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5 { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; font-weight: 600; }
+        .logo, .hero h1, .section-title, .footer-logo { font-family: 'Orbitron', monospace; }
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -185,7 +186,8 @@
             border-radius: 2px;
         }
 
-        nav { display: flex; gap: 30px; align-items: center; }
+        nav { display: flex; gap: 30px; align-items: center; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        nav::-webkit-scrollbar { display: none; }
         nav a {
             color: var(--text);
             text-decoration: none;
@@ -306,7 +308,7 @@
 
         .hero h1 {
             font-family: 'Orbitron', monospace;
-            font-size: 82px;
+            font-size: clamp(36px, 7vw, 82px);
             font-weight: 900;
             line-height: 1.05;
             margin-bottom: 24px;
@@ -922,24 +924,62 @@
             display: none;
         }
 
-        /* Responsive */
+        /* Responsive - all screen sizes */
+        @media (max-width: 1024px) {
+            header { padding: 16px 30px; }
+            section { padding: 80px 30px; }
+        }
+
         @media (max-width: 768px) {
-            header { padding: 16px 20px; }
-            header.scrolled { padding: 12px 20px; }
-            nav { gap: 10px; }
+            header { padding: 14px 16px; }
+            header.scrolled { padding: 10px 16px; }
+            nav { gap: 8px; }
             nav a { font-size: 11px; }
-            .hero h1 { font-size: 32px; }
+            .logo { font-size: 14px; letter-spacing: 1px; }
+            .hero h1 { font-size: clamp(28px, 8vw, 42px); }
             .hero p { font-size: 15px; }
-            .section-title { font-size: 28px; }
-            section { padding: 60px 16px; }
-            .rom-grid { grid-template-columns: 1fr; }
+            .hero-badge { font-size: 10px; padding: 8px 16px; }
+            .section-title { font-size: clamp(24px, 6vw, 32px); }
+            section { padding: 50px 16px; }
+            .rom-grid { grid-template-columns: 1fr; gap: 20px; }
+            .rom-card { padding: 24px; }
             .upload-row { grid-template-columns: 1fr; }
-            .rom-detail-grid { grid-template-columns: 1fr; }
+            .rom-detail-grid { grid-template-columns: 1fr; gap: 12px; }
             .hero-actions { flex-direction: column; align-items: center; }
-            .logo { font-size: 16px; }
+            .hero-actions .btn { width: 100%; max-width: 300px; }
             .about-grid { grid-template-columns: 1fr; }
-            .modal { padding: 24px 16px; margin: 10px; width: calc(100% - 20px); }
-            .modal h2 { font-size: 20px; }
+            .modal { padding: 20px 14px; margin: 8px; width: calc(100% - 16px); max-width: 100%; border-radius: 16px; }
+            .modal h2 { font-size: 18px; }
+            .screenshot-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+            .rom-filters { gap: 8px; flex-wrap: wrap; }
+            .rom-filters button { font-size: 11px; padding: 8px 16px; }
+            #romSearch { font-size: 13px; padding: 12px 14px; }
+        }
+
+        @media (max-width: 480px) {
+            header { padding: 10px 12px; }
+            header.scrolled { padding: 8px 12px; }
+            nav { gap: 6px; }
+            nav a { font-size: 10px; }
+            .btn { font-size: 12px; padding: 8px 16px; }
+            .hero h1 { font-size: clamp(22px, 7vw, 28px); }
+            .hero p { font-size: 13px; }
+            .hero-badge { font-size: 9px; padding: 6px 12px; letter-spacing: 1px; margin-bottom: 16px; }
+            .hero-actions .btn { font-size: 13px; padding: 12px 24px; }
+            section { padding: 40px 12px; }
+            .section-title { font-size: clamp(20px, 5vw, 24px); }
+            .rom-card { padding: 18px; border-radius: 14px; }
+            .rom-card h3 { font-size: 18px; }
+            .rom-card p { font-size: 12px; }
+            .modal { padding: 16px 12px; margin: 4px; width: calc(100% - 8px); border-radius: 12px; }
+            .modal h2 { font-size: 16px; }
+            .modal-close { top: 10px; right: 10px; width: 30px; height: 30px; font-size: 16px; }
+            .rom-detail-grid .detail-item { padding: 12px; }
+            .about-card { padding: 24px 16px; }
+            .about-card .avatar { width: 60px; height: 60px; font-size: 24px; }
+            .about-card h3 { font-size: 14px; }
+            footer { padding: 30px 16px; }
+            .toast { bottom: 16px; right: 16px; left: 16px; max-width: none; font-size: 13px; padding: 12px 18px; }
         }
 
         /* Spinner */
@@ -1021,19 +1061,19 @@
             <div class="avatar">⚝</div>
             <h3>⚝BlueHeart 💙「ᴘʟᴇxᴜꜱ」</h3>
             <div class="role">Lead Developer</div>
-            <p>ROM builder, kernel maintainer, and creator of ASCP and BlueFlash tools.</p>
+            <p>ASCP Official maintainer, DerpFest/Clover/Axion unofficial maintainer for Redwood.</p>
         </div>
         <div class="about-card reveal">
             <div class="avatar">H</div>
             <h3>𝙷𝙰𝚁𝚂𝙷𝙸𝚃</h3>
             <div class="role">Core Developer</div>
-            <p>Device tree maintainer and audio tuning specialist for Redwood.</p>
+            <p>Makes kernels and manages device tree. Maintaining Pixel OS unofficial and Infinity X official for Redwood.</p>
         </div>
         <div class="about-card reveal">
             <div class="avatar">P</div>
             <h3>𝓟𝓻𝓲𝔂𝓪𝓷𝓼𝓱𝓾 𝓙𝓪𝓷𝓰𝓲𝓭</h3>
-            <div class="role">Contributor</div>
-            <p>Testing, debugging, and quality assurance for all Redwood ROMs.</p>
+            <div class="role">Core Developer</div>
+            <p>Evolution X official maintainer and Project Matrix OS official maintainer for Redwood.</p>
         </div>
         <div class="about-card reveal">
             <div class="avatar">∞</div>
@@ -1354,7 +1394,7 @@ function saveROMs(data) {
         const res = await fetch('roms.json');
         const defaultROMs = await res.json();
         const romsVer = localStorage.getItem('blueredwood_roms_ver') || '0';
-        const curVer = '8';
+        const curVer = '9';
         if (!localStorage.getItem('blueredwood_roms_init') || romsVer !== curVer) {
             localStorage.setItem('blueredwood_roms', JSON.stringify(defaultROMs));
             localStorage.setItem('blueredwood_roms_init', '1');
