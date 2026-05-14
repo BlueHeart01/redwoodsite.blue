@@ -1089,8 +1089,19 @@
         @media (max-width: 768px) {
             header { width: calc(100% - 24px); padding: 10px 16px; top: 8px; border-radius: 16px; }
             header.scrolled { padding: 8px 16px; }
-            .liquid-blob { filter: blur(60px); opacity: 0.12; } /* reduce blur intensity on mobile */
-            .rom-card { backdrop-filter: blur(20px); } /* reduce blur for performance */
+            .liquid-blob { filter: blur(40px); opacity: 0.08; animation: none; } /* freeze blobs on mobile */
+            .rom-card { backdrop-filter: blur(16px); transform: none !important; }
+            .rom-card::after { display: none !important; } /* disable shimmer on mobile */
+            .rom-card:hover { transform: none !important; }
+            .about-card { backdrop-filter: blur(16px); transform: none !important; }
+            .about-card:hover { transform: none !important; }
+            .logo { animation: none !important; }
+            .logo::before { animation: none !important; }
+            .btn-primary { animation: none !important; }
+            .section-title { animation: none !important; }
+            header { animation: none !important; }
+            .footer-logo { animation: none !important; }
+            * { -webkit-tap-highlight-color: transparent; }
             nav { gap: 2px; }
             nav a { font-size: clamp(9px, 1.8vw, 11px); padding: 6px 10px; border-radius: 8px; }
             .btn { font-size: clamp(9px, 1.8vw, 12px); padding: 8px 16px; border-radius: 10px; }
