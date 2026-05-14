@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BlueREDWOOD - POCO X5 PRO ROMs</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&family=Google+Sans:wght@400;500;700&display=swap');
+@import url('https://fonts.cdnfonts.com/css/product-sans');
 
         * {
             margin: 0;
@@ -54,13 +55,15 @@
         .light-mode .modal .form-group select { background: #f0f2f5; color: #1a1a2e; }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Google Sans', 'Product Sans', 'Inter', sans-serif;
             background: var(--bg-body);
             color: var(--text-primary);
             overflow-x: hidden;
             scroll-behavior: smooth;
             transition: background 0.3s, color 0.3s;
+            -webkit-font-smoothing: antialiased;
         }
+        h1, h2, h3, h4, h5 { font-family: 'Google Sans', 'Product Sans', 'Inter', sans-serif; }
 
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--dark); }
@@ -1130,7 +1133,7 @@ function saveROMs(data) {
         const res = await fetch('roms.json');
         const defaultROMs = await res.json();
         const romsVer = localStorage.getItem('blueredwood_roms_ver') || '0';
-        const curVer = '2';
+        const curVer = '3';
         if (!localStorage.getItem('blueredwood_roms_init') || romsVer !== curVer) {
             localStorage.setItem('blueredwood_roms', JSON.stringify(defaultROMs));
             localStorage.setItem('blueredwood_roms_init', '1');
@@ -1232,10 +1235,10 @@ function showDetail(index) {
     const screenshots = r.screenshots && r.screenshots.length > 0
         ? r.screenshots.map((s, si) =>
             s && s.startsWith('http')
-              ? `<img src="${s}" alt="screenshot ${si+1}" onerror="this.outerHTML='<div style=\\'background:var(--gradient);border-radius:8px;height:120px;display:flex;align-items:center;justify-content:center;font-size:40px\\'>📱</div>'">`
-              : `<div style="background:var(--gradient);border-radius:8px;height:120px;display:flex;align-items:center;justify-content:center;font-size:40px">📱</div>`
+              ? `<div style="background:var(--dark);border-radius:8px;overflow:hidden"><img src="${s}" alt="screenshot ${si+1}" style="width:100%;display:block" onerror="this.parentElement.outerHTML='<div style=\\'background:var(--dark);border-radius:8px;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;color:var(--text-muted)\\'>📷<br>Image unavailable</div>'"></div>`
+              : `<div style="background:var(--dark);border-radius:8px;height:160px;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text-muted)">📷 No preview</div>`
           ).join('')
-        : '<p style="color:var(--muted);font-size:13px">No screenshots available</p>';
+        : '<div style="background:var(--dark);border-radius:8px;padding:40px;text-align:center;color:var(--text-muted);font-size:14px">📸 No screenshots uploaded yet</div>';
 
     let versionOptions = versions.map((v, vi) =>
         `<option value="${vi}">${v.ver} — ${v.date}</option>`

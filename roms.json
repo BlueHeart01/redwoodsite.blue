@@ -95,7 +95,7 @@
     "icon": "A",
     "downloads": 3200,
     "screenshots": [],
-    "changelog": "• Latest ASCP v5.3\n• Scene container disabled for smooth QS\n• Dolby Atmos support\n• ReVanced included",
+    "changelog": "Sync with latest Source\nAndroid 16 QPR2 Build\nReadjusted Blur intensity\nSwitched to KSU Next\nIncludes BCR",
     "banner": "banner.png",
     "versions": [
       { "ver": "Android 16", "date": "2026-05-14", "rom": "https://gofile.io/d/TDRRjM", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
