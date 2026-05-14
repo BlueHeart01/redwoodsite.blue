@@ -1089,19 +1089,20 @@
         @media (max-width: 768px) {
             header { width: calc(100% - 24px); padding: 10px 16px; top: 8px; border-radius: 16px; }
             header.scrolled { padding: 8px 16px; }
-            .liquid-blob { filter: blur(40px); opacity: 0.08; animation: none; } /* freeze blobs on mobile */
-            .rom-card { backdrop-filter: blur(16px); transform: none !important; }
-            .rom-card::after { display: none !important; } /* disable shimmer on mobile */
+            .liquid-blob, .liquid-shimmer { display: none !important; } /* remove heavy blobs */
+            #particles { opacity: 0.3 !important; }
+            .rom-card { backdrop-filter: none !important; background: rgba(12,12,35,0.6) !important; transform: none !important; }
+            .rom-card::after, .rom-card::before { display: none !important; }
             .rom-card:hover { transform: none !important; }
-            .about-card { backdrop-filter: blur(16px); transform: none !important; }
+            .about-card { backdrop-filter: none !important; background: rgba(12,12,35,0.6) !important; transform: none !important; }
             .about-card:hover { transform: none !important; }
-            .logo { animation: none !important; }
-            .logo::before { animation: none !important; }
-            .btn-primary { animation: none !important; }
-            .section-title { animation: none !important; }
-            header { animation: none !important; }
-            .footer-logo { animation: none !important; }
+            .modal { backdrop-filter: none !important; }
+            header { backdrop-filter: blur(20px) !important; } /* keep light blur on header */
+            .logo, .logo::before, .btn-primary, .section-title, .footer-logo { animation: none !important; }
+            .rom-filters button { backdrop-filter: none !important; }
+            .btn-outline { backdrop-filter: none !important; }
             * { -webkit-tap-highlight-color: transparent; }
+        }
             nav { gap: 2px; }
             nav a { font-size: clamp(9px, 1.8vw, 11px); padding: 6px 10px; border-radius: 8px; }
             .btn { font-size: clamp(9px, 1.8vw, 12px); padding: 8px 16px; border-radius: 10px; }
@@ -1437,12 +1438,14 @@ function escapeHtml(text) {
 
 
 // === Particles ===
+const isMobile = window.innerWidth < 768;
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 const particles = [];
-for (let i = 0; i < 80; i++) {
+const pCount = isMobile ? 15 : 80;
+for (let i = 0; i < pCount; i++) {
     particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -1452,6 +1455,7 @@ for (let i = 0; i < 80; i++) {
         o: Math.random() * 0.5 + 0.1
     });
 }
+let frameId;
 function drawParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     particles.forEach((p, i) => {
@@ -1462,20 +1466,22 @@ function drawParticles() {
         p.x += p.dx; p.y += p.dy;
         if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
         if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-        for (let j = i + 1; j < particles.length; j++) {
-            const dx = particles[j].x - p.x;
-            const dy = particles[j].y - p.y;
-            const d = Math.sqrt(dx * dx + dy * dy);
-            if (d < 150) {
-                ctx.beginPath();
-                ctx.moveTo(p.x, p.y);
-                ctx.lineTo(particles[j].x, particles[j].y);
-                ctx.strokeStyle = `rgba(0, 212, 255, ${0.06 * (1 - d / 150)})`;
-                ctx.stroke();
+        if (!isMobile) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[j].x - p.x;
+                const dy = particles[j].y - p.y;
+                const d = Math.sqrt(dx * dx + dy * dy);
+                if (d < 150) {
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.strokeStyle = `rgba(0, 212, 255, ${0.06 * (1 - d / 150)})`;
+                    ctx.stroke();
+                }
             }
         }
     });
-    requestAnimationFrame(drawParticles);
+    frameId = requestAnimationFrame(drawParticles);
 }
 drawParticles();
 window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
