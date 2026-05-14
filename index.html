@@ -109,7 +109,6 @@
             color: var(--text-primary);
             overflow-x: hidden;
             scroll-behavior: smooth;
-            transition: background 0.5s, color 0.3s;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
@@ -1090,6 +1089,8 @@
         @media (max-width: 768px) {
             header { width: calc(100% - 24px); padding: 10px 16px; top: 8px; border-radius: 16px; }
             header.scrolled { padding: 8px 16px; }
+            .liquid-blob { filter: blur(60px); opacity: 0.12; } /* reduce blur intensity on mobile */
+            .rom-card { backdrop-filter: blur(20px); } /* reduce blur for performance */
             nav { gap: 2px; }
             nav a { font-size: clamp(9px, 1.8vw, 11px); padding: 6px 10px; border-radius: 8px; }
             .btn { font-size: clamp(9px, 1.8vw, 12px); padding: 8px 16px; border-radius: 10px; }
@@ -1560,7 +1561,7 @@ function saveROMs(data) {
         const res = await fetch('roms.json');
         const defaultROMs = await res.json();
         const romsVer = localStorage.getItem('blueredwood_roms_ver') || '0';
-        const curVer = '10';
+        const curVer = '11';
         if (!localStorage.getItem('blueredwood_roms_init') || romsVer !== curVer) {
             localStorage.setItem('blueredwood_roms', JSON.stringify(defaultROMs));
             localStorage.setItem('blueredwood_roms_init', '1');
