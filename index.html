@@ -153,16 +153,18 @@
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            background: rgba(6, 6, 18, 0.6);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            background: rgba(6, 6, 18, 0.5);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
             border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.04);
             transition: all 0.4s;
         }
 
         header.scrolled {
             padding: 12px 60px;
-            background: rgba(6, 6, 18, 0.85);
+            background: rgba(6, 6, 18, 0.8);
+            box-shadow: 0 4px 40px rgba(0, 212, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.04);
         }
 
         .logo {
@@ -175,6 +177,7 @@
             letter-spacing: 3px;
             text-shadow: none;
             position: relative;
+            white-space: nowrap;
         }
 
         .logo::after {
@@ -944,7 +947,7 @@
             header.scrolled { padding: 10px 16px; }
             nav { gap: 8px; }
             nav a { font-size: 11px; }
-            .logo { font-size: 14px; letter-spacing: 1px; }
+            .logo { font-size: clamp(10px, 3.5vw, 16px); letter-spacing: 1px; }
             .hero h1 { font-size: clamp(28px, 8vw, 42px); }
             .hero p { font-size: 15px; }
             .hero-badge { font-size: 10px; padding: 8px 16px; }
@@ -971,6 +974,7 @@
             nav { gap: 6px; }
             nav a { font-size: 10px; }
             .btn { font-size: 12px; padding: 8px 16px; }
+            .logo { font-size: clamp(8px, 3vw, 12px); letter-spacing: 0.5px; }
             .hero h1 { font-size: clamp(22px, 7vw, 28px); }
             .hero p { font-size: 13px; }
             .hero-badge { font-size: 9px; padding: 6px 12px; letter-spacing: 1px; margin-bottom: 16px; }
