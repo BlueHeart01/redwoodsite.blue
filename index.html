@@ -854,7 +854,7 @@
     <div class="modal">
         <button class="modal-close" onclick="closeModal('uploadModal')">&times;</button>
         <h2>Upload ROM</h2>
-        <p>Submit a new ROM for POCO X5 Pro</p>
+        <p>Submit a new ROM for POCO X5 Pro — <span style="color:var(--primary)">Telegram CDN links supported for all images!</span></p>
         <div class="form-group">
             <label>ROM Name</label>
             <input type="text" id="romName" placeholder="e.g. ASCP OS">
@@ -872,7 +872,8 @@
         </div>
         <div class="form-group">
             <label>ROM Banner (PNG URL)</label>
-            <input type="url" id="romBanner" placeholder="https://example.com/banner.png" onchange="previewBanner(this.value)">
+            <input type="url" id="romBanner" placeholder="https://telegra.ph/file/... or https://i.postimg.cc/..." onchange="previewBanner(this.value)">
+            <p style="font-size:11px;color:var(--muted);margin-top:4px">Telegram, Telegraph, PostImage, ImgBB links all work</p>
             <img class="banner-preview" id="bannerPreview">
         </div>
         <div class="upload-row">
@@ -1032,18 +1033,21 @@ function renderROMs(filter) {
     grid.innerHTML = filtered.map((r, i) => {
         const idx = roms.indexOf(r);
         return `
-        <div class="rom-card" onclick="showDetail(${idx})">
-            <div class="rom-icon">${r.icon || '📱'}</div>
-            <h3>${r.name}</h3>
-            <div class="rom-meta">
-                <span class="status-badge status-${r.status}">${r.status}</span>
+        <div class="rom-card">
+            <div onclick="showDetail(${idx})" style="cursor:pointer">
+                <div class="rom-icon">${r.icon || '📱'}</div>
+                <h3>${r.name}</h3>
+                <div class="rom-meta">
+                    <span class="status-badge status-${r.status}">${r.status}</span>
+                </div>
+                <p>${r.desc || ''}</p>
+                <div class="rom-dev">Maintainer: <span>${r.dev || 'Unknown'}</span></div>
+                <div class="rom-stats">
+                    <div>⬇️ <strong>${r.downloads || 0}</strong> downloads</div>
+                    ${r.screenshots && r.screenshots.length > 0 ? `<div>📷 <strong>${r.screenshots.length}</strong> screenshots</div>` : ''}
+                </div>
             </div>
-            <p>${r.desc || ''}</p>
-            <div class="rom-dev">Maintainer: <span>${r.dev || 'Unknown'}</span></div>
-            <div class="rom-stats">
-                <div>⬇️ <strong>${r.downloads || 0}</strong> downloads</div>
-                ${r.screenshots && r.screenshots.length > 0 ? `<div>📷 <strong>${r.screenshots.length}</strong> screenshots</div>` : ''}
-            </div>
+            ${r.links && r.links.rom && r.links.rom !== '#' ? `<a href="${r.links.rom}" target="_blank" class="btn btn-primary" style="width:100%;text-align:center;margin-top:16px;text-decoration:none">📥 Download ${r.name}</a>` : ''}
         </div>`;
     }).join('');
 }
@@ -1104,7 +1108,10 @@ function showDetail(index) {
         <h4 style="font-size:13px;text-transform:uppercase;color:var(--muted);margin:16px 0 8px">Screenshots</h4>
         <div class="screenshot-grid">${screenshots}</div>
 
-        <div style="text-align:center;margin-top:20px">
+        <div style="text-align:center;margin:20px 0">
+            ${r.links && r.links.rom && r.links.rom !== '#' ? `<a href="${r.links.rom}" target="_blank" class="btn btn-primary" style="padding:14px 40px;font-size:16px;text-decoration:none">📥 Download ${r.name} Now</a>` : ''}
+        </div>
+        <div style="text-align:center">
             <strong style="color:var(--muted)">⬇️ ${r.downloads || 0} downloads</strong>
         </div>
     `;
