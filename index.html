@@ -871,10 +871,13 @@
             <input type="text" id="romDev" placeholder="Your name">
         </div>
         <div class="form-group">
-            <label>ROM Banner (PNG URL)</label>
-            <input type="url" id="romBanner" placeholder="https://telegra.ph/file/... or https://i.postimg.cc/..." onchange="previewBanner(this.value)">
-            <p style="font-size:11px;color:var(--muted);margin-top:4px">Telegram, Telegraph, PostImage, ImgBB links all work</p>
-            <img class="banner-preview" id="bannerPreview">
+            <label>ROM Banner</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <input type="url" id="romBanner" placeholder="https://telegra.ph/file/... or https://i.postimg.cc/..." onchange="previewBanner(this.value)" style="flex:1;min-width:200px">
+                <input type="file" id="bannerFile" accept="image/png,image/jpeg" onchange="uploadBannerFile(event)" style="display:none">
+                <button type="button" class="btn btn-outline" onclick="document.getElementById('bannerFile').click()" style="font-size:12px">📁 Upload</button>
+            </div>
+            <p style="font-size:11px;color:var(--muted);margin-top:4px">Paste image URL or click Upload — <span style="color:var(--accent)">t.me links won't work</span> as image sources. Use <strong style="color:var(--primary)">Telegraph</strong> (telegra.ph) or <strong style="color:var(--primary)">PostImage</strong> (postimg.cc)</p>
         </div>
         <div class="form-group">
             <label>Android Versions & Downloads</label>
@@ -917,8 +920,9 @@
             <button type="button" class="btn btn-outline" onclick="addVersionEntry()" style="width:100%;font-size:12px">+ Add Another Version</button>
         </div>
         <div class="form-group">
-            <label>Screenshots (one per line, PNG URLs)</label>
+            <label>Screenshots (one per line, image URLs)</label>
             <textarea id="romScreenshots" placeholder="https://telegra.ph/file/...&#10;https://i.postimg.cc/..."></textarea>
+            <p style="font-size:11px;color:var(--muted);margin-top:4px">Telegraph or PostImage only — Telegram <strong style="color:var(--accent)">t.me links not supported</strong> as image sources</p>
         </div>
         <div class="form-group">
             <label>Change Logs</label>
@@ -1019,13 +1023,13 @@ function saveROMs(data) {
 
 // Default ROMs + custom uploaded ones
 const defaultROMs = [
-    { name: 'Infinity X', status: 'official', dev: 'BlueHeart016', desc: 'A feature-packed ROM with endless customization options. Smooth, stable, and refined for daily use.', icon: '∞', downloads: 1240, screenshots: ['https://via.placeholder.com/300x600/111128/00d4ff?text=Screen1', 'https://via.placeholder.com/300x600/111128/7b2ff7?text=Screen2'], changelog: '• Initial official release\n• Pixel features + custom additions\n• Enhanced performance tweaks', banner: 'https://via.placeholder.com/800x200/111128/00d4ff?text=Infinity+X+Banner', versions: [{ ver: 'Android 16', date: '2026-05-10', rom: 'https://sourceforge.net/projects/infinity-x/files/redwood/', boot: '#', vendor_boot: '#', dtbo: '#' }, { ver: 'Android 15', date: '2026-02-14', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }] },
-    { name: 'Infinity X', status: 'unofficial', dev: 'BlueHeart016', desc: 'Unofficial build with experimental features and the latest patches.', icon: '∞', downloads: 580, screenshots: [], changelog: '• Test builds with latest CAF tags\n• Experimental kernel changes', banner: 'https://via.placeholder.com/800x200/111128/ff3366?text=Infinity+X+Unofficial', versions: [{ ver: 'Android 16', date: '2026-05-08', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }] },
+    { name: 'Infinity X', status: 'official', dev: 'BlueHeart016', desc: 'A feature-packed ROM with endless customization options. Smooth, stable, and refined for daily use.', icon: '∞', downloads: 1240, screenshots: ['https://picsum.photos/seed/inf1/300/600', 'https://picsum.photos/seed/inf2/300/600'], changelog: '• Initial official release\n• Pixel features + custom additions\n• Enhanced performance tweaks', banner: 'https://picsum.photos/seed/infbanner/800/200', versions: [{ ver: 'Android 16', date: '2026-05-10', rom: 'https://sourceforge.net/projects/infinity-x/files/redwood/', boot: '#', vendor_boot: '#', dtbo: '#' }, { ver: 'Android 15', date: '2026-02-14', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }] },
+    { name: 'Infinity X', status: 'unofficial', dev: 'BlueHeart016', desc: 'Unofficial build with experimental features and the latest patches.', icon: '∞', downloads: 580, screenshots: [], changelog: '• Test builds with latest CAF tags\n• Experimental kernel changes', banner: '', versions: [{ ver: 'Android 16', date: '2026-05-08', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }] },
     { name: 'AxionOS', status: 'official', dev: 'BlueHeart016', desc: 'A smooth AOSP-based ROM focused on performance, battery life, and minimalism.', icon: 'A', downloads: 980, screenshots: [], changelog: '• Official release\n• AOSP base with optimizations', banner: '', versions: [{ ver: 'Android 16', date: '2026-05-05', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }, { ver: 'Android 15', date: '2026-01-20', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }] },
     { name: 'Evolution X', status: 'official', dev: 'BlueHeart016', desc: 'Pixel-like experience with custom features. Elegant UI and rock-solid performance.', icon: 'E', downloads: 2100, screenshots: [], changelog: '• Latest EvoX sources\n• Pixel features included', banner: '', versions: [{ ver: 'Android 16', date: '2026-05-12', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }, { ver: 'Android 15', date: '2026-03-01', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }, { ver: 'Android 14', date: '2025-10-15', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }] },
     { name: 'RisingOS', status: 'official', dev: 'BlueHeart016', desc: 'Rising from the ashes — a powerful, customizable ROM built for enthusiasts.', icon: 'R', downloads: 760, screenshots: [], changelog: '• Official build\n• RisingOS features', banner: '', versions: [{ ver: 'Android 16', date: '2026-05-09', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }] },
     { name: 'CloverOS', status: 'official', dev: 'Harshit', desc: 'Lightweight, fast, and efficient. CloverOS delivers a clean Android experience.', icon: 'C', downloads: 450, screenshots: [], changelog: '• Initial release\n• Clean AOSP experience', banner: '', versions: [{ ver: 'Android 16', date: '2026-05-07', rom: '#', boot: '#', vendor_boot: '#', dtbo: '#' }] },
-    { name: 'ASCP OS', status: 'official', dev: 'BlueHeart016', desc: 'The flagship ROM of BlueREDWOOD. Premium features, maximum performance.', icon: 'A', downloads: 3200, screenshots: ['https://via.placeholder.com/300x600/111128/00d4ff?text=ASCP+Home', 'https://via.placeholder.com/300x600/111128/7b2ff7?text=ASCP+QS', 'https://via.placeholder.com/300x600/111128/ff3366?text=ASCP+Settings'], changelog: '• Latest ASCP v5.3\n• Scene container disabled for smooth QS\n• Dolby Atmos support\n• ReVanced included', banner: 'https://via.placeholder.com/800x200/0a0a1a/00d4ff?text=ASCP+OS+v5.3', versions: [{ ver: 'Android 16', date: '2026-05-14', rom: 'https://gofile.io/d/TDRRjM', boot: '#', vendor_boot: '#', dtbo: '#' }] }
+    { name: 'ASCP OS', status: 'official', dev: 'BlueHeart016', desc: 'The flagship ROM of BlueREDWOOD. Premium features, maximum performance.', icon: 'A', downloads: 3200, screenshots: ['https://picsum.photos/seed/ascp1/300/600', 'https://picsum.photos/seed/ascp2/300/600', 'https://picsum.photos/seed/ascp3/300/600'], changelog: '• Latest ASCP v5.3\n• Scene container disabled for smooth QS\n• Dolby Atmos support\n• ReVanced included', banner: 'banner.png', versions: [{ ver: 'Android 16', date: '2026-05-14', rom: 'https://gofile.io/d/TDRRjM', boot: '#', vendor_boot: '#', dtbo: '#' }] }
 ];
 
 // Init ROMs
@@ -1271,6 +1275,21 @@ function registerDev() {
     document.getElementById('loginUser').value = user;
     document.getElementById('loginPass').value = '';
     showToast('Account created! You can now login.', 'success');
+}
+
+// === Banner file upload ===
+function uploadBannerFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        document.getElementById('romBanner').value = dataUrl;
+        document.getElementById('bannerPreview').src = dataUrl;
+        document.getElementById('bannerPreview').style.display = 'block';
+        showToast('Banner uploaded! It will be stored in the ROM data.', 'success');
+    };
+    reader.readAsDataURL(file);
 }
 
 // === Banner preview ===
