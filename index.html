@@ -169,15 +169,16 @@
 
         .logo {
             font-family: 'Orbitron', monospace;
-            font-size: 22px;
+            font-size: clamp(12px, 2vw, 22px);
             font-weight: 900;
             background: var(--gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: 3px;
+            letter-spacing: clamp(1px, 0.3vw, 3px);
             text-shadow: none;
             position: relative;
             white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .logo::after {
@@ -946,7 +947,8 @@
             header { padding: 14px 16px; }
             header.scrolled { padding: 10px 16px; }
             nav { gap: 8px; }
-            nav a { font-size: 11px; }
+            nav a { font-size: clamp(9px, 1.8vw, 11px); gap: 6px; }
+            .btn { font-size: clamp(9px, 1.8vw, 12px); padding: 6px 12px; }
             .logo { font-size: clamp(10px, 3.5vw, 16px); letter-spacing: 1px; }
             .hero h1 { font-size: clamp(28px, 8vw, 42px); }
             .hero p { font-size: 15px; }
@@ -971,10 +973,11 @@
         @media (max-width: 480px) {
             header { padding: 10px 12px; }
             header.scrolled { padding: 8px 12px; }
-            nav { gap: 6px; }
-            nav a { font-size: 10px; }
-            .btn { font-size: 12px; padding: 8px 16px; }
+            nav { gap: 4px; }
+            nav a { font-size: clamp(8px, 2vw, 10px); }
+            .btn { font-size: 10px; padding: 6px 10px; }
             .logo { font-size: clamp(8px, 3vw, 12px); letter-spacing: 0.5px; }
+            .logo::after { display: none; }
             .hero h1 { font-size: clamp(22px, 7vw, 28px); }
             .hero p { font-size: 13px; }
             .hero-badge { font-size: 9px; padding: 6px 12px; letter-spacing: 1px; margin-bottom: 16px; }
@@ -993,6 +996,17 @@
             .about-card h3 { font-size: 14px; }
             footer { padding: 30px 16px; }
             .toast { bottom: 16px; right: 16px; left: 16px; max-width: none; font-size: 13px; padding: 12px 18px; }
+        }
+
+        @media (max-width: 360px) {
+            header { padding: 8px 8px; flex-wrap: wrap; gap: 6px; }
+            header.scrolled { padding: 6px 8px; }
+            nav { gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+            nav a { font-size: 9px; }
+            .btn { font-size: 9px; padding: 4px 8px; }
+            .logo { font-size: 10px; letter-spacing: 0px; }
+            .logo::after { display: none; }
+            .theme-toggle { width: 28px; height: 28px; font-size: 14px; }
         }
 
         /* Spinner */
