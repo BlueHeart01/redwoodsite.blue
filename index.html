@@ -25,6 +25,10 @@
             --glow-cyan: 0 0 30px rgba(0, 245, 255, 0.5);
             --glow-purple: 0 0 30px rgba(168, 85, 247, 0.5);
             --glow-pink: 0 0 30px rgba(244, 114, 182, 0.5);
+            /* New blur pill style variables */
+            --glass-bg: rgba(10, 10, 12, 0.6);
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(255, 255, 255, 0.15);
         }
 
         html { scroll-behavior: smooth; }
@@ -109,34 +113,38 @@
         ═══════════════════════════════════════════════════════ */
         header {
             position: fixed;
-            top: 0; left: 0; right: 0;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 1000;
             display: flex;
             justify-content: center;
-            padding-top: 20px;
+            width: 100%;
+            max-width: 900px;
             transition: all 0.4s ease;
         }
 
         header.scrolled {
-            padding-top: 12px;
+            top: 12px;
         }
 
         .pill-nav {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(10, 10, 26, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-subtle);
             border-radius: 100px;
-            padding: 18px 50px;
-            min-width: 650px;
-            backdrop-filter: blur(25px);
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+            padding: 12px 32px;
+            min-width: 550px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
             transition: all 0.4s ease;
         }
 
         header.scrolled .pill-nav {
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
         }
 
         .logo-text {
@@ -734,7 +742,7 @@
                 <a href="#" class="nav-link" onclick="filterROMs('all', document.querySelector('.filter-pill')); window.scrollTo(0, 400)">ROMs</a>
                 <a href="#" class="nav-link" onclick="openModal('aboutModal')">About</a>
                 <a href="#" class="nav-link highlight" onclick="openModal('uploadModal')">Upload</a>
-                <a href="#" class="nav-link" onclick="openModal('loginModal')" style="color:var(--primary)">Login</a>
+                <a href="#" class="nav-link" onclick="openModal('loginModal')" style="background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700">Login</a>
             </div>
         </nav>
     </header>
@@ -745,7 +753,7 @@
             <span>⚡</span>
             <span id="badgeText">POCO X5 Pro Exclusive</span>
         </div>
-        <h1 class="hero-title">𝑷𝑶𝑪𝑶 𝑿𝟓 𝑷𝑹𝑶<br>𝑹𝑶𝑴𝑺</h1>
+        <h1 class="hero-title">ＰＯＣＯ Ｘ５ ＰＲＯ ＲＯＭＳ</h1>
         <p class="hero-subtitle">Discover, download, and experience the ultimate custom ROMs. Built for performance, designed for you.</p>
         
         <div class="hero-stats">
@@ -943,8 +951,7 @@
             { name: "CloverOS", status: "official", dev: "CloverTeam", devInfo: "Telegram: @CloverOS", desc: "Lightweight, fast, and efficient. CloverOS delivers a clean Android experience.", icon: "C", banner: "https://raw.githubusercontent.com/The-Clover-Project/.github/main/banner5.png", downloads: 450, changelog: "• Initial release\n• Clean AOSP experience", versions: [{ver: "Android 16", date: "2026-05-07", rom: "#", boot: "#", vendor_boot: "#", dtbo: "#"}] },
             { name: "DerpFest OS", status: "official", dev: "DerpFest", devInfo: "Telegram: @DerpFest", desc: "A powerful custom ROM focused on customization, performance, and unique features.", icon: "D", banner: "https://raw.githubusercontent.com/DerpFest-AOSP/manifest/13/derp.png", downloads: 890, changelog: "• Initial release\n• DerpFest features", versions: [{ver: "Android 16", date: "2026-05-11", rom: "#", boot: "#", vendor_boot: "#", dtbo: "#"}] },
             { name: "Pixel OS", status: "official", dev: "PixelTeam", devInfo: "Telegram: @PixelOSOfficial", desc: "Stock Pixel experience with optimizations for the best Google integration.", icon: "P", banner: "https://avatars.githubusercontent.com/u/82160282?s=200&v=4", downloads: 1560, changelog: "• Initial release\n• Stock Pixel experience", versions: [{ver: "Android 16", date: "2026-05-13", rom: "#", boot: "#", vendor_boot: "#", dtbo: "#"}, {ver: "Android 15", date: "2026-03-20", rom: "#", boot: "#", vendor_boot: "#", dtbo: "#"}] },
-            { name: "ASCP OS", status: "official", dev: "BlueHeart016", devInfo: "Telegram: @bluehearts_Builds016", desc: "The flagship ROM of BlueREDWOOD. Premium features, maximum performance.", icon: "A", banner: "banner.png", downloads: 3200, changelog: "• Sync with latest Source\n• Android 16 QPR2 Build\n• Readjusted Blur intensity\n• Switched to KSU Next\n• Includes BCR", versions: [{ver: "Android 16", date: "2026-05-14", rom: "https://gofile.io/d/TDRRjM", boot: "#", vendor_boot: "#", dtbo: "#"}] },
-            { name: "ASCP OS", status: "official", dev: "BlueHeart016", devInfo: "Telegram: @bluehearts_Builds016", desc: "The flagship ROM of BlueREDWOOD. Premium features, maximum performance.", icon: "A", banner: "https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=800&h=200&fit=crop", downloads: 5210, changelog: "• Sync with latest Source\n• Android 16 QPR2 Build\n• Readjusted Blur intensity\n• Switched to KSU Next\n• Includes BCR", versions: [{ver: "Android 16", date: "2026-05-14", rom: "https://gofile.io/d/TDRRjM", boot: "#", vendor_boot: "#", dtbo: "#"}] }
+            { name: "ASCP OS", status: "official", dev: "BlueHeart016", devInfo: "Telegram: @bluehearts_Builds016", desc: "The flagship ROM of BlueREDWOOD. Premium features, maximum performance.", icon: "A", banner: "banner.png", downloads: 5210, changelog: "• Sync with latest Source\n• Android 16 QPR2 Build\n• Readjusted Blur intensity\n• Switched to KSU Next\n• Includes BCR", versions: [{ver: "Android 16", date: "2026-05-14", rom: "https://gofile.io/d/TDRRjM", boot: "#", vendor_boot: "#", dtbo: "#"}] }
         ];
 
         // Load ROMs
