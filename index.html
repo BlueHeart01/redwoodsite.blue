@@ -1176,7 +1176,8 @@ function renderROMs(filter) {
 
     grid.innerHTML = filtered.map((r, i) => {
         const idx = roms.indexOf(r);
-        const versions = r.versions || [];
+    const bannerHtml = r.banner ? `<img src="${r.banner}" style="width:100%;border-radius:12px;margin:8px 0 16px;max-height:200px;object-fit:cover" onerror="this.style.display='none'">` : '';
+    const versions = r.versions || [];
         return `
         <div class="rom-card" onclick="showDetail(${idx})">
             <div class="rom-icon">${r.icon || '📱'}</div>
