@@ -456,7 +456,7 @@
             background: var(--card);
             border-radius: 20px;
             padding: 40px;
-            width: 100%;
+            width: 95%;
             max-width: 700px;
             border: 1px solid var(--border-color);
             position: relative;
@@ -760,17 +760,19 @@
         @media (max-width: 768px) {
             header { padding: 16px 20px; }
             header.scrolled { padding: 12px 20px; }
-            nav { gap: 16px; }
-            nav a { font-size: 12px; }
-            .hero h1 { font-size: 36px; }
-            .hero p { font-size: 15px; }
-            section { padding: 60px 20px; }
+            nav { gap: 12px; }
+            nav a { font-size: 11px; }
+            .hero h1 { font-size: 28px; }
+            .hero p { font-size: 14px; }
+            section { padding: 40px 16px; }
             .rom-grid { grid-template-columns: 1fr; }
             .upload-row { grid-template-columns: 1fr; }
             .rom-detail-grid { grid-template-columns: 1fr; }
             .hero-actions { flex-direction: column; align-items: center; }
-            .logo { font-size: 20px; }
+            .logo { font-size: 16px; }
             .about-grid { grid-template-columns: 1fr; }
+            .modal { padding: 24px 16px; margin: 10px; width: calc(100% - 20px); }
+            .modal h2 { font-size: 20px; }
         }
 
         /* Spinner */
@@ -1316,16 +1318,16 @@ function showDetail(index) {
             <span style="color:var(--text-muted);font-size:13px">⬇️ ${r.downloads || 0} total downloads</span>
         </div>
     `;
-    // Set changelog text safely (avoid encoding issues)
+    // Set changelog text safely
     const clEl = document.getElementById('changelogText');
     if (clEl && r.changelog) {
-        const safe = r.changelog
-            .replace(/[^\x20-\x7E\n]/g, '') // remove non-ASCII
-            .replace(/^[-\s]+/gm, '') // clean bullet leftovers
-            .split('\n').filter(l => l.trim())
-            .map(l => '- ' + l.trim())
+        const text = r.changelog
+            .split('\n')
+            .map(l => l.replace(/^[\s\x95\u2022\u2023\u25E6\u2043\u2219*\-]+/g, '').trim())
+            .filter(l => l)
+            .map(l => '\u2022 ' + l)
             .join('\n');
-        clEl.textContent = safe || 'No details';
+        clEl.textContent = text;
     }
 
     openModal('detailModal');
