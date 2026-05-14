@@ -6,12 +6,9 @@
     "desc": "A feature-packed ROM with endless customization options. Smooth, stable, and refined for daily use.",
     "icon": "∞",
     "downloads": 1240,
-    "screenshots": [
-      "https://picsum.photos/seed/inf1/300/600",
-      "https://picsum.photos/seed/inf2/300/600"
-    ],
+    "screenshots": [],
     "changelog": "• Initial official release\n• Pixel features + custom additions\n• Enhanced performance tweaks",
-    "banner": "https://picsum.photos/seed/infbanner/800/200",
+    "banner": "",
     "versions": [
       { "ver": "Android 16", "date": "2026-05-10", "rom": "https://sourceforge.net/projects/infinity-x/files/redwood/", "boot": "#", "vendor_boot": "#", "dtbo": "#" },
       { "ver": "Android 15", "date": "2026-02-14", "rom": "#", "boot": "#", "vendor_boot": "#", "dtbo": "#" }
@@ -97,11 +94,7 @@
     "desc": "The flagship ROM of BlueREDWOOD. Premium features, maximum performance.",
     "icon": "A",
     "downloads": 3200,
-    "screenshots": [
-      "https://picsum.photos/seed/ascp1/300/600",
-      "https://picsum.photos/seed/ascp2/300/600",
-      "https://picsum.photos/seed/ascp3/300/600"
-    ],
+    "screenshots": [],
     "changelog": "• Latest ASCP v5.3\n• Scene container disabled for smooth QS\n• Dolby Atmos support\n• ReVanced included",
     "banner": "banner.png",
     "versions": [
