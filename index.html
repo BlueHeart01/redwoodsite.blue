@@ -73,30 +73,6 @@
         }
 
         a { text-decoration: none; }
-        .light-mode {
-            --bg-base: #f5f3f7;
-            --bg-card: rgba(255, 255, 255, 0.8);
-            --text-white: #1c1b1f;
-            --text-muted: #6b6a72;
-            --text-dim: #9a9aa2;
-            --border-hairline: rgba(0, 0, 0, 0.06);
-            --brand-purple: #7c3aed;
-            --brand-cyan: #0891b2;
-        }
-        .light-mode body { background-color: var(--bg-base); }
-        .light-mode body::before { background: linear-gradient(135deg, #f8f7fc, #f0eef8, #f5f3ff, #faf8f5, #f8f7fc); background-size: 400% 400%; animation: gradientBG 20s ease infinite; }
-        .light-mode body::after { background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px); }
-        .light-mode .rom-card { background: var(--bg-card); }
-        .light-mode .rom-card:hover { background: rgba(255,255,255,0.9); }
-        .light-mode .modal { background: var(--bg-card); }
-        .light-mode .about-card:hover { background: rgba(0,0,0,0.02); }
-        .light-mode .rom-filters button.active { border-color: var(--brand-purple); background: rgba(124,58,237,0.08); color: var(--brand-purple); }
-        .light-mode .rom-filters button:hover { color: var(--text-white); }
-        .light-mode .rom-stats { border-color: rgba(0,0,0,0.06); }
-        .light-mode .rom-card:hover .rom-stats { border-color: rgba(0,0,0,0.1); }
-        .light-mode .hero h1 { background: linear-gradient(180deg, #1c1b1f 0%, #6b6a72 100%); -webkit-background-clip: text; }
-        .light-mode .rom-card .rom-icon { background: rgba(0,0,0,0.05); }
-        .light-mode .rom-filters button:hover { background: rgba(0,0,0,0.04); }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -223,10 +199,6 @@
             max-width: 900px;
             width: 100%;
         }
-        .light-mode .nav-pill {
-            background: rgba(240, 238, 235, 0.9);
-            border-color: rgba(0, 0, 0, 0.08);
-        }
 
         .nav-logo {
             color: #00f2ff;
@@ -273,33 +245,6 @@
             text-shadow: 0 0 10px rgba(0, 242, 255, 0.6);
         }
 
-        .nav-links .theme-toggle-pill {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #888;
-            padding: 0;
-        }
-        .nav-links .theme-toggle-pill:hover {
-            color: #fff;
-            border-color: rgba(255,255,255,0.3);
-        }
-        .light-mode .nav-links .theme-toggle-pill {
-            border-color: rgba(0,0,0,0.1);
-        }
-        .light-mode .nav-links .theme-toggle-pill:hover {
-            border-color: rgba(0,0,0,0.3);
-            color: #000;
-        }
-
         @media (max-width: 768px) {
             header { padding: 12px 5%; }
             .nav-pill { padding: 10px 18px; min-width: auto; border-radius: 50px; }
@@ -311,7 +256,6 @@
             .nav-pill { padding: 8px 14px; border-radius: 40px; flex-wrap: wrap; justify-content: center; gap: 6px; }
             .nav-logo { font-size: 0.8rem; margin-right: 8px; }
             .nav-links a { font-size: 0.6rem; }
-            .nav-links .theme-toggle-pill { width: 26px; height: 26px; font-size: 11px; }
         }
 
         .nav-pill.scrolled {
@@ -1185,7 +1129,6 @@
             nav { gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
             nav a { font-size: 9px; }
             .btn { font-size: 9px; padding: 4px 8px; }
-            .theme-toggle-pill { width: 26px; height: 26px; font-size: 12px; }
         }
 
         /* Spinner */
@@ -1221,7 +1164,6 @@
             <a onclick="scrollToSection('roms')" class="link-dim">Builds</a>
             <a onclick="scrollToSection('about')" class="link-dim">Guides</a>
             <a onclick="openLogin()" class="link-highlight" id="loginBtn">log in</a>
-            <button class="theme-toggle-pill" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
         </div>
     </div>
 </header>
@@ -1544,18 +1486,6 @@ const revealObserver = new IntersectionObserver((entries) => {
     });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-
-// === Theme Toggle ===
-function toggleTheme() {
-    const isLight = document.body.classList.toggle('light-mode');
-    document.querySelector('.theme-toggle').textContent = isLight ? '☀️' : '🌙';
-    localStorage.setItem('blueredwood_theme', isLight ? 'light' : 'dark');
-}
-// Restore theme
-if (localStorage.getItem('blueredwood_theme') === 'light') {
-    document.body.classList.add('light-mode');
-    document.querySelector('.theme-toggle').textContent = '☀️';
-}
 
 // === Changelog expand/collapse ===
 function toggleChangelog() {
