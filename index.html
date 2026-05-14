@@ -41,19 +41,35 @@
             font-family: 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
-            background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 32px 32px;
+            position: relative;
         }
 
         body::before {
             content: '';
-            position: absolute;
-            top: -20%; left: 50%;
-            width: 1000px; height: 800px;
-            transform: translateX(-50%);
-            background: radial-gradient(ellipse at center, rgba(124, 58, 237, 0.08) 0%, transparent 60%);
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e, #1a0533, #0d0221, #302b63);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 32px 32px;
             pointer-events: none;
             z-index: -1;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 50% 0%; }
+            50% { background-position: 100% 50%; }
+            75% { background-position: 50% 100%; }
+            100% { background-position: 0% 50%; }
         }
 
         a { text-decoration: none; }
@@ -67,7 +83,9 @@
             --brand-purple: #7c3aed;
             --brand-cyan: #0891b2;
         }
-        .light-mode body { background-color: var(--bg-base); background-image: radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px); }
+        .light-mode body { background-color: var(--bg-base); }
+        .light-mode body::before { background: linear-gradient(135deg, #f5f3ff, #ede9fe, #fce7f3, #ecfdf5, #f5f3ff); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
+        .light-mode body::after { background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px); }
         .light-mode .rom-card { background: var(--bg-card); }
         .light-mode .rom-card:hover { background: rgba(255,255,255,0.9); }
         .light-mode .modal { background: var(--bg-card); }
