@@ -1102,7 +1102,7 @@
         ];
 
         // Load ROMs
-        const DATA_VERSION = 'v4';
+        const DATA_VERSION = 'v5';
         let roms;
         if (localStorage.getItem('blueredwood_roms_ver') !== DATA_VERSION) {
             localStorage.setItem('blueredwood_roms_new', JSON.stringify(defaultROMs));
@@ -1507,6 +1507,36 @@
         }
 
         // ═══════════════════════════════════════════════════════
+        // KNOWN ROM NAMES (from Android_Custom_Rom_List)
+        // ═══════════════════════════════════════════════════════
+        const knownROMs = [
+            'Advanced XPerience OS', 'AXP OS', 'AICP', 'Alch3myOS', 'AlphaDroid',
+            'Altair ROM', 'AviumUI', 'AxionAOSP', 'Axion OS', 'AyakaUI',
+            'BenzeneOS', 'BlissROMs', 'CaesiumOS', 'CalyxOS', 'chaoticOS',
+            'CharaROM', 'crDroid', 'DerpFest AOSP', 'DerpFest',
+            'Ethereal-OS', 'euclidOS', 'EunoiaOS', 'Evolution X', 'EvoX',
+            'GrapheneOS', 'Halcyon', 'halogenOS', 'HertzifyOS',
+            'Infinity X', 'Project Infinity X',
+            'LineageOS', 'LineageOS-Ext', 'LMODroid', 'LibreMobileOS',
+            'LOS Modified', 'LunaOS', 'Lunaris-AOSP', 'LunarisAOSP',
+            'LumineDroid', 'Lynx-AOSP', 'Miku UI', 'Neoteric-OS',
+            'omnirom', 'Paranoid', 'AOSPA', 'PixelBuilds', 'Project Flare',
+            'PixelLines', 'PixelOS', 'Pixel OS', 'PixelOS-GM',
+            'Project Matrixx', 'Project Mist OS', 'Project Sakura',
+            'RisingOS', 'Rising OS', 'Soul AOSP', 'StatiXOS', 'SunOS Project',
+            'Superior OS', 'The Clover Project', 'CloverOS',
+            'The XPerience Project', 'VoltageOS', 'WitAqua', 'xdroid-oss',
+            'YAAP', 'YAAPex', 'ASCP OS'
+        ];
+
+        // Download host domains (prioritize these)
+        const downloadHosts = [
+            'pixeldrain.com', 'sourceforge.net', 'github.com', 'gitlab.com',
+            'gofile.io', 'mega.nz', 'drive.google.com', 'mediafire.com',
+            'androidfilehost.com', 'devuploads.com', 'sf.net'
+        ];
+
+        // ═══════════════════════════════════════════════════════
         // QUICK IMPORT — extracts ROM info from a Telegram post
         // ═══════════════════════════════════════════════════════
         async function quickImport() {
@@ -1520,97 +1550,127 @@
             btn.disabled = true;
 
             try {
+                // Try multiple proxies for reliability
                 const proxies = [
                     'https://api.allorigins.win/raw?url=',
-                    'https://api.codetabs.com/v1/proxy?quest='
+                    'https://api.codetabs.com/v1/proxy?quest=',
+                    'https://corsproxy.io/?' + encodeURIComponent('https://t.me/' + channel + '/' + postId + '?embed=1') + '&',
                 ];
                 let html = '';
                 for (const proxy of proxies) {
                     try {
-                        const resp = await fetch(proxy + encodeURIComponent(`https://t.me/${channel}/${postId}?embed=1`));
+                        let url;
+                        if (proxy.includes('corsproxy')) {
+                            url = proxy;
+                        } else {
+                            url = proxy + encodeURIComponent(`https://t.me/${channel}/${postId}?embed=1`);
+                        }
+                        const resp = await fetch(url);
                         if (resp.ok) { html = await resp.text(); break; }
                     } catch (_) {}
                 }
                 if (!html) throw new Error('All proxies failed');
-                const d = new DOMParser().parseFromString(html, 'text/html');
 
+                const d = new DOMParser().parseFromString(html, 'text/html');
                 const msgEl = d.querySelector('.tgme_widget_message_text');
+                const rawHtml = msgEl ? msgEl.innerHTML : '';
                 const msgText = msgEl ? msgEl.textContent.trim() : '';
 
-                // Extract developer name from post author or @mention in text
+                // ─── Developer: look for "By @username" in HTML ───
                 let devName = 'Unknown';
+                const byMatch = rawHtml.match(/[Bb]y\s*(?:<\/?[^>]+>)*\s*@?(\w+)/);
+                if (byMatch) devName = '@' + byMatch[1];
                 const authorEl = d.querySelector('.tgme_widget_message_author_name');
-                if (authorEl) {
-                    const authorText = authorEl.textContent.trim();
-                    const atMatch = authorText.match(/@(\w+)/);
-                    if (atMatch) devName = atMatch[0];
-                    else if (authorText.length < 25) devName = authorText;
+                if (authorEl && devName === 'Unknown') {
+                    const atMatch = authorEl.textContent.match(/@(\w+)/);
+                    if (atMatch) devName = '@' + atMatch[1];
                 }
-                const msgAtMatch = msgText.match(/@(\w+)/);
-                if (msgAtMatch && devName === 'Unknown') devName = '@' + msgAtMatch[1];
 
-                // Extract screenshots
+                // ─── Screenshots ───
                 const screenshots = [];
+                const seen = new Set();
                 d.querySelectorAll('.tgme_widget_message_photo_wrap').forEach(el => {
-                    const s = el.getAttribute('style');
-                    if (s) {
-                        const u = s.match(/url\(['"]?([^'"]+)['"]?\)/);
-                        if (u) screenshots.push(u[1]);
-                    }
-                });
-                d.querySelectorAll('.tgme_widget_message_text img').forEach(el => {
-                    if (el.src && el.src.startsWith('http')) screenshots.push(el.src);
-                });
-                d.querySelectorAll('.tgme_widget_message_photo_wrap[style*="background-image"]').forEach(el => {
                     const bg = el.getAttribute('style');
                     if (bg) {
                         const u = bg.match(/url\(['"]?([^'"]+)['"]?\)/);
-                        if (u && !screenshots.includes(u[1])) screenshots.push(u[1]);
+                        if (u && !seen.has(u[1])) { seen.add(u[1]); screenshots.push(u[1]); }
+                    }
+                });
+                d.querySelectorAll('.tgme_widget_message_text img').forEach(el => {
+                    if (el.src && el.src.startsWith('http') && !seen.has(el.src)) {
+                        seen.add(el.src); screenshots.push(el.src);
                     }
                 });
 
-                // Extract download links (skip tg:// and t.me internal links)
-                const links = [];
+                // ─── Download links: find the first real download URL ───
+                const allLinks = [];
                 d.querySelectorAll('.tgme_widget_message_text a').forEach(el => {
                     const h = el.getAttribute('href');
-                    if (h && !h.startsWith('tg://') && !h.match(/t\.me\//)) links.push(h);
+                    if (h && !h.startsWith('tg://') && !h.match(/t\.me\//)) allLinks.push(h);
                 });
+                // Prefer links from known download hosts
+                let downloadUrl = allLinks.find(h => downloadHosts.some(host => h.includes(host)));
+                if (!downloadUrl) downloadUrl = allLinks[0] || link;
 
-                // Determine ROM name
+                // ─── ROM Name: match against known list ───
                 let romName = 'New ROM';
                 const boldEl = d.querySelector('.tgme_widget_message_text b, .tgme_widget_message_text strong');
-                if (boldEl) romName = boldEl.textContent.trim();
-                else if (msgText) romName = msgText.split('\n')[0].replace(/^[\s•\-*#]+/, '').trim() || channel;
+                if (boldEl) {
+                    const boldText = boldEl.textContent.trim();
+                    // Try to find a known ROM name in the bold text
+                    const found = knownROMs.find(name => {
+                        const clean = name.replace(/[- ]/g, '').toLowerCase();
+                        const bold = boldText.replace(/[- ]/g, '').toLowerCase();
+                        return bold.includes(clean) || clean.includes(bold);
+                    });
+                    romName = found || boldText.split('|')[0].trim();
+                } else if (msgText) {
+                    const found = knownROMs.find(name =>
+                        msgText.toLowerCase().includes(name.toLowerCase())
+                    );
+                    romName = found || msgText.split('\n')[0].replace(/^[\s•\-*#]+/, '').trim() || channel;
+                }
 
-                // Try to extract version (e.g. "3.10" from "LunarisAOSP 3.10")
+                // ─── Extract version info ───
                 let romVer = 'Android 16';
-                const verMatch = romName.match(/([\d]+\.[\d]+)/);
                 const androidMatch = msgText.match(/Android\s*(\d+)/i);
                 if (androidMatch) romVer = 'Android ' + androidMatch[1];
 
-                // Check if it's a Gapps/Vanilla build
-                const hasGapps = msgText.toLowerCase().includes('gapps');
-
-                // Build description
+                // ─── Build description from non-hashtag lines ───
                 let description = '';
                 const lines = msgText.split('\n').filter(l => l.trim());
                 for (const line of lines) {
-                    if (!line.startsWith('#') && !line.match(/^[▪️•\-*]\s*$/) && line.length > 10) {
-                        description = line.trim().substring(0, 200);
+                    const clean = line.replace(/^[▪️•\-*>#]\s*/, '').trim();
+                    if (clean && !clean.startsWith('#') && clean.length > 15 && !clean.match(/^@/)) {
+                        description = clean.substring(0, 200);
                         break;
                     }
                 }
                 if (!description) description = romName + ' ROM for Redwood';
 
-                // Fill the form
+                // ─── Changelog: filter out hashtags line, keep bullet points ───
+                let changelog = '';
+                if (msgText) {
+                    const msgLines = msgText.split('\n').filter(l => l.trim());
+                    const startIdx = msgLines.findIndex(l => l.match(/^[▪️•\-*]/));
+                    if (startIdx !== -1) {
+                        changelog = msgLines.slice(startIdx).join('\n');
+                    } else {
+                        changelog = msgLines.slice(1).join('\n');
+                    }
+                    changelog = changelog.replace(/^Join:.*$/m, '').replace(/^📝.*$/m, '').trim();
+                }
+
+                // ─── Fill the form ───
                 document.getElementById('romName').value = romName;
                 document.getElementById('romDev').value = devName;
                 document.getElementById('romDevInfo').value = devName !== 'Unknown' ? 'Telegram: ' + devName : '';
                 document.getElementById('romDesc').value = description;
-                if (msgText) document.getElementById('romChangelog').value = msgText;
+                if (changelog) document.getElementById('romChangelog').value = changelog;
+                else if (msgText) document.getElementById('romChangelog').value = msgText;
                 if (screenshots.length) document.getElementById('romScreenshots').value = screenshots.join('\n');
 
-                // Set banner from first screenshot if available
+                // Banner from first screenshot
                 const bannerInput = document.getElementById('romBanner');
                 if (bannerInput && screenshots.length) {
                     bannerInput.value = screenshots[0];
@@ -1618,20 +1678,19 @@
                     if (preview) { preview.src = screenshots[0]; preview.style.display = 'block'; }
                 }
 
-                // Fill version entry
+                // ─── Fill version entry with download link ───
                 const verRom = document.querySelector('.verRom');
                 const verDate = document.querySelector('.verDate');
                 const verSelect = document.querySelector('.verSelect');
-                if (verRom && links.length) verRom.value = links[0];
-                else if (verRom) verRom.value = link;
+                if (verRom && downloadUrl) verRom.value = downloadUrl;
                 if (verDate) verDate.value = new Date().toISOString().split('T')[0];
                 if (verSelect) {
                     for (const opt of verSelect.options) {
-                        if (opt.value === romVer || opt.text === romVer) { verSelect.value = opt.value; break; }
+                        if (opt.text === romVer) { verSelect.value = opt.value; break; }
                     }
                 }
 
-                showToast(`Imported "${romName}" — dev: ${devName}, ${screenshots.length} screenshots, ${links.length} links`, 'success');
+                showToast(`Imported: ${romName} — dev: ${devName}, ${screenshots.length} screenshots`, 'success');
             } catch (e) {
                 document.getElementById('romName').value = 'New ROM';
                 document.getElementById('romDev').value = 'Unknown';
