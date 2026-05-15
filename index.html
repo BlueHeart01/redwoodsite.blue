@@ -1521,20 +1521,43 @@
                     if (h && !h.startsWith('tg://') && !h.match(/t\.me\//)) links.push(h);
                 });
 
+                // Find best download link (prioritize ROM sources)
+                const romHosts = ['sourceforge', 'google.com/drive', 'androidfilehost', 'mega.nz', 'gofile', 'pixeldrain', '1fichier', 'dropbox'];
+                let bestLink = '';
+                if (links.length) {
+                    const romLink = links.find(l => romHosts.some(h => l.toLowerCase().includes(h)));
+                    bestLink = romLink || links[0];
+                }
+
                 let romName = 'New ROM';
                 const boldEl = d.querySelector('.tgme_widget_message_text b, .tgme_widget_message_text strong');
                 if (boldEl) romName = boldEl.textContent.trim();
                 else if (msgText) romName = msgText.split('\n')[0].replace(/^[\s•\-*]+/, '').trim() || channel;
 
+                // Extract maintainer using "by" or "maintainer" keywords
+                let maintainer = 'Unknown';
+                if (msgText) {
+                    const byMatch = msgText.match(/(?:by|maintainer|maintained by|credits to|dev|developer)[:\s]+([A-Za-z0-9_@]+)/i);
+                    if (byMatch && byMatch[1]) {
+                        maintainer = byMatch[1].replace(/[@#]/g, '').trim();
+                    } else {
+                        const atMatch = msgText.match(/@([A-Za-z0-9_]+)/);
+                        if (atMatch && atMatch[1]) {
+                            maintainer = atMatch[1];
+                        }
+                    }
+                }
+
                 document.getElementById('romName').value = romName;
-                document.getElementById('romDev').value = 'Unknown';
+                document.getElementById('romDev').value = maintainer;
                 document.getElementById('romDesc').value = msgText ? msgText.split('\n').slice(0, 3).join(' ').substring(0, 150) : 'ROM shared via Telegram';
                 if (msgText) document.getElementById('romChangelog').value = msgText;
                 if (screenshots.length) document.getElementById('romScreenshots').value = screenshots.join('\n');
 
                 const verRom = document.querySelector('.verRom');
                 const verDate = document.querySelector('.verDate');
-                if (verRom && links.length) verRom.value = links[0];
+                if (verRom && bestLink) verRom.value = bestLink;
+                else if (verRom && links.length) verRom.value = links[0];
                 else if (verRom) verRom.value = link;
                 if (verDate) verDate.value = new Date().toISOString().split('T')[0];
 
