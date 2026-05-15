@@ -700,6 +700,53 @@
             .nav-glow-btn { padding: 10px 16px; font-size: 13px; }
         }
 
+        .upload-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 14px;
+            background: var(--card-glass);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0,245,255,0.15);
+        }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .btn { cursor: pointer; border: none; border-radius: 10px; padding: 10px 18px; font-size: 14px; font-weight: 600; font-family: inherit; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg,var(--primary),var(--secondary)); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,245,255,0.3); }
+        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-dim); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: rgba(0,245,255,0.05); }
+        .banner-preview { width: 100%; max-height: 120px; object-fit: cover; border-radius: 10px; margin-top: 8px; display: none; border: 1px solid rgba(255,255,255,0.06); }
+
+        @media (max-width: 500px) {
+            .upload-row { grid-template-columns: 1fr; }
+        }
+
         /* ═══════════════════════════════════════════════════════
            LIGHT MODE
         ═══════════════════════════════════════════════════════ */
@@ -795,25 +842,105 @@
 
     <!-- UPLOAD MODAL -->
     <div class="modal-overlay" id="uploadModal">
-        <div class="modal">
+        <div class="modal" style="max-width:800px">
             <button class="modal-close" onclick="closeModal('uploadModal')">×</button>
             <h2 style="margin-bottom:8px;font-size:28px">Upload ROM</h2>
             <p style="color:var(--text-dim);margin-bottom:24px">Submit your custom ROM for POCO X5 Pro</p>
-            
-            <div style="display:grid;gap:16px">
-                <input type="text" id="romName" placeholder="ROM Name *" 
-                    style="width:100%;padding:16px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.1);border-radius:14px;color:var(--text);font-family:inherit;font-size:15px">
-                <input type="text" id="romDev" placeholder="Developer Name" 
-                    style="width:100%;padding:16px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.1);border-radius:14px;color:var(--text);font-family:inherit;font-size:15px">
-                <textarea id="romDesc" placeholder="Description" rows="3" 
-                    style="width:100%;padding:16px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.1);border-radius:14px;color:var(--text);font-family:inherit;font-size:15px;resize:none"></textarea>
-                <select id="romStatus" 
-                    style="width:100%;padding:16px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.1);border-radius:14px;color:var(--text);font-family:inherit;font-size:15px">
+
+            <!-- Quick Import -->
+            <div style="background:var(--card-glass);border:1px solid rgba(0,245,255,0.12);border-radius:16px;padding:20px;margin-bottom:24px">
+                <p style="font-size:13px;margin-bottom:12px;color:var(--text-dim)">📎 <strong style="color:var(--text)">Quick Import</strong> — paste a Telegram post or GitHub repo link</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+                    <input type="url" id="quickLink" placeholder="https://t.me/bluehearts_Builds016/..." style="flex:1;min-width:200px;padding:12px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:var(--text);font-family:inherit;font-size:14px">
+                    <button class="btn btn-primary" onclick="quickImport()" style="white-space:nowrap">Import Link</button>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <input type="url" id="gitRepoUrl" placeholder="https://github.com/org/repo (auto-fetch banner)" style="flex:1;min-width:200px;padding:12px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:var(--text);font-family:inherit;font-size:14px">
+                    <button class="btn btn-outline" onclick="fetchGitBanner()" style="white-space:nowrap">Fetch Banner</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>ROM Name</label>
+                <input type="text" id="romName" placeholder="e.g. ASCP OS">
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select id="romStatus">
                     <option value="official">Official</option>
                     <option value="unofficial">Unofficial</option>
                 </select>
-                <button class="nav-glow-btn" onclick="submitROM()" style="width:100%;margin-top:8px;padding:16px">🚀 Submit ROM</button>
             </div>
+            <div class="form-group">
+                <label>Developer / Maintainer</label>
+                <input type="text" id="romDev" placeholder="Your name">
+            </div>
+            <div class="form-group">
+                <label>Developer Contact</label>
+                <input type="text" id="romDevInfo" placeholder="Telegram: @username">
+            </div>
+            <div class="form-group">
+                <label>ROM Banner</label>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <input type="url" id="romBanner" placeholder="https://telegra.ph/file/..." onchange="previewBanner(this.value)" style="flex:1;min-width:200px">
+                    <input type="file" id="bannerFile" accept="image/png,image/jpeg" onchange="uploadBannerFile(event)" style="display:none">
+                    <button type="button" class="btn btn-outline" onclick="document.getElementById('bannerFile').click()" style="font-size:12px">📁 Upload</button>
+                </div>
+                <img id="bannerPreview" class="banner-preview">
+            </div>
+            <div class="form-group">
+                <label>Android Versions & Downloads</label>
+                <div id="versionEntries">
+                    <div class="version-entry" style="background:var(--card-glass);padding:16px;border-radius:12px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.05)">
+                        <div class="upload-row">
+                            <div class="form-group" style="margin-bottom:0">
+                                <label style="font-size:11px">Version</label>
+                                <select class="verSelect" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                                    <option>Android 16</option>
+                                    <option>Android 15</option>
+                                    <option>Android 14</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom:0">
+                                <label style="font-size:11px">Release Date</label>
+                                <input type="date" class="verDate" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top:8px;margin-bottom:0">
+                            <label style="font-size:11px">ROM Download Link</label>
+                            <input type="url" class="verRom" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                        </div>
+                        <div class="upload-row" style="margin-top:8px">
+                            <div class="form-group" style="margin-bottom:0">
+                                <label style="font-size:11px">boot.img</label>
+                                <input type="url" class="verBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                            </div>
+                            <div class="form-group" style="margin-bottom:0">
+                                <label style="font-size:11px">vendor_boot.img</label>
+                                <input type="url" class="verVendorBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top:8px;margin-bottom:0">
+                            <label style="font-size:11px">dtbo.img</label>
+                            <input type="url" class="verDtbo" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline" onclick="addVersionEntry()" style="width:100%;font-size:12px">+ Add Another Version</button>
+            </div>
+            <div class="form-group">
+                <label>Screenshots (one per line, image URLs)</label>
+                <textarea id="romScreenshots" placeholder="https://telegra.ph/file/...&#10;https://i.postimg.cc/..." style="min-height:60px"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Change Logs</label>
+                <textarea id="romChangelog" placeholder="What's new in this release?" style="min-height:60px"></textarea>
+            </div>
+            <div class="form-group">
+                <label>ROM Description</label>
+                <textarea id="romDesc" placeholder="Brief description..." style="min-height:60px"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="submitROM()" style="width:100%;padding:16px;font-size:16px">🚀 Submit ROM</button>
         </div>
     </div>
 
@@ -1227,28 +1354,286 @@
         // ═══════════════════════════════════════════════════════
         function submitROM() {
             const name = document.getElementById('romName').value.trim();
-            const dev = document.getElementById('romDev').value.trim();
-            const desc = document.getElementById('romDesc').value.trim();
             const status = document.getElementById('romStatus').value;
+            const dev = document.getElementById('romDev').value.trim();
+            const devInfo = document.getElementById('romDevInfo').value.trim();
+            const banner = document.getElementById('romBanner').value.trim();
+            const screenshotsRaw = document.getElementById('romScreenshots').value.trim();
+            const changelog = document.getElementById('romChangelog').value.trim();
+            const desc = document.getElementById('romDesc').value.trim();
 
-            if (!name) { showToast('ROM name is required!', 'error'); return; }
+            if (!name || !dev) { showToast('ROM name and developer are required!', 'error'); return; }
+
+            const versionEntries = document.querySelectorAll('#versionEntries .version-entry');
+            const versions = [];
+            versionEntries.forEach(el => {
+                const ver = el.querySelector('.verSelect')?.value || 'Unknown';
+                const date = el.querySelector('.verDate')?.value || '';
+                const rom = el.querySelector('.verRom')?.value?.trim() || '';
+                const boot = el.querySelector('.verBoot')?.value?.trim() || '';
+                const vendor_boot = el.querySelector('.verVendorBoot')?.value?.trim() || '';
+                const dtbo = el.querySelector('.verDtbo')?.value?.trim() || '';
+                if (rom) versions.push({ ver, date, rom, boot, vendor_boot, dtbo });
+            });
+
+            if (versions.length === 0) {
+                showToast('Please add at least one version with a download link!', 'error');
+                return;
+            }
+
+            const screenshots = screenshotsRaw ? screenshotsRaw.split('\n').filter(s => s.trim()) : [];
 
             roms.unshift({
-                name, dev, desc, status,
-                icon: '📱',
+                name, status, dev, devInfo,
+                desc: desc || 'No description provided.',
+                icon: name.charAt(0).toUpperCase(),
                 downloads: 0,
-                versions: [{ver: "Custom", date: new Date().toISOString().split('T')[0], rom: "#", boot: "#", vendor_boot: "#", dtbo: "#"}]
+                banner, screenshots,
+                changelog: changelog || 'No changelog provided.',
+                versions
             });
 
             localStorage.setItem('blueredwood_roms_new', JSON.stringify(roms));
             renderROMs();
             closeModal('uploadModal');
-            
+
             document.getElementById('romName').value = '';
             document.getElementById('romDev').value = '';
+            document.getElementById('romDevInfo').value = '';
+            document.getElementById('romBanner').value = '';
+            document.getElementById('romScreenshots').value = '';
+            document.getElementById('romChangelog').value = '';
             document.getElementById('romDesc').value = '';
-            
+            document.getElementById('bannerPreview').style.display = 'none';
+            document.getElementById('versionEntries').innerHTML = `
+                <div class="version-entry" style="background:var(--card-glass);padding:16px;border-radius:12px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.05)">
+                    <div class="upload-row">
+                        <div class="form-group" style="margin-bottom:0">
+                            <label style="font-size:11px">Version</label>
+                            <select class="verSelect" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                                <option>Android 16</option>
+                                <option>Android 15</option>
+                                <option>Android 14</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <label style="font-size:11px">Release Date</label>
+                            <input type="date" class="verDate" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:8px;margin-bottom:0">
+                        <label style="font-size:11px">ROM Download Link</label>
+                        <input type="url" class="verRom" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                    </div>
+                    <div class="upload-row" style="margin-top:8px">
+                        <div class="form-group" style="margin-bottom:0">
+                            <label style="font-size:11px">boot.img</label>
+                            <input type="url" class="verBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <label style="font-size:11px">vendor_boot.img</label>
+                            <input type="url" class="verVendorBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:8px;margin-bottom:0">
+                        <label style="font-size:11px">dtbo.img</label>
+                        <input type="url" class="verDtbo" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                    </div>
+                </div>`;
+
             showToast('ROM uploaded successfully!', 'success');
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // QUICK IMPORT
+        // ═══════════════════════════════════════════════════════
+        async function quickImport() {
+            const link = document.getElementById('quickLink').value.trim();
+            if (!link) { showToast('Paste a Telegram post link!', 'error'); return; }
+            const match = link.match(/t\.me\/([^\/\?]+)\/(\d+)/);
+            if (!match) { showToast('Invalid Telegram link! Use format: https://t.me/channel/123', 'error'); return; }
+            const channel = match[1], postId = match[2];
+            const btn = document.querySelector('[onclick="quickImport()"]');
+            btn.textContent = 'Fetching...';
+            btn.disabled = true;
+
+            try {
+                const proxy = 'https://api.allorigins.win/raw?url=';
+                const resp = await fetch(proxy + encodeURIComponent(`https://t.me/${channel}/${postId}?embed=1`));
+                const html = await resp.text();
+                const d = new DOMParser().parseFromString(html, 'text/html');
+
+                const msgEl = d.querySelector('.tgme_widget_message_text, .tgme_widget_message_bubble');
+                const msgText = msgEl ? msgEl.textContent.trim() : '';
+
+                const screenshots = [];
+                d.querySelectorAll('.tgme_widget_message_photo_wrap').forEach(el => {
+                    const s = el.getAttribute('style');
+                    if (s) {
+                        const u = s.match(/url\(['"]?([^'"]+)['"]?\)/);
+                        if (u) screenshots.push(u[1].replace(/\/[a-z0-9]+_[a-z0-9]+\.[a-z]+$/,
+                            m => '/' + m.split('_')[0] + '_800x800' + m.match(/\.[a-z]+$/)[0]));
+                    }
+                });
+                d.querySelectorAll('.tgme_widget_message_text img').forEach(el => {
+                    if (el.src && el.src.startsWith('http')) screenshots.push(el.src);
+                });
+
+                const links = [];
+                d.querySelectorAll('.tgme_widget_message_text a').forEach(el => {
+                    const h = el.getAttribute('href');
+                    if (h && !h.startsWith('tg://') && !h.match(/t\.me\//)) links.push(h);
+                });
+
+                let romName = 'New ROM';
+                const boldEl = d.querySelector('.tgme_widget_message_text b, .tgme_widget_message_text strong');
+                if (boldEl) romName = boldEl.textContent.trim();
+                else if (msgText) romName = msgText.split('\n')[0].replace(/^[\s•\-*]+/, '').trim() || channel;
+
+                document.getElementById('romName').value = romName;
+                document.getElementById('romDev').value = 'Unknown';
+                document.getElementById('romDesc').value = msgText ? msgText.split('\n').slice(0, 3).join(' ').substring(0, 150) : 'ROM shared via Telegram';
+                if (msgText) document.getElementById('romChangelog').value = msgText;
+                if (screenshots.length) document.getElementById('romScreenshots').value = screenshots.join('\n');
+
+                const verRom = document.querySelector('.verRom');
+                const verDate = document.querySelector('.verDate');
+                if (verRom && links.length) verRom.value = links[0];
+                else if (verRom) verRom.value = link;
+                if (verDate) verDate.value = new Date().toISOString().split('T')[0];
+
+                showToast(`Imported "${romName}" — ${screenshots.length} screenshots, ${links.length} links`, 'success');
+            } catch (e) {
+                document.getElementById('romName').value = 'New ROM';
+                document.getElementById('romDev').value = 'Unknown';
+                document.getElementById('romDesc').value = 'ROM shared via Telegram';
+                const verRom = document.querySelector('.verRom');
+                const verDate = document.querySelector('.verDate');
+                if (verRom) verRom.value = link;
+                if (verDate) verDate.value = new Date().toISOString().split('T')[0];
+                showToast('Could not fetch post details — link added manually', 'success');
+            }
+            btn.textContent = 'Import';
+            btn.disabled = false;
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // GITHUB BANNER FETCH
+        // ═══════════════════════════════════════════════════════
+        async function fetchGitBanner() {
+            const url = document.getElementById('gitRepoUrl').value.trim();
+            if (!url) { showToast('Paste a GitHub repo URL!', 'error'); return; }
+            const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+            if (!match) { showToast('Invalid GitHub URL!', 'error'); return; }
+            const [, owner, repo] = match;
+            const cleanRepo = repo.replace(/\.git$/, '');
+            const btn = document.querySelector('[onclick="fetchGitBanner()"]');
+            btn.textContent = 'Fetching...';
+            btn.disabled = true;
+
+            try {
+                const paths = ['banner.png', 'banner.webp', '.github/banner.png', '.github/banner.webp', 'assets/banner.png', 'assets/banner.webp', 'logo.png', 'assets/logo.png'];
+                let found = null;
+                for (const path of paths) {
+                    const r = await fetch(`https://raw.githubusercontent.com/${owner}/${cleanRepo}/main/${path}`, { method: 'HEAD' });
+                    if (r.ok) { found = `https://raw.githubusercontent.com/${owner}/${cleanRepo}/main/${path}`; break; }
+                    const r2 = await fetch(`https://raw.githubusercontent.com/${owner}/${cleanRepo}/master/${path}`, { method: 'HEAD' });
+                    if (r2.ok) { found = `https://raw.githubusercontent.com/${owner}/${cleanRepo}/master/${path}`; break; }
+                }
+                if (found) {
+                    document.getElementById('romBanner').value = found;
+                    document.getElementById('bannerPreview').src = found;
+                    document.getElementById('bannerPreview').style.display = 'block';
+                    showToast('Banner fetched from repo!', 'success');
+                } else {
+                    const api = await fetch(`https://api.github.com/repos/${owner}/${cleanRepo}`);
+                    if (api.ok) {
+                        const data = await api.json();
+                        if (data.owner && data.owner.avatar_url) {
+                            document.getElementById('romBanner').value = data.owner.avatar_url;
+                            document.getElementById('bannerPreview').src = data.owner.avatar_url;
+                            document.getElementById('bannerPreview').style.display = 'block';
+                            showToast('Using repo owner avatar as banner', 'success');
+                        }
+                    }
+                }
+            } catch (e) {
+                showToast('Could not fetch banner', 'error');
+            }
+            btn.textContent = 'Fetch Banner';
+            btn.disabled = false;
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // BANNER UPLOAD
+        // ═══════════════════════════════════════════════════════
+        function uploadBannerFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const dataUrl = e.target.result;
+                document.getElementById('romBanner').value = dataUrl;
+                document.getElementById('bannerPreview').src = dataUrl;
+                document.getElementById('bannerPreview').style.display = 'block';
+                showToast('Banner uploaded!', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function previewBanner(url) {
+            const preview = document.getElementById('bannerPreview');
+            if (url) {
+                preview.src = url;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // VERSION ENTRIES
+        // ═══════════════════════════════════════════════════════
+        function addVersionEntry() {
+            const container = document.getElementById('versionEntries');
+            const entry = document.createElement('div');
+            entry.className = 'version-entry';
+            entry.style.cssText = 'background:var(--card-glass);padding:16px;border-radius:12px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.05);position:relative';
+            entry.innerHTML = `
+                <button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--accent);cursor:pointer;font-size:18px">&times;</button>
+                <div class="upload-row">
+                    <div class="form-group" style="margin-bottom:0">
+                        <label style="font-size:11px">Version</label>
+                        <select class="verSelect" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                            <option>Android 16</option>
+                            <option>Android 15</option>
+                            <option>Android 14</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0">
+                        <label style="font-size:11px">Release Date</label>
+                        <input type="date" class="verDate" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:8px;margin-bottom:0">
+                    <label style="font-size:11px">ROM Download Link</label>
+                    <input type="url" class="verRom" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                </div>
+                <div class="upload-row" style="margin-top:8px">
+                    <div class="form-group" style="margin-bottom:0">
+                        <label style="font-size:11px">boot.img</label>
+                        <input type="url" class="verBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0">
+                        <label style="font-size:11px">vendor_boot.img</label>
+                        <input type="url" class="verVendorBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top:8px;margin-bottom:0">
+                    <label style="font-size:11px">dtbo.img</label>
+                    <input type="url" class="verDtbo" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                </div>`;
+            container.appendChild(entry);
         }
 
         // ═══════════════════════════════════════════════════════
