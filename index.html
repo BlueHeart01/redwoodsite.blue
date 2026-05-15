@@ -775,9 +775,28 @@
         .light-mode .grid-overlay {
             opacity: 0.3;
         }
+
+        /* Skip navigation link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary);
+            color: var(--dark);
+            padding: 8px;
+            z-index: 1000;
+            transition: top 0.3s;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
     </style>
 </head>
 <body>
+    <!-- Skip navigation link for accessibility -->
+    <a href="#mainContent" class="skip-link">Skip to main content</a>
+    
     <!-- EPIC BACKGROUND -->
     <div class="universe">
         <canvas id="universeCanvas"></canvas>
@@ -788,19 +807,19 @@
 
     <!-- HEADER -->
     <header id="mainHeader">
-        <nav class="pill-nav">
-            <div class="logo-text" onclick="window.scrollTo(0,0)">POCO X5 PRO</div>
+        <nav class="pill-nav" aria-label="Main navigation">
+            <div class="logo-text" onclick="window.scrollTo(0,0)" role="button" tabindex="0" aria-label="POCO X5 PRO Home">POCO X5 PRO</div>
             <div class="nav-container">
                 <a href="#" class="nav-link" onclick="filterROMs('all', document.querySelector('.filter-pill')); window.scrollTo(0, 400)">ROMs</a>
-                <a href="#" class="nav-link" onclick="openModal('aboutModal')">About</a>
-                <a href="#" class="nav-link highlight" id="uploadNavBtn" onclick="openModal('uploadModal')" style="display:none">Upload</a>
-                <a href="#" class="nav-link" id="loginNavBtn" onclick="handleLoginClick()" style="background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700">Login</a>
+                <a href="#" class="nav-link" onclick="openModal('aboutModal')" aria-label="About this project">About</a>
+                <a href="#" class="nav-link highlight" id="uploadNavBtn" onclick="openModal('uploadModal')" style="display:none" aria-label="Upload a ROM">Upload</a>
+                <a href="#" class="nav-link" id="loginNavBtn" onclick="handleLoginClick()" style="background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700" aria-label="Login or logout">Login</a>
             </div>
         </nav>
     </header>
 
     <!-- HERO -->
-    <section class="hero">
+    <section class="hero" id="mainContent">
         <div class="hero-badge">
             <span>⚡</span>
             <span id="badgeText">POCO X5 Pro Exclusive</span>
@@ -1106,6 +1125,18 @@
             const d = document.createElement('div');
             d.textContent = str;
             return d.innerHTML;
+        }
+
+        // ═════════════════════════════════════════════════════════
+        // URL VALIDATION
+        // ═════════════════════════════════════════════════════════
+        function isValidURL(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
         }
 
         // ═══════════════════════════════════════════════════════
@@ -1528,6 +1559,10 @@
 
             if (!name || !dev) { showToast('ROM name and developer are required!', 'error'); return; }
 
+            // URL validation for banner and developer info
+            if (banner && !isValidURL(banner)) { showToast('Invalid banner URL!', 'error'); return; }
+            if (devInfo && !devInfo.startsWith('Telegram: ') && !isValidURL(devInfo)) { showToast('Invalid developer contact URL!', 'error'); return; }
+
             const versionEntries = document.querySelectorAll('#versionEntries .version-entry');
             const versions = [];
             versionEntries.forEach(el => {
@@ -1541,6 +1576,13 @@
                 const vDev = el.querySelector('.verDev')?.value?.trim() || '';
                 const vDevInfo = el.querySelector('.verDevInfo')?.value?.trim() || '';
                 const vChangelog = el.querySelector('.verChangelog')?.value?.trim() || '';
+                
+                // URL validation for version fields
+                if (rom && !isValidURL(rom)) { showToast('Invalid ROM download URL!', 'error'); return; }
+                if (boot && !isValidURL(boot)) { showToast('Invalid boot.img URL!', 'error'); return; }
+                if (vendor_boot && !isValidURL(vendor_boot)) { showToast('Invalid vendor_boot.img URL!', 'error'); return; }
+                if (dtbo && !isValidURL(dtbo)) { showToast('Invalid dtbo.img URL!', 'error'); return; }
+                
                 if (rom) {
                     const entry = { ver: andVer, date, rom, boot, vendor_boot, dtbo };
                     if (romVer) entry.romVer = romVer;
@@ -1986,13 +2028,13 @@
                 }
 
                 // ─── Fill the form ───
-                document.getElementById('romName').value = romName;
-                document.getElementById('romDev').value = devName;
-                document.getElementById('romDevInfo').value = devName !== 'Unknown' ? 'Telegram: ' + devName : '';
-                document.getElementById('romDesc').value = description;
-                if (changelog) document.getElementById('romChangelog').value = changelog;
-                else if (msgText) document.getElementById('romChangelog').value = msgText;
-                if (screenshots.length) document.getElementById('romScreenshots').value = screenshots.join('\n');
+                document.getElementById('romName').value = esc(romName);
+                document.getElementById('romDev').value = esc(devName);
+                document.getElementById('romDevInfo').value = devName !== 'Unknown' ? 'Telegram: ' + esc(devName) : '';
+                document.getElementById('romDesc').value = esc(description);
+                if (changelog) document.getElementById('romChangelog').value = esc(changelog);
+                else if (msgText) document.getElementById('romChangelog').value = esc(msgText);
+                if (screenshots.length) document.getElementById('romScreenshots').value = screenshots.map(esc).join('\n');
 
                 // Banner from first screenshot
                 const bannerInput = document.getElementById('romBanner');
@@ -2011,9 +2053,9 @@
                 const verDev = document.querySelector('.verDev');
                 if (verRom && downloadUrl) verRom.value = downloadUrl;
                 if (verDate) verDate.value = new Date().toISOString().split('T')[0];
-                if (verRomVer && romVersion) verRomVer.value = romVersion;
-                if (verChangelog && changelog) verChangelog.value = changelog;
-                if (verDev && devName !== 'Unknown') verDev.value = devName;
+                if (verRomVer && romVersion) verRomVer.value = esc(romVersion);
+                if (verChangelog && changelog) verChangelog.value = esc(changelog);
+                if (verDev && devName !== 'Unknown') verDev.value = esc(devName);
                 if (verSelect) {
                     for (const opt of verSelect.options) {
                         if (opt.text === androidVer) { verSelect.value = opt.value; break; }
