@@ -1542,7 +1542,7 @@
         async function quickImport() {
             const link = document.getElementById('quickLink').value.trim();
             if (!link) { showToast('Paste a Telegram post link!', 'error'); return; }
-            const match = link.match(/t\.me\/([^\/\?]+)\/(\d+)/);
+            const match = link.match(/t\.me\/([^\/\?]+)(?:\/\d+)?\/(\d+)/);
             if (!match) { showToast('Invalid Telegram link! Use format: https://t.me/channel/123', 'error'); return; }
             const channel = match[1], postId = match[2];
             const btn = document.querySelector('[onclick="quickImport()"]');
