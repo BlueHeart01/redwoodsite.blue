@@ -2066,7 +2066,6 @@
 
                     // Detect official/unofficial status
                     let status = 'unofficial';
-                    const lower = txt.toLowerCase();
                     if (lower.includes('oficial') || lower.includes('official')) {
                         if (lower.includes('#unofficial') || lower.includes('#unoffical') || lower.includes('| unofficial') || lower.includes('no oficial')) {
                             status = 'unofficial';
