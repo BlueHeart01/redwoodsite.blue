@@ -1104,10 +1104,13 @@
         ];
 
         // Load ROMs
-        let roms = JSON.parse(localStorage.getItem('blueredwood_roms_new')) || defaultROMs;
-        if (!localStorage.getItem('blueredwood_roms_new')) {
+        const DATA_VERSION = 'v3';
+        let roms;
+        if (localStorage.getItem('blueredwood_roms_ver') !== DATA_VERSION) {
             localStorage.setItem('blueredwood_roms_new', JSON.stringify(defaultROMs));
+            localStorage.setItem('blueredwood_roms_ver', DATA_VERSION);
         }
+        roms = JSON.parse(localStorage.getItem('blueredwood_roms_new'));
 
         // ═══════════════════════════════════════════════════════
         // UNIVERSE ANIMATION
