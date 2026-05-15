@@ -1112,7 +1112,7 @@
         // DATA
         // ═══════════════════════════════════════════════════════
         const defaultROMs = [
-            { name: "ASCP OS", status: "official", dev: "BlueHeart016", devInfo: "Telegram: @bluehearts_Builds016", desc: "The flagship ROM of BlueREDWOOD. Premium features, maximum performance.", banner: "banner.png", downloads: 5210, changelog: "• Sync with latest Source\n• Android 16 QPR2 Build\n• Readjusted Blur intensity\n• Switched to KSU Next\n• Includes BCR", versions: [{ver: "Android 16", date: "2026-05-14", rom: "https://gofile.io/d/TDRRjM", boot: "#", vendor_boot: "#", dtbo: "#"}] },
+            { name: "ASCP OS", status: "official", dev: "BlueHeart016", devInfo: "Telegram: @bluehearts_Builds016", desc: "The flagship ROM of BlueREDWOOD. Premium features, maximum performance.", banner: "banner.png", downloads: 5210, changelog: "• Sync with latest Source\n• Android 16 QPR2 Build\n• Readjusted Blur intensity\n• Switched to KSU Next\n• Includes BCR", versions: [{romVer: "5.3", andVer: "Android 16", ver: "Android 16", date: "2026-05-14", rom: "https://pixeldrain.com/u/JoJwwTnY", boot: "#", vendor_boot: "#", dtbo: "#", vDev: "@BlueHeart016", vDevInfo: "Telegram: @bluehearts_Builds016", vChangelog: "• Sync with latest Source\n• Android 16 QPR2 Build\n• Readjusted Blur intensity\n• Switched to KSU Next\n• Includes BCR"}] },
             { name: "AxionOS", status: "unofficial", dev: "BlueHeart016", devInfo: "Telegram: @bluehearts_Builds016", desc: "A smooth AOSP-based ROM — unofficial build.", banner: "https://avatars.githubusercontent.com/u/197447202?s=200&v=4", downloads: 420, changelog: "• Unofficial build\n• AOSP base with optimizations", versions: [{ver: "Android 16", date: "2026-05-05", rom: "#", boot: "#", vendor_boot: "#", dtbo: "#"}] },
             { name: "CloverOS", status: "unofficial", dev: "BlueHeart016", devInfo: "Telegram: @bluehearts_Builds016", desc: "Lightweight, fast — unofficial build.", banner: "https://raw.githubusercontent.com/The-Clover-Project/.github/main/banner5.png", downloads: 220, changelog: "• Unofficial build\n• Clean AOSP experience", versions: [{ver: "Android 16", date: "2026-05-07", rom: "#", boot: "#", vendor_boot: "#", dtbo: "#"}] },
             { name: "DerpFest OS", status: "unofficial", dev: "BlueHeart016", devInfo: "Telegram: @bluehearts_Builds016", desc: "Powerful custom ROM — unofficial build.", banner: "https://raw.githubusercontent.com/DerpFest-AOSP/manifest/13/derp.png", downloads: 460, changelog: "• Unofficial build\n• DerpFest features", versions: [{ver: "Android 16", date: "2026-05-11", rom: "#", boot: "#", vendor_boot: "#", dtbo: "#"}] },
@@ -1235,66 +1235,65 @@
         // ═══════════════════════════════════════════════════════
         // DETAIL MODAL
         // ═══════════════════════════════════════════════════════
-        function showDetail(index) {
+        function renderDetailContent(index, verIdx) {
             const r = roms[index];
             const versions = r.versions || [];
+            const v = versions[verIdx] || versions[0] || {};
             const safeName = esc(r.name);
             const safeDesc = esc(r.desc || 'No description provided.');
-            const safeDev = esc(r.dev || 'Unknown');
             const safeBanner = r.banner ? esc(r.banner) : '';
-            const safeIcon = esc(r.icon) || '📱';
-            
-            // Changelog expand/collapse
-            let changelogHtml = '';
-            if (r.changelog) {
-                let clText = r.changelog;
-                if (!clText.includes('\n')) {
-                    clText = clText.replace(/([•▪️\-*])/g, '\n$1').trim();
-                }
-                const cl = esc(clText).replace(/\n/g, '<br>');
-                const clShort = r.changelog.length <= 100;
-                changelogHtml = `
-                <div style="margin-top:20px" id="changelogWrap_${index}">
+
+            // Version label
+            const verLabel = v.romVer ? esc(v.romVer) + ' — ' + esc(v.andVer || v.ver) : esc(v.ver || 'Unknown');
+
+            // Dev info (per-version if available, else ROM-level)
+            const versionDev = v.vDev || r.dev || 'Unknown';
+            const versionDevInfo = v.vDevInfo || r.devInfo || '';
+            const safeDev = esc(versionDev);
+            const safeDevInfo = esc(versionDevInfo);
+
+            // Changelog (per-version if available, else ROM-level)
+            const clTextRaw = v.vChangelog || r.changelog || '';
+            let clDisplay = '';
+            if (clTextRaw) {
+                let cl = clTextRaw;
+                if (!cl.includes('\n')) cl = cl.replace(/([•▪️\-*])/g, '\n$1').trim();
+                const clEsc = esc(cl).replace(/\n/g, '<br>');
+                clDisplay = `
+                <div style="margin-top:20px">
                     <h4 style="margin:0 0 12px;color:var(--secondary);font-size:16px">📋 What's New</h4>
                     <div style="background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.15);border-radius:16px;padding:16px">
-                        <p style="color:var(--text-dim);font-size:14px;line-height:1.7;margin:0" class="changelogText" data-max="80">${cl}</p>
-                        <button onclick="toggleChangelog(this)" class="changelogBtn" style="display:${clShort ? 'none' : 'inline-block'};margin-top:12px;padding:8px 16px;background:rgba(168,85,247,0.15);border:none;border-radius:8px;color:var(--secondary);font-size:13px;cursor:pointer">Show more ▼</button>
+                        <p style="color:var(--text-dim);font-size:14px;line-height:1.7;margin:0" class="changelogText" data-max="80">${clEsc}</p>
+                        <button onclick="toggleChangelog(this)" class="changelogBtn" style="display:${clTextRaw.length <= 100 ? 'none' : 'inline-block'};margin-top:12px;padding:8px 16px;background:rgba(168,85,247,0.15);border:none;border-radius:8px;color:var(--secondary);font-size:13px;cursor:pointer">Show more ▼</button>
                     </div>
                 </div>`;
             }
 
             // Version selector
-            let versionSelector = '';
-            if (versions.length > 1) {
-                versionSelector = `
+            const versionSelector = versions.length > 1 ? `
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
                     <span style="color:var(--text-dim);font-size:13px">Select Version:</span>
                     <select onchange="switchVersion(${index}, this.value)" style="padding:10px 16px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:var(--text);font-size:14px">
-                        ${versions.map((v, vi) => `<option value="${vi}">${esc(v.ver)} — ${esc(v.date)}</option>`).join('')}
+                        ${versions.map((ver, vi) => {
+                            const label = ver.romVer ? esc(ver.romVer) + ' — ' + esc(ver.andVer || ver.ver) : esc(ver.ver || 'Unknown');
+                            return `<option value="${vi}" ${vi === verIdx ? 'selected' : ''}>${label} — ${esc(ver.date)}</option>`;
+                        }).join('')}
                     </select>
-                </div>`;
-            }
+                </div>` : '';
 
-            // Banner image
-            let bannerHtml = '';
-            if (safeBanner) {
-                bannerHtml = `<img src="${safeBanner}" alt="${safeName} banner" style="width:100%;height:120px;object-fit:cover;border-radius:16px;margin-bottom:20px" onerror="this.style.display='none'">`;
-            }
+            // Banner
+            const bannerHtml = safeBanner ? `<img src="${safeBanner}" alt="${safeName} banner" style="width:100%;height:120px;object-fit:cover;border-radius:16px;margin-bottom:20px" onerror="this.style.display='none'">` : '';
 
-            // Developer info
-            let devInfoHtml = '';
-            const safeDevInfo = r.devInfo ? esc(r.devInfo) : '';
-            if (safeDev && safeDev !== 'Unknown') {
-                devInfoHtml = `<div style="background:rgba(0,245,255,0.08);border:1px solid rgba(0,245,255,0.15);border-radius:12px;padding:12px;margin-bottom:20px">
+            // Dev info
+            const devInfoHtml = safeDev !== 'Unknown' ? `
+                <div style="background:rgba(0,245,255,0.08);border:1px solid rgba(0,245,255,0.15);border-radius:12px;padding:12px;margin-bottom:20px">
                     <span style="color:var(--primary);font-size:13px">👨‍💻 Developer: ${safeDev}</span>
                     ${safeDevInfo ? `<div style="color:var(--text-dim);font-size:12px;margin-top:4px">${safeDevInfo}</div>` : ''}
-                </div>`;
-            }
+                </div>` : '';
 
-            // Build download grid for a version
-            function renderVersion(v, romIndex) {
-                return `
-                <div class="verGrid_${romIndex}">
+            // Download grid
+            const dlGrid = v.rom !== '#' ? `
+                <div>
                     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
                         <div style="background:rgba(0,245,255,0.1);border-radius:16px;padding:20px;text-align:center">
                             <div style="font-size:28px;margin-bottom:8px">📱</div>
@@ -1317,9 +1316,8 @@
                             <span style="color:var(--text-dim);font-size:11px">${v.dtbo !== '#' ? '✓ Available' : 'Coming soon'}</span>
                         </div>
                     </div>
-                    ${v.rom !== '#' ? `<a href="${esc(v.rom)}" target="_blank" class="nav-glow-btn" style="display:block;text-align:center;padding:18px;font-size:16px;margin-top:8px">📥 Download ${safeName} (${esc(v.ver)})</a>` : ''}
-                </div>`;
-            }
+                    ${v.rom !== '#' ? `<a href="${esc(v.rom)}" target="_blank" class="nav-glow-btn" style="display:block;text-align:center;padding:18px;font-size:16px;margin-top:8px">📥 Download ${safeName} (${verLabel})</a>` : ''}
+                </div>` : '<p style="color:var(--text-dim);text-align:center;padding:20px">No downloads available</p>';
 
             document.getElementById('detailContent').innerHTML = `
                 ${bannerHtml}
@@ -1327,22 +1325,17 @@
                     <div>
                         <h2 style="margin:0 0 8px;font-size:32px">${safeName}</h2>
                         <span class="card-status status-${r.status}">● ${esc(r.status)}</span>
-                        <p style="color:var(--text-dim);margin:8px 0 0">👤 ${safeDev !== 'Unknown' ? safeDev : 'Unknown'}</p>
+                        <p style="color:var(--text-dim);margin:8px 0 0;font-size:13px">${verLabel}</p>
                     </div>
                 </div>
-                
                 <p style="color:var(--text-dim);line-height:1.7;margin-bottom:16px;font-size:16px">${safeDesc}</p>
                 ${devInfoHtml}
                 <div style="background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.15);border-radius:20px;padding:24px;margin:20px 0">
                     <h4 style="margin:0 0 16px;color:var(--primary);font-size:18px">📥 Downloads</h4>
                     ${versionSelector}
-                    <div class="versionContent">
-                        ${versions.length && versions[0].rom !== '#' ? renderVersion(versions[0], index) : '<p style="color:var(--text-dim);text-align:center;padding:20px">No downloads available</p>'}
-                    </div>
+                    <div class="versionContent">${dlGrid}</div>
                 </div>
-                
-                ${changelogHtml}
-                
+                ${clDisplay}
                 <div style="text-align:center;padding-top:20px;border-top:1px solid rgba(255,255,255,0.05);margin-top:20px">
                     <span style="color:var(--text-dim);font-size:15px">⬇️ ${r.downloads || 0} total downloads</span>
                     <span style="color:var(--text-dim);font-size:13px;margin-left:16px">📦 ${versions.length} version${versions.length !== 1 ? 's' : ''}</span>
@@ -1353,7 +1346,20 @@
                     <button onclick="deleteROM(${index})" class="btn btn-outline" style="flex:1;padding:14px;border-color:rgba(244,114,182,0.3);color:var(--accent)">🗑️ Delete ROM</button>
                 </div>` : ''}
             `;
+        }
+
+        function showDetail(index) {
+            window._detailIndex = index;
+            window._detailVerIdx = 0;
+            renderDetailContent(index, 0);
             openModal('detailModal');
+        }
+
+        // Version switcher — updates all content per version
+        function switchVersion(index, verIndex) {
+            verIndex = parseInt(verIndex);
+            window._detailVerIdx = verIndex;
+            renderDetailContent(index, verIndex);
         }
 
         // Changelog toggle
@@ -1466,13 +1472,24 @@
             const versionEntries = document.querySelectorAll('#versionEntries .version-entry');
             const versions = [];
             versionEntries.forEach(el => {
-                const ver = el.querySelector('.verSelect')?.value || 'Unknown';
+                const romVer = el.querySelector('.verRomVer')?.value?.trim() || '';
+                const andVer = el.querySelector('.verSelect')?.value || 'Android 16';
                 const date = el.querySelector('.verDate')?.value || '';
                 const rom = el.querySelector('.verRom')?.value?.trim() || '';
                 const boot = el.querySelector('.verBoot')?.value?.trim() || '';
                 const vendor_boot = el.querySelector('.verVendorBoot')?.value?.trim() || '';
                 const dtbo = el.querySelector('.verDtbo')?.value?.trim() || '';
-                if (rom) versions.push({ ver, date, rom, boot, vendor_boot, dtbo });
+                const vDev = el.querySelector('.verDev')?.value?.trim() || '';
+                const vDevInfo = el.querySelector('.verDevInfo')?.value?.trim() || '';
+                const vChangelog = el.querySelector('.verChangelog')?.value?.trim() || '';
+                if (rom) {
+                    const entry = { ver: andVer, date, rom, boot, vendor_boot, dtbo };
+                    if (romVer) entry.romVer = romVer;
+                    if (vDev) entry.vDev = vDev;
+                    if (vDevInfo) entry.vDevInfo = vDevInfo;
+                    if (vChangelog) entry.vChangelog = vChangelog;
+                    versions.push(entry);
+                }
             });
 
             if (versions.length === 0) {
@@ -1564,41 +1581,7 @@
             document.getElementById('romChangelog').value = '';
             document.getElementById('romDesc').value = '';
             document.getElementById('bannerPreview').style.display = 'none';
-            document.getElementById('versionEntries').innerHTML = `
-                <div class="version-entry" style="background:var(--card-glass);padding:16px;border-radius:12px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.05)">
-                    <div class="upload-row">
-                        <div class="form-group" style="margin-bottom:0">
-                            <label style="font-size:11px">Version</label>
-                            <select class="verSelect" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
-                                <option>Android 16</option>
-                                <option>Android 15</option>
-                                <option>Android 14</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="margin-bottom:0">
-                            <label style="font-size:11px">Release Date</label>
-                            <input type="date" class="verDate" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
-                        </div>
-                    </div>
-                    <div class="form-group" style="margin-top:8px;margin-bottom:0">
-                        <label style="font-size:11px">ROM Download Link</label>
-                        <input type="url" class="verRom" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
-                    </div>
-                    <div class="upload-row" style="margin-top:8px">
-                        <div class="form-group" style="margin-bottom:0">
-                            <label style="font-size:11px">boot.img</label>
-                            <input type="url" class="verBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
-                        </div>
-                        <div class="form-group" style="margin-bottom:0">
-                            <label style="font-size:11px">vendor_boot.img</label>
-                            <input type="url" class="verVendorBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
-                        </div>
-                    </div>
-                    <div class="form-group" style="margin-top:8px;margin-bottom:0">
-                        <label style="font-size:11px">dtbo.img</label>
-                        <input type="url" class="verDtbo" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
-                    </div>
-                </div>`;
+            document.getElementById('versionEntries').innerHTML = versionEntryHTML();
         }
 
         // ─── EDIT ROM (pre-fill upload form) ───
@@ -1647,23 +1630,31 @@
             showToast('ROM deleted', 'success');
         }
 
-        // Helper: generate version entry HTML
+        // Helper: generate version entry HTML (with ROM version, per-version changelog & dev)
         function versionEntryHTML(v) {
-            const ver = v ? v.ver : 'Android 16';
+            const andVer = v ? v.ver : 'Android 16';
+            const romVer = v ? v.romVer || '' : '';
             const date = v ? v.date : '';
             const rom = v ? v.rom : '';
             const boot = v ? v.boot : '';
             const vb = v ? v.vendor_boot : '';
             const dtbo = v ? v.dtbo : '';
+            const vCl = v ? v.vChangelog || '' : '';
+            const vDev = v ? v.vDev || '' : '';
+            const vDevInfo = v ? v.vDevInfo || '' : '';
             return `
                 <div class="version-entry" style="background:var(--card-glass);padding:16px;border-radius:12px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.05)">
-                    <div class="upload-row">
+                    <div class="upload-row" style="grid-template-columns:1fr 1fr 1fr">
                         <div class="form-group" style="margin-bottom:0">
-                            <label style="font-size:11px">Version</label>
+                            <label style="font-size:11px">ROM Version</label>
+                            <input type="text" class="verRomVer" value="${esc(romVer)}" placeholder="e.g. 5.2" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <label style="font-size:11px">Android</label>
                             <select class="verSelect" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
-                                <option ${ver === 'Android 16' ? 'selected' : ''}>Android 16</option>
-                                <option ${ver === 'Android 15' ? 'selected' : ''}>Android 15</option>
-                                <option ${ver === 'Android 14' ? 'selected' : ''}>Android 14</option>
+                                <option ${andVer === 'Android 16' ? 'selected' : ''}>Android 16</option>
+                                <option ${andVer === 'Android 15' ? 'selected' : ''}>Android 15</option>
+                                <option ${andVer === 'Android 14' ? 'selected' : ''}>Android 14</option>
                             </select>
                         </div>
                         <div class="form-group" style="margin-bottom:0">
@@ -1674,6 +1665,16 @@
                     <div class="form-group" style="margin-top:8px;margin-bottom:0">
                         <label style="font-size:11px">ROM Download Link</label>
                         <input type="url" class="verRom" value="${esc(rom)}" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                    </div>
+                    <div class="upload-row" style="margin-top:8px">
+                        <div class="form-group" style="margin-bottom:0">
+                            <label style="font-size:11px">Per-Version Developer</label>
+                            <input type="text" class="verDev" value="${esc(vDev)}" placeholder="Leave empty for ROM default" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <label style="font-size:11px">Dev Contact</label>
+                            <input type="text" class="verDevInfo" value="${esc(vDevInfo)}" placeholder="Telegram: @..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                        </div>
                     </div>
                     <div class="upload-row" style="margin-top:8px">
                         <div class="form-group" style="margin-bottom:0">
@@ -1688,6 +1689,10 @@
                     <div class="form-group" style="margin-top:8px;margin-bottom:0">
                         <label style="font-size:11px">dtbo.img</label>
                         <input type="url" class="verDtbo" value="${esc(dtbo)}" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                    </div>
+                    <div class="form-group" style="margin-top:8px;margin-bottom:0">
+                        <label style="font-size:11px">Per-Version Changelog</label>
+                        <textarea class="verChangelog" placeholder="What's new in this version?" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit;font-size:13px;min-height:40px">${esc(vCl)}</textarea>
                     </div>
                 </div>`;
         }
@@ -1871,9 +1876,12 @@
                 }
 
                 // ─── Extract version info ───
-                let romVer = 'Android 16';
+                let androidVer = 'Android 16';
+                let romVersion = '';
                 const androidMatch = msgText.match(/Android\s*(\d+)/i);
-                if (androidMatch) romVer = 'Android ' + androidMatch[1];
+                if (androidMatch) androidVer = 'Android ' + androidMatch[1];
+                const romVerMatch = msgText.match(/version\s*[:\s]*([\d.]+)/i) || romName.match(/([\d.]+)$/);
+                if (romVerMatch) romVersion = romVerMatch[1];
 
                 // ─── Build description: first meaningful sentence ───
                 let description = '';
@@ -1939,11 +1947,17 @@
                 const verRom = document.querySelector('.verRom');
                 const verDate = document.querySelector('.verDate');
                 const verSelect = document.querySelector('.verSelect');
+                const verRomVer = document.querySelector('.verRomVer');
+                const verChangelog = document.querySelector('.verChangelog');
+                const verDev = document.querySelector('.verDev');
                 if (verRom && downloadUrl) verRom.value = downloadUrl;
                 if (verDate) verDate.value = new Date().toISOString().split('T')[0];
+                if (verRomVer && romVersion) verRomVer.value = romVersion;
+                if (verChangelog && changelog) verChangelog.value = changelog;
+                if (verDev && devName !== 'Unknown') verDev.value = devName;
                 if (verSelect) {
                     for (const opt of verSelect.options) {
-                        if (opt.text === romVer) { verSelect.value = opt.value; break; }
+                        if (opt.text === androidVer) { verSelect.value = opt.value; break; }
                     }
                 }
 
@@ -2099,10 +2113,13 @@
                     const dlHosts = ['pixeldrain.com', 'sourceforge.net', 'github.com', 'gofile.io', 'mega.nz'];
                     const dl = allLinks.find(h => dlHosts.some(dh => h.includes(dh))) || allLinks[0] || '';
 
-                    // Extract Android version
+                    // Extract Android version & ROM version
                     let andVer = 'Android 16';
+                    let romVer = '';
                     const av = msgText.match(/Android\s*(\d+)/i);
                     if (av) andVer = 'Android ' + av[1];
+                    const rv = msgText.match(/version\s*[:\s]*([\d.]+)/i) || romName.match(/([\d.]+)$/);
+                    if (rv) romVer = rv[1];
 
                     // Extract changelog (bullet lines)
                     let changelog = '';
@@ -2142,7 +2159,7 @@
                     bulkFoundROMs.push({
                         postId, romName, dev, downloadUrl: dl,
                         link: `https://t.me/${channel}/${postId}`,
-                        status, andVer, changelog, desc, banner,
+                        status, andVer, romVer, changelog, desc, banner,
                         selected: true
                     });
                 });
@@ -2194,7 +2211,7 @@
                     r.romName.toLowerCase().replace(/[- ]/g, '') === n.toLowerCase().replace(/[- ]/g, '')
                 );
                 const finalName = matched || r.romName;
-                const newVer = { ver: r.andVer || 'Android 16', date: new Date().toISOString().split('T')[0], rom: r.downloadUrl || r.link, boot: '#', vendor_boot: '#', dtbo: '#' };
+                const newVer = { ver: r.andVer || 'Android 16', date: new Date().toISOString().split('T')[0], rom: r.downloadUrl || r.link, boot: '#', vendor_boot: '#', dtbo: '#', romVer: r.romVer || '', vDev: r.dev !== 'Unknown' ? r.dev : '', vDevInfo: r.dev !== 'Unknown' ? 'Telegram: ' + r.dev : '', vChangelog: r.changelog || '' };
                 // Check if ROM with same name exists
                 const existing = roms.find(ex => ex.name === finalName);
                 if (existing) {
