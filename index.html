@@ -1123,7 +1123,7 @@
         ];
 
         // Load ROMs
-        const DATA_VERSION = 'v7';
+        const DATA_VERSION = 'v8';
         let roms;
         if (localStorage.getItem('blueredwood_roms_ver') !== DATA_VERSION) {
             localStorage.setItem('blueredwood_roms_new', JSON.stringify(defaultROMs));
@@ -1801,14 +1801,19 @@
                 // Convert <br> to newlines so textContent preserves line breaks
                 const msgText = msgEl ? msgEl.innerHTML.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim() : '';
 
-                // ─── Developer: look for "By @username" in HTML ───
+                // ─── Developer: prefer Telegram link near "By", fallback to text ───
                 let devName = 'Unknown';
-                const byMatch = rawHtml.match(/[Bb]y\s*(?:<\/?[^>]+>)*\s*@?(\w+)/);
-                if (byMatch) devName = '@' + byMatch[1];
-                const authorEl = d.querySelector('.tgme_widget_message_author_name');
-                if (authorEl && devName === 'Unknown') {
-                    const atMatch = authorEl.textContent.match(/@(\w+)/);
-                    if (atMatch) devName = '@' + atMatch[1];
+                const byLink = rawHtml.match(/[Bb]y[^<]*(?:<[^>]*>)*\s*<a[^>]*href="https:\/\/t\.me\/(\w+)[^>]*>/);
+                if (byLink) {
+                    devName = '@' + byLink[1];
+                } else {
+                    const byMatch = rawHtml.match(/[Bb]y\s*(?:<\/?[^>]+>)*\s*@?(\w[\w.]*)/);
+                    if (byMatch) devName = byMatch[1].startsWith('@') ? byMatch[1] : '@' + byMatch[1];
+                    const authorEl = d.querySelector('.tgme_widget_message_author_name');
+                    if (authorEl && devName === 'Unknown') {
+                        const atMatch = authorEl.textContent.match(/@(\w+)/);
+                        if (atMatch) devName = '@' + atMatch[1];
+                    }
                 }
 
                 // ─── Screenshots ───
@@ -2053,16 +2058,16 @@
                         romName = bold ? bold[1].trim() : msgText.split('\n')[0].replace(/^[\s#•\-*]+/, '').trim();
                     }
 
-                    // Extract dev: look for "By @username" or "By Name" in HTML
+                    // Extract dev: prefer Telegram link near "By", fallback to text
                     let dev = 'Unknown';
-                    const byMatch = innerH.match(/[Bb]y\s*(?:<\/?[^>]+>)*\s*@?(\w[\w.]*)/);
-                    if (byMatch) {
-                        const raw = byMatch[1];
-                        dev = innerH.includes('@' + raw) ? '@' + raw : raw;
-                    }
-                    // Fallback: look for @username in links near "By"
                     const byLink = innerH.match(/[Bb]y[^<]*(?:<[^>]*>)*\s*<a[^>]*href="https:\/\/t\.me\/(\w+)[^>]*>/);
-                    if (byLink && dev === 'Unknown') dev = '@' + byLink[1];
+                    if (byLink) {
+                        dev = '@' + byLink[1];
+                    } else {
+                        // Fallback: look for @username or name after "By"
+                        const byMatch = innerH.match(/[Bb]y\s*(?:<\/?[^>]+>)*\s*(@?\w[\w.]*)/);
+                        if (byMatch) dev = byMatch[1].startsWith('@') ? byMatch[1] : byMatch[1];
+                    }
 
                     // Detect official/unofficial status
                     let status = 'unofficial';
