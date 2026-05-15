@@ -1252,8 +1252,10 @@
             const romVersion = v.romVer ? esc(v.romVer) : '—';
             const buildDate = v.date || '—';
 
-            // Get initials for avatar
-            const devInitials = safeDev.replace(/@/g, '').substring(0, 2).toUpperCase();
+            // Get initials and Telegram profile pic for avatar
+            const devUsername = safeDev.replace(/@/g, '').trim();
+            const devInitials = devUsername.substring(0, 2).toUpperCase();
+            const profilePicUrl = devUsername ? `https://t.me/i/userpic/320/${encodeURIComponent(devUsername)}.jpg` : '';
 
             // Changelog
             const clRaw = v.vChangelog || r.changelog || '';
@@ -1270,13 +1272,13 @@
                 </div>`;
             }
 
-            // Version tabs
-            const androidVersions = [...new Set(versions.map(ver => ver.andVer || ver.ver || 'Unknown'))].slice(0, 4);
-            const versionTabs = androidVersions.length > 1 ? `
+            // Version tabs (show ROM version + Android version)
+            const versionTabs = versions.length > 1 ? `
                 <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap">
-                    ${androidVersions.map((av, avi) => {
-                        const active = (v.andVer || v.ver) === av || (!v.ver && avi === 0);
-                        return `<button onclick="switchVersion(${index}, ${versions.findIndex(vv => (vv.andVer || vv.ver) === av)})" style="padding:10px 22px;border-radius:25px;border:2px solid ${active ? 'var(--primary)' : 'rgba(255,255,255,0.1)'};background:${active ? 'rgba(0,245,255,0.15)' : 'transparent'};color:${active ? '#fff' : 'var(--text-dim)'};font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.3s;box-shadow:${active ? '0 0 20px rgba(0,245,255,0.3)' : 'none'}">Android ${esc(av.replace('Android ',''))}</button>`;
+                    ${versions.map((ver, vi) => {
+                        const label = ver.romVer ? esc(ver.romVer) + ' · Android ' + esc((ver.andVer || ver.ver || '').replace('Android ','')) : 'Android ' + esc((ver.andVer || ver.ver || '').replace('Android ',''));
+                        const active = vi === verIdx;
+                        return `<button onclick="switchVersion(${index}, ${vi})" style="padding:10px 22px;border-radius:25px;border:2px solid ${active ? 'var(--primary)' : 'rgba(255,255,255,0.1)'};background:${active ? 'rgba(0,245,255,0.15)' : 'transparent'};color:${active ? '#fff' : 'var(--text-dim)'};font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.3s;box-shadow:${active ? '0 0 20px rgba(0,245,255,0.3)' : 'none'}">${label}</button>`;
                     }).join('')}
                 </div>` : '';
 
@@ -1315,7 +1317,10 @@
             // Maintainer box (EvoX style)
             const maintainerHtml = safeDev !== 'Unknown' ? `
                 <div style="display:flex;align-items:center;gap:16px;padding:16px;border:1px solid rgba(0,245,255,0.12);border-radius:16px;background:rgba(0,10,30,0.6);margin-bottom:24px">
-                    <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;flex-shrink:0">${esc(devInitials)}</div>
+                    <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;flex-shrink:0;position:relative">
+                        <img src="${profilePicUrl}" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0">
+                        <span style="z-index:1">${esc(devInitials)}</span>
+                    </div>
                     <div style="flex:1">
                         <div style="color:#fff;font-weight:600;font-size:15px">${safeDev}</div>
                         <div style="color:var(--text-dim);font-size:13px">Maintainer</div>
