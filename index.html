@@ -1989,6 +1989,15 @@
                 }
                 if (!html) throw new Error('Failed to fetch channel');
                 const d = new DOMParser().parseFromString(html, 'text/html');
+                // Check if this is a group (has "View in Telegram" but no message list)
+                const isGroup = html.includes('View in Telegram') && !html.includes('tgme_widget_message_text');
+                if (isGroup) {
+                    status.innerHTML = '⚠️ This is a <strong>group</strong>, not a channel. Groups can\'t be scanned publicly.<br>Use individual post links with <strong>Quick Import</strong> instead, or try a public channel.';
+                    results.style.display = 'block';
+                    btn.textContent = 'Scan Channel';
+                    btn.disabled = false;
+                    return;
+                }
                 const messages = d.querySelectorAll('.tgme_widget_message_wrap, .tgme_widget_message');
                 if (!messages.length) throw new Error('No messages found');
 
