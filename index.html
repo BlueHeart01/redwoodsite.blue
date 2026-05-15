@@ -1298,8 +1298,7 @@
 
             document.getElementById('detailContent').innerHTML = `
                 ${bannerHtml}
-                <div style="display:flex;align-items:center;gap:24px;margin-bottom:16px">
-                    <div class="card-icon" style="width:80px;height:80px;font-size:36px">${safeIcon}</div>
+                <div style="display:flex;align-items:center;gap:20px;margin-bottom:16px">
                     <div>
                         <h2 style="margin:0 0 8px;font-size:32px">${safeName}</h2>
                         <span class="card-status status-${r.status}">● ${esc(r.status)}</span>
@@ -1615,20 +1614,28 @@
                 // ─── ROM Name: match against known list ───
                 let romName = 'New ROM';
                 const boldEl = d.querySelector('.tgme_widget_message_text b, .tgme_widget_message_text strong');
-                if (boldEl) {
-                    const boldText = boldEl.textContent.trim();
-                    // Try to find a known ROM name in the bold text
-                    const found = knownROMs.find(name => {
-                        const clean = name.replace(/[- ]/g, '').toLowerCase();
-                        const bold = boldText.replace(/[- ]/g, '').toLowerCase();
-                        return bold.includes(clean) || clean.includes(bold);
-                    });
-                    romName = found || boldText.split('|')[0].trim();
-                } else if (msgText) {
-                    const found = knownROMs.find(name =>
-                        msgText.toLowerCase().includes(name.toLowerCase())
-                    );
-                    romName = found || msgText.split('\n')[0].replace(/^[\s•\-*#]+/, '').trim() || channel;
+                // Strip emojis and clean text for matching
+                const cleanText = msgText.replace(/[🍀🌙⭐✨🌸🌟💫⚡🔥💥💎🔮🌈🎯🎉✅❌🔹🔸▪️▫️▶️⏩🔽🔼⬇️⬆️🔗📎📌💡💪👨‍💻📱📦📥📋📝📄]/g, '').replace(/\s+/g, ' ').trim();
+                // Try finding known ROM name in cleaned text
+                let foundName = knownROMs.find(name => {
+                    const clean = name.replace(/[- ]/g, '').toLowerCase();
+                    return cleanText.toLowerCase().includes(clean);
+                });
+                if (!foundName) {
+                    // Try against bold text
+                    if (boldEl) {
+                        const boldText = boldEl.textContent.trim();
+                        foundName = knownROMs.find(name => {
+                            const clean = name.replace(/[- ]/g, '').toLowerCase();
+                            const bold = boldText.replace(/[- ]/g, '').toLowerCase();
+                            return bold.includes(clean) || clean.includes(bold);
+                        });
+                        romName = foundName || boldText.replace(/^[🍀🌙⭐✨🌸🌟💫⚡🔥💥💎🔮🌈🎯🎉✅❌▪️▫️]\s*/, '').split('|')[0].trim();
+                    } else {
+                        romName = cleanText.split('\n')[0].replace(/^[\s•\-*#]+/, '').trim() || channel;
+                    }
+                } else {
+                    romName = foundName;
                 }
 
                 // ─── Extract version info ───
@@ -1636,29 +1643,34 @@
                 const androidMatch = msgText.match(/Android\s*(\d+)/i);
                 if (androidMatch) romVer = 'Android ' + androidMatch[1];
 
-                // ─── Build description from non-hashtag lines ───
+                // ─── Build description: first meaningful sentence ───
                 let description = '';
-                const lines = msgText.split('\n').filter(l => l.trim());
-                for (const line of lines) {
-                    const clean = line.replace(/^[▪️•\-*>#]\s*/, '').trim();
-                    if (clean && !clean.startsWith('#') && clean.length > 15 && !clean.match(/^@/)) {
-                        description = clean.substring(0, 200);
+                const cleanLines = msgText.replace(/[🍀🌙⭐✨🌸🌟💫⚡🔥💥💎🔮🌈🎯🎉✅❌▪️▫️▶️⏩]/g, '').split('\n').filter(l => l.trim());
+                for (const line of cleanLines) {
+                    const c = line.replace(/^[•\-*>#]\s*/, '').trim();
+                    if (c && !c.startsWith('#') && !c.match(/^(Download|Recovery|Build Date|Build Type|Donate|Credits|Changelog|Notes|Join|@)/i) && c.length > 20) {
+                        description = c.substring(0, 200);
                         break;
                     }
                 }
-                if (!description) description = romName + ' ROM for Redwood';
+                if (!description) {
+                    // Use line with ROM name + Android version
+                    const verLine = cleanLines.find(l => l.match(/Android\s*\d+/i));
+                    description = verLine ? verLine.substring(0, 200) : (romName + ' for Redwood');
+                }
 
-                // ─── Changelog: filter out hashtags line, keep bullet points ───
+                // ─── Changelog: extract text after "Changelog:" keyword ───
                 let changelog = '';
                 if (msgText) {
-                    const msgLines = msgText.split('\n').filter(l => l.trim());
-                    const startIdx = msgLines.findIndex(l => l.match(/^[▪️•\-*]/));
-                    if (startIdx !== -1) {
-                        changelog = msgLines.slice(startIdx).join('\n');
+                    const clMatch = msgText.match(/Changelog[:\s]*([\s\S]*?)(?=Notes|Credits|Join|Donate|⭐|💬|$)/i);
+                    if (clMatch) {
+                        changelog = clMatch[1].trim();
                     } else {
-                        changelog = msgLines.slice(1).join('\n');
+                        // Fallback: lines starting with bullet
+                        const bulletLines = cleanLines.filter(l => l.match(/^[▪️•\-*]\s*.*\S/));
+                        if (bulletLines.length > 1) changelog = bulletLines.join('\n');
                     }
-                    changelog = changelog.replace(/^Join:.*$/m, '').replace(/^📝.*$/m, '').trim();
+                    changelog = changelog.replace(/[🍀🌙⭐✨🌸🌟💫⚡🔥💥💎🔮🌈🎯🎉✅❌▪️▫️]\s*/g, '').trim();
                 }
 
                 // ─── Fill the form ───
