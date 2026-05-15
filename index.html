@@ -791,7 +791,7 @@
                 <a href="#" class="nav-link" onclick="filterROMs('all', document.querySelector('.filter-pill')); window.scrollTo(0, 400)">ROMs</a>
                 <a href="#" class="nav-link" onclick="openModal('aboutModal')">About</a>
                 <a href="#" class="nav-link highlight" id="uploadNavBtn" onclick="openModal('uploadModal')" style="display:none">Upload</a>
-                <a href="#" class="nav-link" onclick="openModal('loginModal')" style="background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700">Login</a>
+                <a href="#" class="nav-link" id="loginNavBtn" onclick="handleLoginClick()" style="background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700">Login</a>
             </div>
         </nav>
     </header>
@@ -1848,7 +1848,7 @@
         }
 
         // ═══════════════════════════════════════════════════════
-        // LOGIN
+        // LOGIN / LOGOUT
         // ═══════════════════════════════════════════════════════
         function login() {
             const user = document.getElementById('loginUsername').value;
@@ -1866,6 +1866,20 @@
             }
         }
 
+        function logout() {
+            localStorage.removeItem('blueredwood_user');
+            showToast('Logged out', 'success');
+            updateUIBasedOnAuth();
+        }
+
+        function handleLoginClick() {
+            if (getCurrentUser() === 'admin') {
+                logout();
+            } else {
+                openModal('loginModal');
+            }
+        }
+
         function getCurrentUser() {
             return localStorage.getItem('blueredwood_user');
         }
@@ -1873,7 +1887,9 @@
         function updateUIBasedOnAuth() {
             const isLoggedIn = getCurrentUser() === 'admin';
             const uploadBtn = document.getElementById('uploadNavBtn');
+            const loginBtn = document.getElementById('loginNavBtn');
             if (uploadBtn) uploadBtn.style.display = isLoggedIn ? 'inline' : 'none';
+            if (loginBtn) loginBtn.textContent = isLoggedIn ? 'Logout' : 'Login';
         }
 
         // ═══════════════════════════════════════════════════════
