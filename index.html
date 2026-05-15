@@ -1981,12 +1981,19 @@
             try {
                 const proxies = [
                     'https://api.allorigins.win/raw?url=',
-                    'https://api.codetabs.com/v1/proxy?quest='
+                    'https://api.codetabs.com/v1/proxy?quest=',
+                    'https://corsproxy.io/?' + encodeURIComponent('https://t.me/s/' + channel) + '&',
                 ];
                 let html = '';
                 for (const proxy of proxies) {
                     try {
-                        const resp = await fetch(proxy + encodeURIComponent(`https://t.me/s/${channel}`));
+                        let url;
+                        if (proxy.includes('corsproxy')) {
+                            url = proxy;
+                        } else {
+                            url = proxy + encodeURIComponent(`https://t.me/s/${channel}`);
+                        }
+                        const resp = await fetch(url);
                         if (resp.ok) { html = await resp.text(); break; }
                     } catch (_) {}
                 }
@@ -2011,13 +2018,16 @@
                     const postEl = el.querySelector('.tgme_widget_message_text') || el;
                     const innerH = postEl.innerHTML || '';
                     const txt = postEl.textContent || '';
-                    // Skip non-ROM posts: must contain ROM keywords
-                    const romKeywords = ['#rom', '#redwood', 'android', 'rom', 'build', 'update', 'gapps'];
-                    const hasKeyword = romKeywords.some(k => txt.toLowerCase().includes(k));
+                    // Must contain device/ROM keywords
+                    const lower = txt.toLowerCase();
+                    const romKeywords = ['#rom', '#redwood', 'android', 'rom', 'build', 'gapps', 'kernel'];
+                    const hasKeyword = romKeywords.some(k => lower.includes(k)) && lower.includes('redwood');
                     if (!hasKeyword) return;
-                    // Skip port/MIUI/HyperOS ROMs
-                    const skipKeywords = ['hyperos', 'miui', 'port', 'zkui', 'turboos'];
-                    if (skipKeywords.some(k => txt.toLowerCase().includes(k))) return;
+                    // Skip port/MIUI/HyperOS ROMs (only if it's the main subject)
+                    const skipKeywords = ['zkui', 'turboos'];
+                    if (skipKeywords.some(k => lower.includes(k))) return;
+                    // Also skip if it's clearly a stock firmware post
+                    if (lower.includes('miui') && !lower.includes('custom') && !lower.includes('aosp') && !lower.includes('port')) return;
 
                     // Get post ID from data-post attribute or link
                     const postLink = el.getAttribute('data-post') || '';
