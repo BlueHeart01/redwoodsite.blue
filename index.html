@@ -2058,15 +2058,22 @@
                         romName = bold ? bold[1].trim() : msgText.split('\n')[0].replace(/^[\s#•\-*]+/, '').trim();
                     }
 
-                    // Extract dev: prefer Telegram link near "By", fallback to text
+                    // Extract dev: prefer Telegram link near "By", fallback to forwarded name
                     let dev = 'Unknown';
                     const byLink = innerH.match(/[Bb]y[^<]*(?:<[^>]*>)*\s*<a[^>]*href="https:\/\/t\.me\/(\w+)[^>]*>/);
                     if (byLink) {
                         dev = '@' + byLink[1];
                     } else {
-                        // Fallback: look for @username or name after "By"
                         const byMatch = innerH.match(/[Bb]y\s*(?:<\/?[^>]+>)*\s*(@?\w[\w.]*)/);
-                        if (byMatch) dev = byMatch[1].startsWith('@') ? byMatch[1] : byMatch[1];
+                        if (byMatch) dev = byMatch[1].startsWith('@') ? byMatch[1] : '@' + byMatch[1];
+                    }
+                    // Fallback: forwarded-from name
+                    if (dev === 'Unknown' || dev === '@' || !dev) {
+                        const fwd = el.querySelector('.tgme_widget_message_forwarded_from_name');
+                        if (fwd) {
+                            const fwdText = fwd.textContent.trim();
+                            if (fwdText && fwdText.length < 30) dev = fwdText;
+                        }
                     }
 
                     // Detect official/unofficial status
@@ -2181,38 +2188,49 @@
         function bulkImportSelected() {
             const selected = bulkFoundROMs.filter(r => r.selected);
             if (!selected.length) { showToast('No ROMs selected!', 'error'); return; }
-            let imported = 0;
+            let added = 0, updated = 0;
             selected.forEach(r => {
                 const matched = knownROMs.find(n =>
                     r.romName.toLowerCase().replace(/[- ]/g, '') === n.toLowerCase().replace(/[- ]/g, '')
                 );
                 const finalName = matched || r.romName;
-                const exists = roms.some(ex =>
-                    ex.name === finalName && ex.versions &&
-                    ex.versions.some(v => v.rom === r.downloadUrl)
-                );
-                if (exists) return;
-                roms.unshift({
-                    name: finalName,
-                    status: r.status || 'unofficial',
-                    dev: r.dev,
-                    devInfo: r.dev !== 'Unknown' ? 'Telegram: ' + r.dev : '',
-                    desc: r.desc || (finalName + ' for Redwood'),
-                    icon: finalName.charAt(0).toUpperCase(),
-                    downloads: 0,
-                    banner: r.banner || '',
-                    screenshots: r.banner ? [r.banner] : [],
-                    changelog: r.changelog || '',
-                    versions: [{ ver: r.andVer || 'Android 16', date: new Date().toISOString().split('T')[0], rom: r.downloadUrl || r.link, boot: '#', vendor_boot: '#', dtbo: '#' }]
-                });
-                imported++;
+                const newVer = { ver: r.andVer || 'Android 16', date: new Date().toISOString().split('T')[0], rom: r.downloadUrl || r.link, boot: '#', vendor_boot: '#', dtbo: '#' };
+                // Check if ROM with same name exists
+                const existing = roms.find(ex => ex.name === finalName);
+                if (existing) {
+                    // Check if this exact version/URL already exists
+                    const hasVer = existing.versions.some(v => v.rom === newVer.rom);
+                    if (hasVer) return;
+                    // Update existing: add version, refresh other fields if newer
+                    existing.versions.push(newVer);
+                    if (r.dev && r.dev !== 'Unknown') { existing.dev = r.dev; existing.devInfo = 'Telegram: ' + r.dev; }
+                    if (r.changelog) existing.changelog = r.changelog;
+                    if (r.banner) existing.banner = r.banner;
+                    if (r.desc && !r.desc.includes('for Redwood')) existing.desc = r.desc;
+                    updated++;
+                } else {
+                    roms.unshift({
+                        name: finalName,
+                        status: r.status || 'unofficial',
+                        dev: r.dev,
+                        devInfo: r.dev !== 'Unknown' ? 'Telegram: ' + r.dev : '',
+                        desc: r.desc || (finalName + ' for Redwood'),
+                        icon: finalName.charAt(0).toUpperCase(),
+                        downloads: 0,
+                        banner: r.banner || '',
+                        screenshots: r.banner ? [r.banner] : [],
+                        changelog: r.changelog || '',
+                        versions: [newVer]
+                    });
+                    added++;
+                }
             });
-            if (imported) {
+            if (added || updated) {
                 localStorage.setItem('blueredwood_roms_new', JSON.stringify(roms));
                 renderROMs();
-                showToast(`Imported ${imported} ROM${imported > 1 ? 's' : ''}!`, 'success');
+                showToast(`${added ? 'Added ' + added + ', ' : ''}${updated ? 'Updated ' + updated : ''}`, 'success');
             } else {
-                showToast('All selected ROMs already exist', 'error');
+                showToast('Nothing new to import', 'error');
             }
             document.getElementById('bulkResults').style.display = 'none';
         }
