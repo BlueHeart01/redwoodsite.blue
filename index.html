@@ -853,7 +853,7 @@
             <p style="color:var(--text-dim);margin-bottom:24px">Submit your custom ROM for POCO X5 Pro</p>
 
             <!-- Quick Import -->
-            <div style="background:var(--card-glass);border:1px solid rgba(0,245,255,0.12);border-radius:16px;padding:20px;margin-bottom:24px">
+            <div style="background:var(--card-glass);border:1px solid rgba(0,245,255,0.12);border-radius:16px;padding:20px;margin-bottom:16px">
                 <p style="font-size:13px;margin-bottom:12px;color:var(--text-dim)">📎 <strong style="color:var(--text)">Quick Import</strong> — paste a Telegram post or GitHub repo link</p>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
                     <input type="url" id="quickLink" placeholder="https://t.me/bluehearts_Builds016/..." style="flex:1;min-width:200px;padding:12px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:var(--text);font-family:inherit;font-size:14px">
@@ -862,6 +862,21 @@
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                     <input type="url" id="gitRepoUrl" placeholder="https://github.com/org/repo (auto-fetch banner)" style="flex:1;min-width:200px;padding:12px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:var(--text);font-family:inherit;font-size:14px">
                     <button class="btn btn-outline" onclick="fetchGitBanner()" style="white-space:nowrap">Fetch Banner</button>
+                </div>
+            </div>
+
+            <!-- Bulk Import -->
+            <div style="background:var(--card-glass);border:1px solid rgba(168,85,247,0.12);border-radius:16px;padding:20px;margin-bottom:24px">
+                <p style="font-size:13px;margin-bottom:12px;color:var(--text-dim)">📦 <strong style="color:var(--text)">Bulk Import</strong> — paste a Telegram channel link to scan all recent ROM posts</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+                    <input type="url" id="bulkChannelLink" placeholder="https://t.me/bluehearts_Builds016" style="flex:1;min-width:200px;padding:12px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:var(--text);font-family:inherit;font-size:14px">
+                    <button class="btn btn-primary" onclick="bulkImport()" style="white-space:nowrap;background:linear-gradient(135deg,var(--secondary),var(--accent))">Scan Channel</button>
+                </div>
+                <div id="bulkResults" style="display:none;margin-top:12px;padding:16px;background:var(--card-glass);border-radius:12px;border:1px solid rgba(168,85,247,0.1)">
+                    <p style="font-size:13px;color:var(--text-dim);margin-bottom:12px">Detected ROMs — select to import:</p>
+                    <div id="bulkRomList" style="display:grid;gap:8px;max-height:300px;overflow-y:auto"></div>
+                    <button class="btn btn-primary" id="bulkImportBtn" onclick="bulkImportSelected()" style="width:100%;margin-top:12px;display:none">Import Selected</button>
+                    <p id="bulkStatus" style="font-size:12px;color:var(--text-dim);margin-top:8px;text-align:center"></p>
                 </div>
             </div>
 
@@ -1937,6 +1952,174 @@
             }
             btn.textContent = 'Import';
             btn.disabled = false;
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // BULK IMPORT — scan Telegram channel for all ROM posts
+        // ═══════════════════════════════════════════════════════
+        let bulkFoundROMs = [];
+
+        async function bulkImport() {
+            const link = document.getElementById('bulkChannelLink').value.trim();
+            if (!link) { showToast('Paste a Telegram channel link!', 'error'); return; }
+            const match = link.match(/t\.me\/([^\/\?\s]+)/);
+            if (!match) { showToast('Invalid channel link!', 'error'); return; }
+            const channel = match[1];
+            const btn = document.querySelector('[onclick="bulkImport()"]');
+            const results = document.getElementById('bulkResults');
+            const list = document.getElementById('bulkRomList');
+            const status = document.getElementById('bulkStatus');
+            btn.textContent = 'Scanning...';
+            btn.disabled = true;
+            results.style.display = 'none';
+            list.innerHTML = '';
+            status.textContent = '';
+
+            try {
+                const proxies = [
+                    'https://api.allorigins.win/raw?url=',
+                    'https://api.codetabs.com/v1/proxy?quest='
+                ];
+                let html = '';
+                for (const proxy of proxies) {
+                    try {
+                        const resp = await fetch(proxy + encodeURIComponent(`https://t.me/s/${channel}`));
+                        if (resp.ok) { html = await resp.text(); break; }
+                    } catch (_) {}
+                }
+                if (!html) throw new Error('Failed to fetch channel');
+                const d = new DOMParser().parseFromString(html, 'text/html');
+                const messages = d.querySelectorAll('.tgme_widget_message_wrap, .tgme_widget_message');
+                if (!messages.length) throw new Error('No messages found');
+
+                bulkFoundROMs = [];
+                const postIds = new Set();
+
+                messages.forEach(el => {
+                    const postEl = el.querySelector('.tgme_widget_message_text') || el;
+                    const innerH = postEl.innerHTML || '';
+                    const txt = postEl.textContent || '';
+                    // Skip non-ROM posts: must contain ROM keywords
+                    const romKeywords = ['#rom', '#redwood', 'android', 'rom', 'build', 'update', 'kernel', 'gapps'];
+                    const hasKeyword = romKeywords.some(k => txt.toLowerCase().includes(k));
+                    if (!hasKeyword) return;
+
+                    // Get post ID from data-post attribute or link
+                    const postLink = el.getAttribute('data-post') || '';
+                    const idMatch = postLink.match(/\/(\d+)$/) || txt.match(/t\.me\/(?:\w+)\/(\d+)/);
+                    const postId = idMatch ? idMatch[1] : '';
+                    if (!postId || postIds.has(postId)) return;
+                    postIds.add(postId);
+
+                    // Extract using same logic as quickImport
+                    const msgText = innerH.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim();
+                    const cleanLower = msgText.replace(/[🍀🌙⭐✨🌸🌟💫⚡🔥💥💎🔮🌈🎯🎉✅❌▪️▫️▶️⏩🔽🔼⬇️⬆️🔗📎📌💡💪]/g, '').replace(/\s+/g, ' ').toLowerCase().replace(/[- ]/g, '');
+
+                    let romName = 'New ROM';
+                    for (const [key, val] of Object.entries(romNameAliases)) {
+                        if (cleanLower.includes(key)) { romName = val; break; }
+                    }
+                    if (romName === 'New ROM') {
+                        const found = knownROMs.find(n => cleanLower.includes(n.replace(/[- ]/g, '').toLowerCase()));
+                        if (found) romName = found;
+                    }
+                    if (romName === 'New ROM') {
+                        const bold = msgText.match(/\*\*(.+?)\*\*/);
+                        romName = bold ? bold[1].trim() : msgText.split('\n')[0].replace(/^[\s#•\-*]+/, '').trim();
+                    }
+
+                    // Extract dev
+                    let dev = 'Unknown';
+                    const byMatch = innerH.match(/[Bb]y\s*(?:<\/?[^>]+>)*\s*@?(\w+)/);
+                    if (byMatch) dev = '@' + byMatch[1];
+
+                    // Extract download link
+                    const tempDoc = d.createElement('div');
+                    tempDoc.innerHTML = innerH;
+                    const allLinks = [];
+                    tempDoc.querySelectorAll('a').forEach(a => {
+                        const h = a.getAttribute('href');
+                        if (h && !h.startsWith('tg://') && !h.match(/t\.me\//)) allLinks.push(h);
+                    });
+                    const dlHosts = ['pixeldrain.com', 'sourceforge.net', 'github.com', 'gofile.io', 'mega.nz'];
+                    const dl = allLinks.find(h => dlHosts.some(dh => h.includes(dh))) || allLinks[0] || '';
+
+                    bulkFoundROMs.push({
+                        postId, romName, dev, downloadUrl: dl,
+                        link: `https://t.me/${channel}/${postId}`,
+                        selected: true
+                    });
+                });
+
+                if (!bulkFoundROMs.length) {
+                    status.textContent = 'No ROM posts found in recent messages';
+                    results.style.display = 'block';
+                    btn.textContent = 'Scan Channel';
+                    btn.disabled = false;
+                    return;
+                }
+
+                // Render detected ROMs
+                list.innerHTML = bulkFoundROMs.map((r, i) => `
+                    <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.06);border-radius:10px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor=''">
+                        <input type="checkbox" checked onchange="bulkFoundROMs[${i}].selected = this.checked; document.getElementById('bulkImportBtn').style.display = bulkFoundROMs.some(r=>r.selected)?'block':'none'" style="accent-color:var(--primary);width:18px;height:18px">
+                        <div style="flex:1">
+                            <strong style="color:var(--text);font-size:14px">${esc(r.romName)}</strong>
+                            <span style="color:var(--text-dim);font-size:11px;margin-left:8px">${esc(r.dev)}</span>
+                            <div style="font-size:10px;color:var(--text-dim);margin-top:2px">${r.downloadUrl ? '✅ Link found' : '❌ No download link'}</div>
+                        </div>
+                    </label>
+                `).join('');
+                results.style.display = 'block';
+                document.getElementById('bulkImportBtn').style.display = 'block';
+                status.textContent = `Found ${bulkFoundROMs.length} ROM post${bulkFoundROMs.length > 1 ? 's' : ''}`;
+                btn.textContent = 'Scan Channel';
+                btn.disabled = false;
+            } catch (e) {
+                status.textContent = 'Failed to scan channel. Make sure it is public.';
+                results.style.display = 'block';
+                btn.textContent = 'Scan Channel';
+                btn.disabled = false;
+            }
+        }
+
+        function bulkImportSelected() {
+            const selected = bulkFoundROMs.filter(r => r.selected);
+            if (!selected.length) { showToast('No ROMs selected!', 'error'); return; }
+            let imported = 0;
+            selected.forEach(r => {
+                const matched = knownROMs.find(n =>
+                    r.romName.toLowerCase().replace(/[- ]/g, '') === n.toLowerCase().replace(/[- ]/g, '')
+                );
+                const finalName = matched || r.romName;
+                const exists = roms.some(ex =>
+                    ex.name === finalName && ex.versions &&
+                    ex.versions.some(v => v.rom === r.downloadUrl)
+                );
+                if (exists) return;
+                roms.unshift({
+                    name: finalName,
+                    status: 'unofficial',
+                    dev: r.dev,
+                    devInfo: r.dev !== 'Unknown' ? 'Telegram: ' + r.dev : '',
+                    desc: finalName + ' for Redwood',
+                    icon: finalName.charAt(0).toUpperCase(),
+                    downloads: 0,
+                    banner: '',
+                    screenshots: [],
+                    changelog: '',
+                    versions: [{ ver: 'Android 16', date: new Date().toISOString().split('T')[0], rom: r.downloadUrl || r.link, boot: '#', vendor_boot: '#', dtbo: '#' }]
+                });
+                imported++;
+            });
+            if (imported) {
+                localStorage.setItem('blueredwood_roms_new', JSON.stringify(roms));
+                renderROMs();
+                showToast(`Imported ${imported} ROM${imported > 1 ? 's' : ''}!`, 'success');
+            } else {
+                showToast('All selected ROMs already exist', 'error');
+            }
+            document.getElementById('bulkResults').style.display = 'none';
         }
 
         // ═══════════════════════════════════════════════════════
