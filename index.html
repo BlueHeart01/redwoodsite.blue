@@ -2048,6 +2048,11 @@
                     const byMatch = innerH.match(/[Bb]y\s*(?:<\/?[^>]+>)*\s*@?(\w+)/);
                     if (byMatch) dev = '@' + byMatch[1];
 
+                    // Detect official/unofficial status
+                    let status = 'unofficial';
+                    const upper = txt.toUpperCase();
+                    if (upper.includes('OFICIAL') || upper.includes('OFFICIAL')) status = 'official';
+
                     // Extract download link
                     const tempDoc = d.createElement('div');
                     tempDoc.innerHTML = innerH;
@@ -2059,9 +2064,38 @@
                     const dlHosts = ['pixeldrain.com', 'sourceforge.net', 'github.com', 'gofile.io', 'mega.nz'];
                     const dl = allLinks.find(h => dlHosts.some(dh => h.includes(dh))) || allLinks[0] || '';
 
+                    // Extract Android version
+                    let andVer = 'Android 16';
+                    const av = msgText.match(/Android\s*(\d+)/i);
+                    if (av) andVer = 'Android ' + av[1];
+
+                    // Extract changelog (bullet lines)
+                    let changelog = '';
+                    const clMatch = msgText.match(/Changelog[:\s]*([\s\S]*?)(?=Notes|Credits|Join|Donate|⭐|💬|$)/i);
+                    if (clMatch) {
+                        changelog = clMatch[1].trim();
+                    } else {
+                        const clLines = msgText.split('\n').filter(l => l.match(/^[▪️•\-*]\s*.*\S/));
+                        if (clLines.length > 1) changelog = clLines.map(l => l.replace(/^[▪️•\-*]\s*/, '').trim()).join('\n');
+                    }
+                    changelog = changelog.replace(/[🍀🌙⭐✨🌸🌟💫⚡🔥💥💎🔮🌈🎯🎉✅❌▪️▫️]\s*/g, '').trim();
+
+                    // Extract description (first meaningful line)
+                    let desc = '';
+                    const cleanL = msgText.replace(/[🍀🌙⭐✨🌸🌟💫⚡🔥💥💎🔮🌈🎯🎉✅❌▪️▫️▶️⏩]/g, '').split('\n').filter(l => l.trim());
+                    for (const line of cleanL) {
+                        const c = line.replace(/^[•\-*>#]\s*/, '').trim();
+                        if (c && !c.startsWith('#') && !c.match(/^(Download|Recovery|Build|By|@)/i) && c.length > 15) {
+                            desc = c.substring(0, 200);
+                            break;
+                        }
+                    }
+                    if (!desc) desc = romName + ' for Redwood';
+
                     bulkFoundROMs.push({
                         postId, romName, dev, downloadUrl: dl,
                         link: `https://t.me/${channel}/${postId}`,
+                        status, andVer, changelog, desc,
                         selected: true
                     });
                 });
@@ -2079,9 +2113,15 @@
                     <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.06);border-radius:10px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor=''">
                         <input type="checkbox" checked onchange="bulkFoundROMs[${i}].selected = this.checked; document.getElementById('bulkImportBtn').style.display = bulkFoundROMs.some(r=>r.selected)?'block':'none'" style="accent-color:var(--primary);width:18px;height:18px">
                         <div style="flex:1">
-                            <strong style="color:var(--text);font-size:14px">${esc(r.romName)}</strong>
-                            <span style="color:var(--text-dim);font-size:11px;margin-left:8px">${esc(r.dev)}</span>
-                            <div style="font-size:10px;color:var(--text-dim);margin-top:2px">${r.downloadUrl ? '✅ Link found' : '❌ No download link'}</div>
+                            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                                <strong style="color:var(--text);font-size:14px">${esc(r.romName)}</strong>
+                                <span style="font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;background:${r.status === 'official' ? 'rgba(0,245,255,0.15)' : 'rgba(168,85,247,0.15)'};color:${r.status === 'official' ? 'var(--primary)' : 'var(--secondary)'}">${r.status}</span>
+                                <span style="color:var(--text-dim);font-size:10px">${r.andVer}</span>
+                            </div>
+                            <div style="font-size:11px;color:var(--text-dim);margin-top:2px">
+                                ${esc(r.dev)} ${r.downloadUrl ? '• ✅ Link' : '• ❌ No link'}
+                                ${r.changelog ? '• 📋 Changelog' : ''}
+                            </div>
                         </div>
                     </label>
                 `).join('');
@@ -2114,16 +2154,16 @@
                 if (exists) return;
                 roms.unshift({
                     name: finalName,
-                    status: 'unofficial',
+                    status: r.status || 'unofficial',
                     dev: r.dev,
                     devInfo: r.dev !== 'Unknown' ? 'Telegram: ' + r.dev : '',
-                    desc: finalName + ' for Redwood',
+                    desc: r.desc || (finalName + ' for Redwood'),
                     icon: finalName.charAt(0).toUpperCase(),
                     downloads: 0,
                     banner: '',
                     screenshots: [],
-                    changelog: '',
-                    versions: [{ ver: 'Android 16', date: new Date().toISOString().split('T')[0], rom: r.downloadUrl || r.link, boot: '#', vendor_boot: '#', dtbo: '#' }]
+                    changelog: r.changelog || '',
+                    versions: [{ ver: r.andVer || 'Android 16', date: new Date().toISOString().split('T')[0], rom: r.downloadUrl || r.link, boot: '#', vendor_boot: '#', dtbo: '#' }]
                 });
                 imported++;
             });
