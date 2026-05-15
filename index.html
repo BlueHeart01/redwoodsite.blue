@@ -1102,7 +1102,7 @@
         ];
 
         // Load ROMs
-        const DATA_VERSION = 'v5';
+        const DATA_VERSION = 'v6';
         let roms;
         if (localStorage.getItem('blueredwood_roms_ver') !== DATA_VERSION) {
             localStorage.setItem('blueredwood_roms_new', JSON.stringify(defaultROMs));
@@ -1322,6 +1322,11 @@
                     <span style="color:var(--text-dim);font-size:15px">⬇️ ${r.downloads || 0} total downloads</span>
                     <span style="color:var(--text-dim);font-size:13px;margin-left:16px">📦 ${versions.length} version${versions.length !== 1 ? 's' : ''}</span>
                 </div>
+                ${getCurrentUser() === 'admin' ? `
+                <div style="display:flex;gap:12px;margin-top:20px">
+                    <button onclick="editROM(${index})" class="btn btn-outline" style="flex:1;padding:14px">✏️ Edit ROM</button>
+                    <button onclick="deleteROM(${index})" class="btn btn-outline" style="flex:1;padding:14px;border-color:rgba(244,114,182,0.3);color:var(--accent)">🗑️ Delete ROM</button>
+                </div>` : ''}
             `;
             openModal('detailModal');
         }
@@ -1411,7 +1416,7 @@
         });
 
         // ═══════════════════════════════════════════════════════
-        // SUBMIT ROM
+        // SUBMIT ROM (with edit support & duplicate detection)
         // ═══════════════════════════════════════════════════════
         function submitROM() {
             const name = document.getElementById('romName').value.trim();
@@ -1444,6 +1449,62 @@
 
             const screenshots = screenshotsRaw ? screenshotsRaw.split('\n').filter(s => s.trim()) : [];
 
+            // ─── EDIT MODE: update existing entry ───
+            if (window._editingROM !== undefined && window._editingROM !== null) {
+                const idx = window._editingROM;
+                const prev = roms[idx];
+                roms[idx] = {
+                    name, status, dev, devInfo,
+                    desc: desc || 'No description provided.',
+                    icon: name.charAt(0).toUpperCase(),
+                    downloads: prev.downloads || 0,
+                    banner, screenshots,
+                    changelog: changelog || 'No changelog provided.',
+                    versions
+                };
+                localStorage.setItem('blueredwood_roms_new', JSON.stringify(roms));
+                renderROMs();
+                closeModal('uploadModal');
+                window._editingROM = null;
+                showToast('ROM updated!', 'success');
+                resetUploadForm();
+                return;
+            }
+
+            // ─── DUPLICATE DETECTION ───
+            const sameName = roms.filter(r => r.name.toLowerCase() === name.toLowerCase());
+            // Check if same download link exists in any version of same-named ROMs
+            const versionUrls = versions.map(v => v.rom.replace(/\/+$/, '').toLowerCase());
+            const existing = sameName.find(r =>
+                r.versions && r.versions.some(v =>
+                    versionUrls.includes(v.rom.replace(/\/+$/, '').toLowerCase())
+                )
+            );
+            if (existing) {
+                // Same name + same download link → check if changelog differs → update
+                const oldCl = (existing.changelog || '').trim();
+                const newCl = (changelog || '').trim();
+                if (oldCl !== newCl && newCl) {
+                    // Update existing entry with new changelog/data
+                    Object.assign(existing, {
+                        dev, devInfo, desc: desc || existing.desc,
+                        banner: banner || existing.banner,
+                        screenshots: screenshots.length ? screenshots : existing.screenshots,
+                        changelog: changelog || existing.changelog,
+                        versions: versions.length ? versions : existing.versions
+                    });
+                    localStorage.setItem('blueredwood_roms_new', JSON.stringify(roms));
+                    renderROMs();
+                    closeModal('uploadModal');
+                    showToast('ROM already exists — changelog updated!', 'success');
+                    resetUploadForm();
+                } else {
+                    showToast('ROM already exists with same details — skipped', 'error');
+                }
+                return;
+            }
+
+            // ─── NEW ROM ───
             roms.unshift({
                 name, status, dev, devInfo,
                 desc: desc || 'No description provided.',
@@ -1457,7 +1518,11 @@
             localStorage.setItem('blueredwood_roms_new', JSON.stringify(roms));
             renderROMs();
             closeModal('uploadModal');
+            showToast('ROM uploaded successfully!', 'success');
+            resetUploadForm();
+        }
 
+        function resetUploadForm() {
             document.getElementById('romName').value = '';
             document.getElementById('romDev').value = '';
             document.getElementById('romDevInfo').value = '';
@@ -1501,8 +1566,110 @@
                         <input type="url" class="verDtbo" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
                     </div>
                 </div>`;
+        }
 
-            showToast('ROM uploaded successfully!', 'success');
+        // ─── EDIT ROM (pre-fill upload form) ───
+        function editROM(index) {
+            const r = roms[index];
+            if (!r) return;
+            window._editingROM = index;
+            document.getElementById('romName').value = r.name || '';
+            document.getElementById('romDev').value = r.dev || '';
+            document.getElementById('romDevInfo').value = r.devInfo || '';
+            document.getElementById('romBanner').value = r.banner || '';
+            const preview = document.getElementById('bannerPreview');
+            if (preview && r.banner) { preview.src = r.banner; preview.style.display = 'block'; }
+            document.getElementById('romScreenshots').value = (r.screenshots || []).join('\n');
+            document.getElementById('romChangelog').value = r.changelog || '';
+            document.getElementById('romDesc').value = r.desc || '';
+            document.getElementById('romStatus').value = r.status || 'official';
+            // Rebuild version entries
+            const container = document.getElementById('versionEntries');
+            container.innerHTML = '';
+            (r.versions || []).forEach((v, i) => {
+                if (i === 0) {
+                    // Re-use existing first entry
+                    container.innerHTML = versionEntryHTML(v);
+                } else {
+                    addVersionEntryWithData(v);
+                }
+            });
+            if (!r.versions || !r.versions.length) {
+                container.innerHTML = versionEntryHTML();
+            }
+            closeModal('detailModal');
+            openModal('uploadModal');
+            showToast('Editing ROM — update and submit', 'success');
+        }
+
+        // ─── DELETE ROM ───
+        function deleteROM(index) {
+            if (!confirm('Delete this ROM? This cannot be undone.')) return;
+            roms.splice(index, 1);
+            localStorage.setItem('blueredwood_roms_new', JSON.stringify(roms));
+            renderROMs();
+            closeModal('detailModal');
+            showToast('ROM deleted', 'success');
+        }
+
+        // Helper: generate version entry HTML
+        function versionEntryHTML(v) {
+            const ver = v ? v.ver : 'Android 16';
+            const date = v ? v.date : '';
+            const rom = v ? v.rom : '';
+            const boot = v ? v.boot : '';
+            const vb = v ? v.vendor_boot : '';
+            const dtbo = v ? v.dtbo : '';
+            return `
+                <div class="version-entry" style="background:var(--card-glass);padding:16px;border-radius:12px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.05)">
+                    <div class="upload-row">
+                        <div class="form-group" style="margin-bottom:0">
+                            <label style="font-size:11px">Version</label>
+                            <select class="verSelect" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                                <option ${ver === 'Android 16' ? 'selected' : ''}>Android 16</option>
+                                <option ${ver === 'Android 15' ? 'selected' : ''}>Android 15</option>
+                                <option ${ver === 'Android 14' ? 'selected' : ''}>Android 14</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <label style="font-size:11px">Release Date</label>
+                            <input type="date" class="verDate" value="${esc(date)}" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:8px;margin-bottom:0">
+                        <label style="font-size:11px">ROM Download Link</label>
+                        <input type="url" class="verRom" value="${esc(rom)}" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                    </div>
+                    <div class="upload-row" style="margin-top:8px">
+                        <div class="form-group" style="margin-bottom:0">
+                            <label style="font-size:11px">boot.img</label>
+                            <input type="url" class="verBoot" value="${esc(boot)}" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <label style="font-size:11px">vendor_boot.img</label>
+                            <input type="url" class="verVendorBoot" value="${esc(vb)}" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:8px;margin-bottom:0">
+                        <label style="font-size:11px">dtbo.img</label>
+                        <input type="url" class="verDtbo" value="${esc(dtbo)}" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
+                    </div>
+                </div>`;
+        }
+
+        function addVersionEntryWithData(v) {
+            const container = document.getElementById('versionEntries');
+            const div = document.createElement('div');
+            div.innerHTML = versionEntryHTML(v);
+            const entry = div.firstElementChild;
+            entry.style.position = 'relative';
+            const closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.innerHTML = '&times;';
+            closeBtn.onclick = function() { entry.remove(); };
+            closeBtn.style.cssText = 'position:absolute;top:8px;right:8px;background:none;border:none;color:var(--accent);cursor:pointer;font-size:18px';
+            entry.appendChild(closeBtn);
+            container.appendChild(entry);
         }
 
         // ═══════════════════════════════════════════════════════
@@ -1659,18 +1826,31 @@
                     description = verLine ? verLine.substring(0, 200) : (romName + ' for Redwood');
                 }
 
-                // ─── Changelog: extract text after "Changelog:" keyword ───
+                // ─── Changelog: extract text after "Changelog:" keyword or bullet points ───
                 let changelog = '';
                 if (msgText) {
+                    // Try "Changelog:" keyword first
                     const clMatch = msgText.match(/Changelog[:\s]*([\s\S]*?)(?=Notes|Credits|Join|Donate|⭐|💬|$)/i);
                     if (clMatch) {
                         changelog = clMatch[1].trim();
                     } else {
-                        // Fallback: lines starting with bullet
+                        // Fallback: collect all bullet lines (▪️ • - *)
                         const bulletLines = cleanLines.filter(l => l.match(/^[▪️•\-*]\s*.*\S/));
-                        if (bulletLines.length > 1) changelog = bulletLines.join('\n');
+                        if (bulletLines.length > 1) {
+                            changelog = bulletLines.map(l => l.replace(/^[▪️•\-*]\s*/, '').trim()).join('\n');
+                        } else {
+                            // Last resort: take lines after the first blank line after metadata
+                            const metaEnd = cleanLines.findIndex(l => l.match(/^[▪️•\-*]/));
+                            if (metaEnd !== -1) {
+                                changelog = cleanLines.slice(metaEnd).map(l =>
+                                    l.replace(/^[▪️•\-*]\s*/, '').trim()
+                                ).join('\n');
+                            }
+                        }
                     }
-                    changelog = changelog.replace(/[🍀🌙⭐✨🌸🌟💫⚡🔥💥💎🔮🌈🎯🎉✅❌▪️▫️]\s*/g, '').trim();
+                    // Clean up emojis and trailing junk
+                    changelog = changelog.replace(/[🍀🌙⭐✨🌸🌟💫⚡🔥💥💎🔮🌈🎯🎉✅❌▪️▫️▶️⏩]\s*/g, '')
+                        .replace(/Join:.*$/gm, '').replace(/📝.*$/gm, '').replace(/Credits:.*$/gm, '').trim();
                 }
 
                 // ─── Fill the form ───
@@ -1795,45 +1975,7 @@
         // VERSION ENTRIES
         // ═══════════════════════════════════════════════════════
         function addVersionEntry() {
-            const container = document.getElementById('versionEntries');
-            const entry = document.createElement('div');
-            entry.className = 'version-entry';
-            entry.style.cssText = 'background:var(--card-glass);padding:16px;border-radius:12px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.05);position:relative';
-            entry.innerHTML = `
-                <button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--accent);cursor:pointer;font-size:18px">&times;</button>
-                <div class="upload-row">
-                    <div class="form-group" style="margin-bottom:0">
-                        <label style="font-size:11px">Version</label>
-                        <select class="verSelect" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
-                            <option>Android 16</option>
-                            <option>Android 15</option>
-                            <option>Android 14</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="margin-bottom:0">
-                        <label style="font-size:11px">Release Date</label>
-                        <input type="date" class="verDate" style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
-                    </div>
-                </div>
-                <div class="form-group" style="margin-top:8px;margin-bottom:0">
-                    <label style="font-size:11px">ROM Download Link</label>
-                    <input type="url" class="verRom" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
-                </div>
-                <div class="upload-row" style="margin-top:8px">
-                    <div class="form-group" style="margin-bottom:0">
-                        <label style="font-size:11px">boot.img</label>
-                        <input type="url" class="verBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
-                    </div>
-                    <div class="form-group" style="margin-bottom:0">
-                        <label style="font-size:11px">vendor_boot.img</label>
-                        <input type="url" class="verVendorBoot" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
-                    </div>
-                </div>
-                <div class="form-group" style="margin-top:8px;margin-bottom:0">
-                    <label style="font-size:11px">dtbo.img</label>
-                    <input type="url" class="verDtbo" placeholder="https://..." style="width:100%;padding:10px 14px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit">
-                </div>`;
-            container.appendChild(entry);
+            addVersionEntryWithData();
         }
 
         // ═══════════════════════════════════════════════════════
