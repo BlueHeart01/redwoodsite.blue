@@ -2053,15 +2053,29 @@
                         romName = bold ? bold[1].trim() : msgText.split('\n')[0].replace(/^[\s#•\-*]+/, '').trim();
                     }
 
-                    // Extract dev
+                    // Extract dev: look for "By @username" or "By Name" in HTML
                     let dev = 'Unknown';
-                    const byMatch = innerH.match(/[Bb]y\s*(?:<\/?[^>]+>)*\s*@?(\w+)/);
-                    if (byMatch) dev = '@' + byMatch[1];
+                    const byMatch = innerH.match(/[Bb]y\s*(?:<\/?[^>]+>)*\s*@?(\w[\w.]*)/);
+                    if (byMatch) {
+                        const raw = byMatch[1];
+                        dev = innerH.includes('@' + raw) ? '@' + raw : raw;
+                    }
+                    // Fallback: look for @username in links near "By"
+                    const byLink = innerH.match(/[Bb]y[^<]*(?:<[^>]*>)*\s*<a[^>]*href="https:\/\/t\.me\/(\w+)[^>]*>/);
+                    if (byLink && dev === 'Unknown') dev = '@' + byLink[1];
 
                     // Detect official/unofficial status
                     let status = 'unofficial';
-                    const upper = txt.toUpperCase();
-                    if (upper.includes('OFICIAL') || upper.includes('OFFICIAL')) status = 'official';
+                    const lower = txt.toLowerCase();
+                    if (lower.includes('oficial') || lower.includes('official')) {
+                        if (lower.includes('#unofficial') || lower.includes('#unoffical') || lower.includes('| unofficial') || lower.includes('no oficial')) {
+                            status = 'unofficial';
+                        } else {
+                            status = 'official';
+                        }
+                    }
+                    if (lower.includes('#unofficial') || lower.includes('#unoffical')) status = 'unofficial';
+                    if (lower.includes('official') && !lower.includes('unofficial') && !lower.includes('unoffical')) status = 'official';
 
                     // Extract download link
                     const tempDoc = d.createElement('div');
@@ -2102,10 +2116,22 @@
                     }
                     if (!desc) desc = romName + ' for Redwood';
 
+                    // Extract screenshots for banner
+                    const screenshots = [];
+                    const seen = new Set();
+                    el.querySelectorAll('.tgme_widget_message_photo_wrap').forEach(el2 => {
+                        const bg = el2.getAttribute('style');
+                        if (bg) {
+                            const u = bg.match(/url\(['"]?([^'"]+)['"]?\)/);
+                            if (u && !seen.has(u[1])) { seen.add(u[1]); screenshots.push(u[1]); }
+                        }
+                    });
+                    const banner = screenshots.length ? screenshots[0] : '';
+
                     bulkFoundROMs.push({
                         postId, romName, dev, downloadUrl: dl,
                         link: `https://t.me/${channel}/${postId}`,
-                        status, andVer, changelog, desc,
+                        status, andVer, changelog, desc, banner,
                         selected: true
                     });
                 });
@@ -2170,8 +2196,8 @@
                     desc: r.desc || (finalName + ' for Redwood'),
                     icon: finalName.charAt(0).toUpperCase(),
                     downloads: 0,
-                    banner: '',
-                    screenshots: [],
+                    banner: r.banner || '',
+                    screenshots: r.banner ? [r.banner] : [],
                     changelog: r.changelog || '',
                     versions: [{ ver: r.andVer || 'Android 16', date: new Date().toISOString().split('T')[0], rom: r.downloadUrl || r.link, boot: '#', vendor_boot: '#', dtbo: '#' }]
                 });
