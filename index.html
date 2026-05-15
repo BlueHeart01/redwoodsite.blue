@@ -2012,9 +2012,12 @@
                     const innerH = postEl.innerHTML || '';
                     const txt = postEl.textContent || '';
                     // Skip non-ROM posts: must contain ROM keywords
-                    const romKeywords = ['#rom', '#redwood', 'android', 'rom', 'build', 'update', 'kernel', 'gapps'];
+                    const romKeywords = ['#rom', '#redwood', 'android', 'rom', 'build', 'update', 'gapps'];
                     const hasKeyword = romKeywords.some(k => txt.toLowerCase().includes(k));
                     if (!hasKeyword) return;
+                    // Skip port/MIUI/HyperOS ROMs
+                    const skipKeywords = ['hyperos', 'miui', 'port', 'zkui', 'turboos'];
+                    if (skipKeywords.some(k => txt.toLowerCase().includes(k))) return;
 
                     // Get post ID from data-post attribute or link
                     const postLink = el.getAttribute('data-post') || '';
