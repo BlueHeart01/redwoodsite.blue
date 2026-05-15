@@ -736,6 +736,9 @@
             box-shadow: 0 0 15px rgba(0,245,255,0.15);
         }
         .form-group textarea { resize: vertical; min-height: 80px; }
+        .status-pill { cursor: pointer; border: 1px solid rgba(255,255,255,0.08); background: var(--card-glass); color: var(--text-dim); padding: 10px 22px; border-radius: 25px; font-size: 14px; font-weight: 600; font-family: inherit; transition: all 0.3s; backdrop-filter: blur(10px); }
+        .status-pill:hover { border-color: var(--primary); color: var(--primary); background: rgba(0,245,255,0.1); }
+        .status-pill.active { background: linear-gradient(135deg,rgba(0,245,255,0.2),rgba(168,85,247,0.2)); border-color: var(--primary); color: var(--primary); box-shadow: 0 0 20px rgba(0,245,255,0.2); }
         .btn { cursor: pointer; border: none; border-radius: 10px; padding: 10px 18px; font-size: 14px; font-weight: 600; font-family: inherit; transition: all 0.3s; }
         .btn-primary { background: linear-gradient(135deg,var(--primary),var(--secondary)); color: #fff; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,245,255,0.3); }
@@ -868,10 +871,10 @@
             </div>
             <div class="form-group">
                 <label>Status</label>
-                <select id="romStatus">
-                    <option value="official">Official</option>
-                    <option value="unofficial">Unofficial</option>
-                </select>
+                <div style="display:flex;gap:8px">
+                    <button type="button" class="status-pill active" data-value="official" onclick="selectStatus(this)">Official</button>
+                    <button type="button" class="status-pill" data-value="unofficial" onclick="selectStatus(this)">Unofficial</button>
+                </div>
             </div>
             <div class="form-group">
                 <label>Developer / Maintainer</label>
@@ -1226,7 +1229,11 @@
             // Changelog expand/collapse
             let changelogHtml = '';
             if (r.changelog) {
-                const cl = esc(r.changelog).replace(/\n/g, '<br>');
+                let clText = r.changelog;
+                if (!clText.includes('\n')) {
+                    clText = clText.replace(/([•▪️\-*])/g, '\n$1').trim();
+                }
+                const cl = esc(clText).replace(/\n/g, '<br>');
                 const clShort = r.changelog.length <= 100;
                 changelogHtml = `
                 <div style="margin-top:20px" id="changelogWrap_${index}">
@@ -1416,11 +1423,19 @@
         });
 
         // ═══════════════════════════════════════════════════════
+        // STATUS PILL SELECTOR
+        // ═══════════════════════════════════════════════════════
+        function selectStatus(btn) {
+            document.querySelectorAll('.status-pill').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        // ═══════════════════════════════════════════════════════
         // SUBMIT ROM (with edit support & duplicate detection)
         // ═══════════════════════════════════════════════════════
         function submitROM() {
             const name = document.getElementById('romName').value.trim();
-            const status = document.getElementById('romStatus').value;
+            const status = document.querySelector('.status-pill.active')?.getAttribute('data-value') || 'official';
             const dev = document.getElementById('romDev').value.trim();
             const devInfo = document.getElementById('romDevInfo').value.trim();
             const banner = document.getElementById('romBanner').value.trim();
@@ -1582,7 +1597,9 @@
             document.getElementById('romScreenshots').value = (r.screenshots || []).join('\n');
             document.getElementById('romChangelog').value = r.changelog || '';
             document.getElementById('romDesc').value = r.desc || '';
-            document.getElementById('romStatus').value = r.status || 'official';
+            document.querySelectorAll('.status-pill').forEach(b => {
+                b.classList.toggle('active', b.getAttribute('data-value') === (r.status || 'official'));
+            });
             // Rebuild version entries
             const container = document.getElementById('versionEntries');
             container.innerHTML = '';
@@ -1694,6 +1711,29 @@
             'The XPerience Project', 'VoltageOS', 'WitAqua', 'xdroid-oss',
             'YAAP', 'YAAPex', 'ASCP OS'
         ];
+        // Normalize known ROM names to display names (aliases)
+        const romNameAliases = {
+            'clover': 'CloverOS',
+            'thecloverproject': 'CloverOS',
+            'cloverproject': 'CloverOS',
+            'lunarisaosp': 'LunarisAOSP',
+            'lunaris-aosp': 'LunarisAOSP',
+            'axionaosp': 'AxionOS',
+            'axionos': 'AxionOS',
+            'axion': 'AxionOS',
+            'infinityx': 'Infinity X',
+            'projectinfinityx': 'Infinity X',
+            'pixelos': 'Pixel OS',
+            'pixel os': 'Pixel OS',
+            'derpfest': 'DerpFest OS',
+            'derpfestaosp': 'DerpFest OS',
+            'evolutionx': 'Evolution X',
+            'evox': 'Evolution X',
+            'risingos': 'RisingOS',
+            'rising os': 'RisingOS',
+            'ascpos': 'ASCP OS',
+            'ascp': 'ASCP OS',
+        };
 
         // Download host domains (prioritize these)
         const downloadHosts = [
@@ -1740,7 +1780,8 @@
                 const d = new DOMParser().parseFromString(html, 'text/html');
                 const msgEl = d.querySelector('.tgme_widget_message_text');
                 const rawHtml = msgEl ? msgEl.innerHTML : '';
-                const msgText = msgEl ? msgEl.textContent.trim() : '';
+                // Convert <br> to newlines so textContent preserves line breaks
+                const msgText = msgEl ? msgEl.innerHTML.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim() : '';
 
                 // ─── Developer: look for "By @username" in HTML ───
                 let devName = 'Unknown';
@@ -1781,28 +1822,29 @@
                 // ─── ROM Name: match against known list ───
                 let romName = 'New ROM';
                 const boldEl = d.querySelector('.tgme_widget_message_text b, .tgme_widget_message_text strong');
-                // Strip emojis and clean text for matching
                 const cleanText = msgText.replace(/[🍀🌙⭐✨🌸🌟💫⚡🔥💥💎🔮🌈🎯🎉✅❌🔹🔸▪️▫️▶️⏩🔽🔼⬇️⬆️🔗📎📌💡💪👨‍💻📱📦📥📋📝📄]/g, '').replace(/\s+/g, ' ').trim();
-                // Try finding known ROM name in cleaned text
-                let foundName = knownROMs.find(name => {
-                    const clean = name.replace(/[- ]/g, '').toLowerCase();
-                    return cleanText.toLowerCase().includes(clean);
-                });
-                if (!foundName) {
-                    // Try against bold text
-                    if (boldEl) {
-                        const boldText = boldEl.textContent.trim();
-                        foundName = knownROMs.find(name => {
-                            const clean = name.replace(/[- ]/g, '').toLowerCase();
-                            const bold = boldText.replace(/[- ]/g, '').toLowerCase();
-                            return bold.includes(clean) || clean.includes(bold);
-                        });
-                        romName = foundName || boldText.replace(/^[🍀🌙⭐✨🌸🌟💫⚡🔥💥💎🔮🌈🎯🎉✅❌▪️▫️]\s*/, '').split('|')[0].trim();
-                    } else {
-                        romName = cleanText.split('\n')[0].replace(/^[\s•\-*#]+/, '').trim() || channel;
+                const cleanLower = cleanText.toLowerCase().replace(/[- ]/g, '');
+                // Check aliases first
+                for (const [key, val] of Object.entries(romNameAliases)) {
+                    if (cleanLower.includes(key)) { romName = val; break; }
+                }
+                if (romName === 'New ROM') {
+                    const found = knownROMs.find(name => cleanLower.includes(name.replace(/[- ]/g, '').toLowerCase()));
+                    if (found) romName = found;
+                }
+                if (romName === 'New ROM' && boldEl) {
+                    const boldText = boldEl.textContent.trim();
+                    const boldLower = boldText.replace(/[- ]/g, '').toLowerCase();
+                    for (const [key, val] of Object.entries(romNameAliases)) {
+                        if (boldLower.includes(key)) { romName = val; break; }
                     }
-                } else {
-                    romName = foundName;
+                    if (romName === 'New ROM') {
+                        const found = knownROMs.find(name => boldLower.includes(name.replace(/[- ]/g, '').toLowerCase()));
+                        romName = found || boldText.replace(/^[🍀🌙⭐✨🌸🌟💫⚡🔥💥💎🔮🌈🎯🎉✅❌▪️▫️]\s*/, '').split('|')[0].trim();
+                    }
+                }
+                if (romName === 'New ROM') {
+                    romName = cleanText.split('\n')[0].replace(/^[\s•\-*#]+/, '').trim() || channel;
                 }
 
                 // ─── Extract version info ───
