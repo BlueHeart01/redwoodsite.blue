@@ -1281,15 +1281,51 @@
                 </div>`;
             }
 
-            // Version tabs (show ROM version + Android version, always visible)
-            const versionTabs = `
-                <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap">
-                    ${versions.map((ver, vi) => {
-                        const label = ver.romVer ? esc(ver.romVer) + ' · Android ' + esc((ver.andVer || ver.ver || '').replace('Android ','')) : 'Android ' + esc((ver.andVer || ver.ver || '').replace('Android ',''));
-                        const active = vi === verIdx;
-                        return `<button onclick="switchVersion(${index}, ${vi})" style="padding:10px 22px;border-radius:25px;border:2px solid ${active ? 'var(--primary)' : 'rgba(255,255,255,0.1)'};background:${active ? 'rgba(0,245,255,0.15)' : 'transparent'};color:${active ? '#fff' : 'var(--text-dim)'};font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.3s;box-shadow:${active ? '0 0 20px rgba(0,245,255,0.3)' : 'none'}">${label}</button>`;
+            // ─── Two-level version navigation ───
+            // Group versions by Android version, preserving order
+            const androidGroups = [];
+            const seen = new Set();
+            versions.forEach(ver => {
+                const av = ver.andVer || ver.ver || 'Unknown';
+                if (!seen.has(av)) {
+                    seen.add(av);
+                    const romsInGroup = versions.filter(vv => (vv.andVer || vv.ver || 'Unknown') === av);
+                    androidGroups.push({ androidVer: av, roms: romsInGroup, startIndex: versions.indexOf(romsInGroup[0]) });
+                }
+            });
+            // Find which Android group and which ROM within it is selected
+            let currentAndGroup = 0, currentRomInGroup = 0;
+            let runningIdx = 0;
+            for (let g = 0; g < androidGroups.length; g++) {
+                const group = androidGroups[g];
+                for (let rv = 0; rv < group.roms.length; rv++) {
+                    if (runningIdx === verIdx) { currentAndGroup = g; currentRomInGroup = rv; }
+                    runningIdx++;
+                }
+            }
+
+            // Android version pills
+            const andPills = androidGroups.length > 1 ? `
+                <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+                    ${androidGroups.map((g, gi) => {
+                        const active = gi === currentAndGroup;
+                        const label = 'Android ' + esc(g.androidVer.replace('Android ',''));
+                        const firstIdx = g.startIndex;
+                        return `<button onclick="switchVersion(${index}, ${firstIdx})" style="padding:8px 18px;border-radius:20px;border:2px solid ${active ? 'var(--primary)' : 'rgba(255,255,255,0.1)'};background:${active ? 'rgba(0,245,255,0.15)' : 'transparent'};color:${active ? '#fff' : 'var(--text-dim)'};font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.3s">${label}</button>`;
                     }).join('')}
-                </div>`;
+                </div>` : '';
+
+            // ROM version pills within selected Android version
+            const currentGroup = androidGroups[currentAndGroup];
+            const romPills = currentGroup && currentGroup.roms.length > 1 ? `
+                <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+                    ${currentGroup.roms.map((ver, rvi) => {
+                        const actualIdx = versions.indexOf(ver);
+                        const active = actualIdx === verIdx;
+                        const label = ver.romVer ? esc(ver.romVer) : esc(ver.andVer || ver.ver || '');
+                        return `<button onclick="switchVersion(${index}, ${actualIdx})" style="padding:6px 16px;border-radius:16px;border:1px solid ${active ? 'var(--secondary)' : 'rgba(255,255,255,0.06)'};background:${active ? 'rgba(168,85,247,0.15)' : 'var(--card-glass)'};color:${active ? 'var(--secondary)' : 'var(--text-dim)'};font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.3s">${label}</button>`;
+                    }).join('')}
+                </div>` : '';
 
             // Banner
             const bannerHtml = safeBanner ? `<div style="width:100%;height:180px;border-radius:20px;overflow:hidden;margin-bottom:24px;background:url('${safeBanner}') center/cover;border:1px solid rgba(255,255,255,0.05)"></div>` : '';
@@ -1373,7 +1409,8 @@
                 
                 ${safeDesc ? `<p style="color:var(--text-dim);font-size:14px;line-height:1.7;margin:16px 0 24px;text-align:center">${safeDesc}</p>` : ''}
                 
-                ${versionTabs}
+                ${andPills}
+                ${romPills}
                 ${specsHtml}
                 ${maintainerHtml}
                 
