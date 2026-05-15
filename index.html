@@ -1193,8 +1193,8 @@
                     <p class="card-desc">${esc(r.desc || 'No description provided.')}</p>
                     <div class="card-footer">
                         <div>
-                            <span class="card-dev">by <span>${esc(r.dev || 'Unknown')}</span></span>
-                            ${r.devInfo ? `<div style="font-size:10px;color:var(--text-dim);margin-top:2px">${esc(r.devInfo)}</div>` : ''}
+                            ${r.dev && r.dev !== 'Unknown' ? `<span class="card-dev">by <span>${esc(r.dev)}</span></span>` : `<span class="card-dev" style="color:var(--text-dim)">Maintainer: TBD</span>`}
+                            ${r.devInfo && r.dev && r.dev !== 'Unknown' ? `<div style="font-size:10px;color:var(--text-dim);margin-top:2px">${esc(r.devInfo)}</div>` : ''}
                         </div>
                         <span class="card-stats"><span class="download-icon">⬇</span> ${r.downloads || 0}</span>
                     </div>
@@ -1259,10 +1259,10 @@
             // Developer info
             let devInfoHtml = '';
             const safeDevInfo = r.devInfo ? esc(r.devInfo) : '';
-            if (safeDevInfo) {
+            if (safeDev && safeDev !== 'Unknown') {
                 devInfoHtml = `<div style="background:rgba(0,245,255,0.08);border:1px solid rgba(0,245,255,0.15);border-radius:12px;padding:12px;margin-bottom:20px">
                     <span style="color:var(--primary);font-size:13px">👨‍💻 Developer: ${safeDev}</span>
-                    <div style="color:var(--text-dim);font-size:12px;margin-top:4px">${safeDevInfo}</div>
+                    ${safeDevInfo ? `<div style="color:var(--text-dim);font-size:12px;margin-top:4px">${safeDevInfo}</div>` : ''}
                 </div>`;
             }
 
@@ -1303,7 +1303,7 @@
                     <div>
                         <h2 style="margin:0 0 8px;font-size:32px">${safeName}</h2>
                         <span class="card-status status-${r.status}">● ${esc(r.status)}</span>
-                        <p style="color:var(--text-dim);margin:8px 0 0">👤 ${safeDev}</p>
+                        <p style="color:var(--text-dim);margin:8px 0 0">👤 ${safeDev !== 'Unknown' ? safeDev : 'Maintainer: TBD'}</p>
                     </div>
                 </div>
                 
