@@ -642,7 +642,7 @@
         }
 
         /* ═══════════════════════════════════════════════════════
-           CHANGELOG EXPAND
+           TOAST NOTIFICATIONS
         ═══════════════════════════════════════════════════════ */
         #changelogText {
             max-height: 80px;
@@ -651,7 +651,7 @@
             line-height: 1.7;
         }
 
-        #changelogText:empty + #changelogBtn { display: none; }
+        .changelogText { max-height: 80px; overflow: hidden; transition: max-height 0.4s ease; line-height: 1.7; }
 
         /* ═══════════════════════════════════════════════════════
            TOAST NOTIFICATIONS
@@ -741,6 +741,8 @@
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,245,255,0.3); }
         .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-dim); }
         .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: rgba(0,245,255,0.05); }
+        .nav-glow-btn { cursor: pointer; border: none; border-radius: 12px; padding: 14px 24px; font-size: 14px; font-weight: 700; font-family: inherit; background: linear-gradient(135deg,var(--primary),var(--secondary)); color: #fff; transition: all 0.3s; text-decoration: none; display: inline-block; }
+        .nav-glow-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,245,255,0.3); }
         .banner-preview { width: 100%; max-height: 120px; object-fit: cover; border-radius: 10px; margin-top: 8px; display: none; border: 1px solid rgba(255,255,255,0.06); }
 
         @media (max-width: 500px) {
@@ -968,7 +970,7 @@
                         <img src="https://cdn5.telesco.pe/file/UdtVYIcOzfFakjAhq5f3hXav6Tn-e2RDmnrHPBz2xilK-P-3Zl_BlKVE2jt3f7UJqCUcXjxVnx4e9WUyCe6VJoY8qkcsMBJXgmFF1-fi4bfh7ABs_f3xUNIjD0cqu_AVeFTw1wk-ONyGuRw1B92m8fnGBLl6YQGETb4ZIWhgnOwraMwMm2_OmIdXHutjNc-qFJu4GHyXyKpVYjElzEzShUiI3hUEdoRiluJwQsg5IfLl1vmF1PEh7lKCRcmqLCb3liJJcaix5spF6dofTN4m4ahX4T26pZZtJomqpV7tOHdVPYG2tt2xViBzTvf6F61jyRP6BnpGrkH6IK7g3_2x_g.jpg" alt="BlueHeart" style="width:60px;height:60px;border-radius:50%;margin-bottom:12px;object-fit:cover">
                         <h4 style="margin:0 0 4px;color:var(--text)">⚝BlueHeart 💙「ᴘʟᴇxᴜꜱ」</h4>
                         <p style="color:var(--primary);font-size:12px;margin:0 0 8px">Core Developer</p>
-                        <p style="color:var(--text-dim);font-size:12px;margin:0">ASCP Official maintainer — DerpFest, Clover, Axion unofficial maintainer for Redwood.</p>
+                        <p style="color:var(--text-dim);font-size:12px;margin:0">ASCP OS official maintainer for Redwood.</p>
                     </div>
                     <div style="background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;text-align:center">
                         <img src="https://cdn5.telesco.pe/file/XhRcjnyERCMtUNPVmEt34lBCjA7Ut1VfM4rzHqFh31MxmyVhnfeQ2QkefAqEAWxGKoeGJFRFRydA_-huT80b8IcNkJbNNkzXF0zRpJDW4IwPi4g79jAOW-7-EHDSD3olnSVewPY4qghDAI_yYnqo4rl0ICCK_e78K7aTv4h42i6GtY-BV6XFGYzjKPu_hX6KhQiqvIhK1rJG8utIW323IqxLEPbFESmR_8qxWVS1ynkrpFx16chCkuAAHkk90JACYJhTHVSxNDQWIdJOfwsAn_wpgQnvyvwZJ4W9mAl-7jgGG7C3XOgfag9u2Xho1TdUOxZPI3jpdKh1ng7GRKripw.jpg" alt="Harshit" style="width:60px;height:60px;border-radius:50%;margin-bottom:12px;object-fit:cover">
@@ -980,7 +982,7 @@
                         <img src="https://cdn5.telesco.pe/file/lMYSKSU9dDN1WaXjdrEgTmT88kmLxbqxHXi-Y5etkVtv9Hv7nAGZ4FVhWTpfQC4Dl7Mdz1t_bl5Sl3FgmaKtQ2zguViGIQpdqCY5J_R9W6XZkBp9KQySnPy4f8-jIKtg_DFuKMJEQoqAfMYE9dpYm83d-YRaMcQ7TBzzc0IMWxY2kiV60bUBRc466VedPX0gxayB2J5vYfZLZkcPs1quO1XGELNfdIAVJVqIXLFI08yFBG3oe5kFdj4NJReZIei-iRELS9JzglWtB4hO0ktn9PMQVmWqQZYHyEPdL7jKBkJoGDfhIe9cYezz93tFXP-0YV6LWl5U2h4_imSkJKN5yQ.jpg" alt="Priyanshu" style="width:60px;height:60px;border-radius:50%;margin-bottom:12px;object-fit:cover">
                         <h4 style="margin:0 0 4px;color:var(--text)">𝓟𝓻𝓲𝔂𝓪𝓷𝓼𝓱𝓾 𝓙𝓪𝓷𝓰𝓲𝓭</h4>
                         <p style="color:var(--accent);font-size:12px;margin:0 0 8px">Core Team · Core Developer</p>
-                        <p style="color:var(--text-dim);font-size:12px;margin:0">Evolution X official maintainer and Project Matrix OS official maintainer for Redwood.</p>
+                        <p style="color:var(--text-dim);font-size:12px;margin:0">Evolution X official maintainer for Redwood.</p>
                     </div>
                     <div style="background:var(--card-glass);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;text-align:center">
                         <img src="https://avatars.githubusercontent.com/u/82261530?v=4" alt="Nikhil Tiwari" style="width:60px;height:60px;border-radius:50%;margin-bottom:12px;object-fit:cover">
@@ -1077,6 +1079,15 @@
 
     <script>
         // ═══════════════════════════════════════════════════════
+        // SECURE: escape HTML to prevent XSS
+        // ═══════════════════════════════════════════════════════
+        function esc(str) {
+            const d = document.createElement('div');
+            d.textContent = str;
+            return d.innerHTML;
+        }
+
+        // ═══════════════════════════════════════════════════════
         // DATA
         // ═══════════════════════════════════════════════════════
         const defaultROMs = [
@@ -1171,19 +1182,19 @@
             grid.innerHTML = filtered.map((r, i) => `
                 <div class="rom-card" onclick="showDetail(${roms.indexOf(r)})">
                     <div class="card-glow"></div>
-                    ${r.banner ? `<div class="card-banner" style="height:60px;background:url('${r.banner}') center/cover;border-radius:12px;margin-bottom:16px;opacity:0.8"></div>` : ''}
+                    ${r.banner ? `<div class="card-banner" style="height:60px;background:url('${esc(r.banner)}') center/cover;border-radius:12px;margin-bottom:16px;opacity:0.8"></div>` : ''}
                     <div class="card-header">
-                        <div class="card-icon">${r.icon || '📱'}</div>
+                        <div class="card-icon">${esc(r.icon) || '📱'}</div>
                         <div class="card-info">
-                            <h3 class="card-name">${r.name}</h3>
-                            <span class="card-status status-${r.status}">● ${r.status}</span>
+                            <h3 class="card-name">${esc(r.name)}</h3>
+                            <span class="card-status status-${r.status}">● ${esc(r.status)}</span>
                         </div>
                     </div>
-                    <p class="card-desc">${r.desc || 'No description provided.'}</p>
+                    <p class="card-desc">${esc(r.desc || 'No description provided.')}</p>
                     <div class="card-footer">
                         <div>
-                            <span class="card-dev">by <span>${r.dev || 'Unknown'}</span></span>
-                            ${r.devInfo ? `<div style="font-size:10px;color:var(--text-dim);margin-top:2px">${r.devInfo}</div>` : ''}
+                            <span class="card-dev">by <span>${esc(r.dev || 'Unknown')}</span></span>
+                            ${r.devInfo ? `<div style="font-size:10px;color:var(--text-dim);margin-top:2px">${esc(r.devInfo)}</div>` : ''}
                         </div>
                         <span class="card-stats"><span class="download-icon">⬇</span> ${r.downloads || 0}</span>
                     </div>
@@ -1206,17 +1217,23 @@
         function showDetail(index) {
             const r = roms[index];
             const versions = r.versions || [];
+            const safeName = esc(r.name);
+            const safeDesc = esc(r.desc || 'No description provided.');
+            const safeDev = esc(r.dev || 'Unknown');
+            const safeBanner = r.banner ? esc(r.banner) : '';
+            const safeIcon = esc(r.icon) || '📱';
             
             // Changelog expand/collapse
             let changelogHtml = '';
             if (r.changelog) {
-                const cl = r.changelog.replace(/\n/g, '<br>');
+                const cl = esc(r.changelog).replace(/\n/g, '<br>');
+                const clShort = r.changelog.length <= 100;
                 changelogHtml = `
-                <div style="margin-top:20px">
+                <div style="margin-top:20px" id="changelogWrap_${index}">
                     <h4 style="margin:0 0 12px;color:var(--secondary);font-size:16px">📋 What's New</h4>
                     <div style="background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.15);border-radius:16px;padding:16px">
-                        <p style="color:var(--text-dim);font-size:14px;line-height:1.7;margin:0" id="changelogText">${cl}</p>
-                        <button onclick="toggleChangelog()" id="changelogBtn" style="display:${r.changelog.length > 100 ? 'inline-block' : 'none'};margin-top:12px;padding:8px 16px;background:rgba(168,85,247,0.15);border:none;border-radius:8px;color:var(--secondary);font-size:13px;cursor:pointer">Show more ▼</button>
+                        <p style="color:var(--text-dim);font-size:14px;line-height:1.7;margin:0" class="changelogText" data-max="80">${cl}</p>
+                        <button onclick="toggleChangelog(this)" class="changelogBtn" style="display:${clShort ? 'none' : 'inline-block'};margin-top:12px;padding:8px 16px;background:rgba(168,85,247,0.15);border:none;border-radius:8px;color:var(--secondary);font-size:13px;cursor:pointer">Show more ▼</button>
                     </div>
                 </div>`;
             }
@@ -1227,70 +1244,76 @@
                 versionSelector = `
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
                     <span style="color:var(--text-dim);font-size:13px">Select Version:</span>
-                    <select id="verSelector" onchange="switchVersion(${index}, this.value)" style="padding:10px 16px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:var(--text);font-size:14px">
-                        ${versions.map((v, vi) => `<option value="${vi}">${v.ver} — ${v.date}</option>`).join('')}
+                    <select onchange="switchVersion(${index}, this.value)" style="padding:10px 16px;background:var(--card-glass);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:var(--text);font-size:14px">
+                        ${versions.map((v, vi) => `<option value="${vi}">${esc(v.ver)} — ${esc(v.date)}</option>`).join('')}
                     </select>
                 </div>`;
             }
 
             // Banner image
             let bannerHtml = '';
-            if (r.banner) {
-                bannerHtml = `<img src="${r.banner}" alt="${r.name} banner" style="width:100%;height:120px;object-fit:cover;border-radius:16px;margin-bottom:20px" onerror="this.style.display='none'">`;
+            if (safeBanner) {
+                bannerHtml = `<img src="${safeBanner}" alt="${safeName} banner" style="width:100%;height:120px;object-fit:cover;border-radius:16px;margin-bottom:20px" onerror="this.style.display='none'">`;
             }
 
             // Developer info
             let devInfoHtml = '';
-            if (r.devInfo) {
+            const safeDevInfo = r.devInfo ? esc(r.devInfo) : '';
+            if (safeDevInfo) {
                 devInfoHtml = `<div style="background:rgba(0,245,255,0.08);border:1px solid rgba(0,245,255,0.15);border-radius:12px;padding:12px;margin-bottom:20px">
-                    <span style="color:var(--primary);font-size:13px">👨‍💻 Developer: ${r.dev}</span>
-                    <div style="color:var(--text-dim);font-size:12px;margin-top:4px">${r.devInfo}</div>
+                    <span style="color:var(--primary);font-size:13px">👨‍💻 Developer: ${safeDev}</span>
+                    <div style="color:var(--text-dim);font-size:12px;margin-top:4px">${safeDevInfo}</div>
+                </div>`;
+            }
+
+            // Build download grid for a version
+            function renderVersion(v, romIndex) {
+                return `
+                <div class="verGrid_${romIndex}">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
+                        <div style="background:rgba(0,245,255,0.1);border-radius:16px;padding:20px;text-align:center">
+                            <div style="font-size:28px;margin-bottom:8px">📱</div>
+                            <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">ROM ZIP</h5>
+                            ${v.rom !== '#' ? `<a href="${esc(v.rom)}" target="_blank" style="color:var(--primary);text-decoration:none;font-weight:600">⬇ Download</a>` : '<span style="color:var(--text-dim);font-size:11px">Unavailable</span>'}
+                        </div>
+                        <div style="background:rgba(168,85,247,0.1);border-radius:16px;padding:20px;text-align:center">
+                            <div style="font-size:28px;margin-bottom:8px">📦</div>
+                            <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">boot.img</h5>
+                            <span style="color:var(--text-dim);font-size:11px">${v.boot !== '#' ? '✓ Available' : 'Coming soon'}</span>
+                        </div>
+                        <div style="background:rgba(244,114,182,0.1);border-radius:16px;padding:20px;text-align:center">
+                            <div style="font-size:28px;margin-bottom:8px">📦</div>
+                            <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">vendor_boot</h5>
+                            <span style="color:var(--text-dim);font-size:11px">${v.vendor_boot !== '#' ? '✓ Available' : 'Coming soon'}</span>
+                        </div>
+                        <div style="background:rgba(34,197,94,0.1);border-radius:16px;padding:20px;text-align:center">
+                            <div style="font-size:28px;margin-bottom:8px">📦</div>
+                            <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">dtbo.img</h5>
+                            <span style="color:var(--text-dim);font-size:11px">${v.dtbo !== '#' ? '✓ Available' : 'Coming soon'}</span>
+                        </div>
+                    </div>
+                    ${v.rom !== '#' ? `<a href="${esc(v.rom)}" target="_blank" class="nav-glow-btn" style="display:block;text-align:center;padding:18px;font-size:16px;margin-top:8px">📥 Download ${safeName} (${esc(v.ver)})</a>` : ''}
                 </div>`;
             }
 
             document.getElementById('detailContent').innerHTML = `
                 ${bannerHtml}
                 <div style="display:flex;align-items:center;gap:24px;margin-bottom:16px">
-                    <div class="card-icon" style="width:80px;height:80px;font-size:36px">${r.icon || '📱'}</div>
+                    <div class="card-icon" style="width:80px;height:80px;font-size:36px">${safeIcon}</div>
                     <div>
-                        <h2 style="margin:0 0 8px;font-size:32px">${r.name}</h2>
-                        <span class="card-status status-${r.status}">● ${r.status}</span>
-                        <p style="color:var(--text-dim);margin:8px 0 0">👤 ${r.dev || 'Unknown'}</p>
+                        <h2 style="margin:0 0 8px;font-size:32px">${safeName}</h2>
+                        <span class="card-status status-${r.status}">● ${esc(r.status)}</span>
+                        <p style="color:var(--text-dim);margin:8px 0 0">👤 ${safeDev}</p>
                     </div>
                 </div>
                 
-                <p style="color:var(--text-dim);line-height:1.7;margin-bottom:16px;font-size:16px">${r.desc || 'No description provided.'}</p>
+                <p style="color:var(--text-dim);line-height:1.7;margin-bottom:16px;font-size:16px">${safeDesc}</p>
                 ${devInfoHtml}
                 <div style="background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.15);border-radius:20px;padding:24px;margin:20px 0">
                     <h4 style="margin:0 0 16px;color:var(--primary);font-size:18px">📥 Downloads</h4>
                     ${versionSelector}
-                    
-                    <div id="versionContent">
-                    ${versions.length && versions[0].rom !== '#' ? `
-                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
-                            <div style="background:rgba(0,245,255,0.1);border-radius:16px;padding:20px;text-align:center">
-                                <div style="font-size:28px;margin-bottom:8px">📱</div>
-                                <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">ROM ZIP</h5>
-                                <a href="${versions[0].rom}" target="_blank" style="color:var(--primary);text-decoration:none;font-weight:600">⬇ Download</a>
-                            </div>
-                            <div style="background:rgba(168,85,247,0.1);border-radius:16px;padding:20px;text-align:center">
-                                <div style="font-size:28px;margin-bottom:8px">📦</div>
-                                <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">boot.img</h5>
-                                <span style="color:var(--text-dim);font-size:11px">${versions[0].boot !== '#' ? '✓ Available' : 'Coming soon'}</span>
-                            </div>
-                            <div style="background:rgba(244,114,182,0.1);border-radius:16px;padding:20px;text-align:center">
-                                <div style="font-size:28px;margin-bottom:8px">📦</div>
-                                <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">vendor_boot</h5>
-                                <span style="color:var(--text-dim);font-size:11px">${versions[0].vendor_boot !== '#' ? '✓ Available' : 'Coming soon'}</span>
-                            </div>
-                            <div style="background:rgba(34,197,94,0.1);border-radius:16px;padding:20px;text-align:center">
-                                <div style="font-size:28px;margin-bottom:8px">📦</div>
-                                <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">dtbo.img</h5>
-                                <span style="color:var(--text-dim);font-size:11px">${versions[0].dtbo !== '#' ? '✓ Available' : 'Coming soon'}</span>
-                            </div>
-                        </div>
-                        ${versions[0].rom !== '#' ? `<a href="${versions[0].rom}" target="_blank" class="nav-glow-btn" style="display:block;text-align:center;padding:18px;font-size:16px;margin-top:8px">📥 Download ${r.name} (${versions[0].ver})</a>` : ''}
-                    ` : '<p style="color:var(--text-dim);text-align:center;padding:20px">No downloads available</p>'}
+                    <div class="versionContent">
+                        ${versions.length && versions[0].rom !== '#' ? renderVersion(versions[0], index) : '<p style="color:var(--text-dim);text-align:center;padding:20px">No downloads available</p>'}
                     </div>
                 </div>
                 
@@ -1305,46 +1328,54 @@
         }
 
         // Changelog toggle
-        let changelogExpanded = false;
-        function toggleChangelog() {
-            const el = document.getElementById('changelogText');
-            const btn = document.getElementById('changelogBtn');
+        function toggleChangelog(btn) {
+            const wrap = btn.closest('#changelogWrap_') || btn.parentElement.parentElement;
+            const el = btn.parentElement.querySelector('.changelogText');
             if (!el || !btn) return;
-            changelogExpanded = !changelogExpanded;
-            el.style.maxHeight = changelogExpanded ? '1000px' : '80px';
-            el.style.overflow = changelogExpanded ? 'visible' : 'hidden';
-            btn.textContent = changelogExpanded ? 'Show less ▲' : 'Show more ▼';
+            const expanded = el.style.maxHeight === '' || el.style.maxHeight === '80px' ? false : true;
+            if (expanded) {
+                el.style.maxHeight = '80px';
+                el.style.overflow = 'hidden';
+                btn.textContent = 'Show more ▼';
+            } else {
+                el.style.maxHeight = '1000px';
+                el.style.overflow = 'visible';
+                btn.textContent = 'Show less ▲';
+            }
         }
 
         // Version switcher
         function switchVersion(index, verIndex) {
             const r = roms[index];
             const v = r.versions[verIndex];
-            document.getElementById('versionContent').innerHTML = `
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
-                    <div style="background:rgba(0,245,255,0.1);border-radius:16px;padding:20px;text-align:center">
-                        <div style="font-size:28px;margin-bottom:8px">📱</div>
-                        <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">ROM ZIP</h5>
-                        <a href="${v.rom}" target="_blank" style="color:var(--primary);text-decoration:none;font-weight:600">${v.rom !== '#' ? '⬇ Download' : '❌ Unavailable'}</a>
+            const content = document.querySelector('#detailModal .versionContent');
+            if (!content) return;
+            content.innerHTML = `
+                <div class="verGrid_${index}">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
+                        <div style="background:rgba(0,245,255,0.1);border-radius:16px;padding:20px;text-align:center">
+                            <div style="font-size:28px;margin-bottom:8px">📱</div>
+                            <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">ROM ZIP</h5>
+                            ${v.rom !== '#' ? `<a href="${esc(v.rom)}" target="_blank" style="color:var(--primary);text-decoration:none;font-weight:600">⬇ Download</a>` : '<span style="color:var(--text-dim);font-size:11px">Unavailable</span>'}
+                        </div>
+                        <div style="background:rgba(168,85,247,0.1);border-radius:16px;padding:20px;text-align:center">
+                            <div style="font-size:28px;margin-bottom:8px">📦</div>
+                            <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">boot.img</h5>
+                            <span style="color:var(--text-dim);font-size:11px">${v.boot !== '#' ? '✓ Available' : 'Coming soon'}</span>
+                        </div>
+                        <div style="background:rgba(244,114,182,0.1);border-radius:16px;padding:20px;text-align:center">
+                            <div style="font-size:28px;margin-bottom:8px">📦</div>
+                            <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">vendor_boot</h5>
+                            <span style="color:var(--text-dim);font-size:11px">${v.vendor_boot !== '#' ? '✓ Available' : 'Coming soon'}</span>
+                        </div>
+                        <div style="background:rgba(34,197,94,0.1);border-radius:16px;padding:20px;text-align:center">
+                            <div style="font-size:28px;margin-bottom:8px">📦</div>
+                            <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">dtbo.img</h5>
+                            <span style="color:var(--text-dim);font-size:11px">${v.dtbo !== '#' ? '✓ Available' : 'Coming soon'}</span>
+                        </div>
                     </div>
-                    <div style="background:rgba(168,85,247,0.1);border-radius:16px;padding:20px;text-align:center">
-                        <div style="font-size:28px;margin-bottom:8px">📦</div>
-                        <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">boot.img</h5>
-                        <span style="color:var(--text-dim);font-size:11px">${v.boot !== '#' ? '✓ Available' : 'Coming soon'}</span>
-                    </div>
-                    <div style="background:rgba(244,114,182,0.1);border-radius:16px;padding:20px;text-align:center">
-                        <div style="font-size:28px;margin-bottom:8px">📦</div>
-                        <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">vendor_boot</h5>
-                        <span style="color:var(--text-dim);font-size:11px">${v.vendor_boot !== '#' ? '✓ Available' : 'Coming soon'}</span>
-                    </div>
-                    <div style="background:rgba(34,197,94,0.1);border-radius:16px;padding:20px;text-align:center">
-                        <div style="font-size:28px;margin-bottom:8px">📦</div>
-                        <h5 style="margin:0 0 8px;color:var(--text-dim);font-size:13px">dtbo.img</h5>
-                        <span style="color:var(--text-dim);font-size:11px">${v.dtbo !== '#' ? '✓ Available' : 'Coming soon'}</span>
-                    </div>
-                </div>
-                ${v.rom !== '#' ? `<a href="${v.rom}" target="_blank" class="nav-glow-btn" style="display:block;text-align:center;padding:18px;font-size:16px;margin-top:8px">📥 Download ${r.name} (${v.ver})</a>` : ''}
-            `;
+                    ${v.rom !== '#' ? `<a href="${esc(v.rom)}" target="_blank" class="nav-glow-btn" style="display:block;text-align:center;padding:18px;font-size:16px;margin-top:8px">📥 Download ${esc(r.name)} (${esc(v.ver)})</a>` : ''}
+                </div>`;
         }
 
         // ═══════════════════════════════════════════════════════
@@ -1359,6 +1390,26 @@
             document.getElementById(id).classList.remove('active');
             document.body.style.overflow = '';
         }
+
+        // Close modal on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(el => {
+                    el.classList.remove('active');
+                });
+                document.body.style.overflow = '';
+            }
+        });
 
         // ═══════════════════════════════════════════════════════
         // SUBMIT ROM
@@ -1652,14 +1703,12 @@
         // ═══════════════════════════════════════════════════════
         function toggleTheme() {
             const isLight = document.body.classList.toggle('light-mode');
-            document.getElementById('themeBtn').textContent = isLight ? '☀️' : '🌙';
             document.getElementById('badgeText').textContent = isLight ? 'POCO X5 Pro Exclusive' : '⚡ POCO X5 Pro Exclusive';
             localStorage.setItem('blueredwood_theme_v2', isLight ? 'light' : 'dark');
         }
 
         if (localStorage.getItem('blueredwood_theme_v2') === 'light') {
             document.body.classList.add('light-mode');
-            document.getElementById('themeBtn').textContent = '☀️';
         }
 
         // ═══════════════════════════════════════════════════════
