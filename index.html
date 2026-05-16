@@ -112,7 +112,8 @@
             pointer-events: none;
             background:
                 radial-gradient(circle at 50% 0%, rgba(68, 97, 255, 0.16), transparent 36%),
-                linear-gradient(180deg, rgba(68, 97, 255, 0.05), transparent 22%, rgba(68, 97, 255, 0.04));
+                linear-gradient(180deg, rgba(68, 97, 255, 0.06), transparent 22%, rgba(68, 97, 255, 0.04));
+            animation: gradientShift 18s ease infinite;
         }
 
         h1, h2, h3, h4, h5, .logo-text, .card-name, .section-title {
@@ -677,6 +678,23 @@
         @keyframes skeletonShimmer {
             from { transform: translateX(-100%); }
             to { transform: translateX(100%); }
+        }
+        @keyframes gradientShift {
+            0%, 100% { background-size: 200% 200%; background-position: left center; }
+            50% { background-size: 200% 200%; background-position: right center; }
+        }
+        @keyframes floatBlob {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-24px) scale(1.04); }
+        }
+        .floating-blob {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            animation: floatBlob 7s ease-in-out infinite;
+            opacity: 0.35;
+            background: radial-gradient(circle at 30% 30%, rgba(68,97,255,0.25), transparent 70%);
         }
         .skeleton-icon {
             height: 150px;
@@ -1421,12 +1439,24 @@
             <div style="text-align:center;padding:20px 0">
                 <h2 class="hud-title">Developer Login</h2>
                 <p class="hud-subtitle">Login to upload and manage ROMs</p>
-                <div style="display:grid;gap:16px">
-                    <input type="text" id="loginUsername" placeholder="Username">
-                    <input type="password" id="loginPassword" placeholder="Password">
-                    <button class="nav-glow-btn" onclick="login()" style="width:100%">Login</button>
+                <form id="loginForm" onsubmit="handleLoginSubmit(event)" style="display:grid;gap:16px">
+                    <div style="text-align:left">
+                        <label for="loginUsername" style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:4px">Username</label>
+                        <input type="text" id="loginUsername" placeholder="Enter username" required style="width:100%">
+                        <span id="userError" style="display:none;font-size:11px;color:#ff4466;margin-top:2px"></span>
+                    </div>
+                    <div style="text-align:left">
+                        <label for="loginPassword" style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:4px">Password</label>
+                        <div style="position:relative">
+                            <input type="password" id="loginPassword" placeholder="Enter password" required style="width:100%;padding-right:56px">
+                            <button type="button" id="togglePass" onclick="togglePassword()" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-dim);font-size:11px;padding:6px 10px;cursor:pointer">Show</button>
+                        </div>
+                        <span id="passError" style="display:none;font-size:11px;color:#ff4466;margin-top:2px"></span>
+                    </div>
+                    <span id="loginError" style="display:none;font-size:12px;color:#ff4466"></span>
+                    <button type="submit" id="loginBtn" class="nav-glow-btn" style="width:100%">Login</button>
                     <p style="color:var(--text-dim);font-size:12px">Contact admin for access</p>
-                </div>
+                </form>
                 <div id="adminPanel" style="display:none;margin-top:20px;padding-top:20px;border-top:1px solid var(--os-border)">
                     <button class="btn btn-outline" onclick="resetROMData()" style="width:100%;padding:14px">Reset to Default ROMs</button>
                 </div>
@@ -2468,15 +2498,35 @@ sudo $(which fastboot) flash vendor_boot vendor_boot.img</pre></div>
             t.className = 'toast show ' + type;
             setTimeout(() => t.classList.remove('show'), 4000);
         }
-        function login() {
-            const user = document.getElementById('loginUsername').value;
+        function showLoginError(id, msg) { const el = document.getElementById(id); if (el) { el.textContent = msg; el.style.display = msg ? '' : 'none'; } }
+        function togglePassword() {
+            const pwd = document.getElementById('loginPassword'), btn = document.getElementById('togglePass');
+            if (!pwd || !btn) return;
+            const isText = pwd.type === 'text';
+            pwd.type = isText ? 'password' : 'text';
+            btn.textContent = isText ? 'Show' : 'Hide';
+        }
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            showLoginError('userError', ''); showLoginError('passError', ''); showLoginError('loginError', '');
+            const user = document.getElementById('loginUsername').value.trim();
             const pass = document.getElementById('loginPassword').value;
-            if (user === 'admin' && pass === 'blueheart016') {
-                localStorage.setItem('blueredwood_user', 'admin');
-                closeModal('loginModal'); showToast('Welcome back, Developer!', 'success');
-                document.getElementById('loginUsername').value = ''; document.getElementById('loginPassword').value = '';
-                updateUIBasedOnAuth();
-            } else showToast('Invalid credentials!', 'error');
+            const btn = document.getElementById('loginBtn');
+            if (!user) { showLoginError('userError', 'Please enter a username'); return; }
+            if (!pass) { showLoginError('passError', 'Please enter a password'); return; }
+            if (pass.length < 6) { showLoginError('passError', 'Password must be at least 6 characters'); return; }
+            btn.disabled = true; btn.textContent = 'Signing in...';
+            setTimeout(() => {
+                btn.disabled = false; btn.textContent = 'Login';
+                if (user === 'admin' && pass === 'blueheart016') {
+                    localStorage.setItem('blueredwood_user', 'admin');
+                    closeModal('loginModal'); showToast('Welcome back, Developer!', 'success');
+                    document.getElementById('loginUsername').value = ''; document.getElementById('loginPassword').value = '';
+                    document.getElementById('loginPassword').type = 'password';
+                    document.getElementById('togglePass').textContent = 'Show';
+                    updateUIBasedOnAuth();
+                } else showLoginError('loginError', 'Invalid credentials!');
+            }, 800);
         }
         function logout() { localStorage.removeItem('blueredwood_user'); showToast('Logged out', 'success'); updateUIBasedOnAuth(); }
         function handleLoginClick() { if (getCurrentUser() === 'admin') logout(); else openModal('loginModal'); }
@@ -2564,6 +2614,28 @@ sudo $(which fastboot) flash vendor_boot vendor_boot.img</pre></div>
             const header = document.getElementById('mainHeader');
             if (window.scrollY > 50) header.classList.add('scrolled'); else header.classList.remove('scrolled');
         });
+
+        (function createBlobs() {
+            const container = document.getElementById('blobContainer') || (() => {
+                const c = document.createElement('div'); c.id = 'blobContainer';
+                c.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:-2;overflow:hidden';
+                document.body.appendChild(c); return c;
+            })();
+            for (let i = 0; i < 6; i++) {
+                const blob = document.createElement('div');
+                blob.className = 'floating-blob';
+                const size = 120 + Math.random() * 220;
+                blob.style.width = size + 'px';
+                blob.style.height = size + 'px';
+                blob.style.left = (Math.random() * 80 + 10) + '%';
+                blob.style.top = (Math.random() * 80 + 10) + '%';
+                blob.style.animationDelay = (Math.random() * 5) + 's';
+                blob.style.animationDuration = (6 + Math.random() * 4) + 's';
+                blob.style.opacity = 0.15 + Math.random() * 0.2;
+                blob.style.background = `radial-gradient(circle at 30% 30%, rgba(${68 + Math.random() * 40},${97 + Math.random() * 40},255,${0.15 + Math.random() * 0.15}), transparent 70%)`;
+                container.appendChild(blob);
+            }
+        })();
 
         async function loadROMs() {
             const skeleton = document.getElementById('skeletonGrid');
