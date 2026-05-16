@@ -120,16 +120,22 @@ def save_known_posts(posts: dict):
 
 
 def parse_structured(msg_text: str, html: str, el) -> dict | None:
-    """Parse a single Telegram post using the strict structured format.
+    """Parse a structured Android ROM release post.
 
-    Returns None if the post does not match the format.
+    Handles two formats:
+      Old: ROM vX.Y based on Android N for Device (codename)
+      New: ROM NAME Android N for Device (codename)  [version on separate line]
+
+    Returns None if the post doesn't look like a ROM release.
     """
     lines = [l.strip() for l in msg_text.split('\n') if l.strip()]
     if not lines:
         return None
 
     first = lines[0]
-    if not re.search(r'based\s+on\s+android', first, re.IGNORECASE):
+    if not re.search(r'\bandroid\b', first, re.IGNORECASE):
+        return None
+    if not (re.search(r'\([\w_]+\)', first) or ' for ' in first.lower()):
         return None
 
     result = {
@@ -146,38 +152,67 @@ def parse_structured(msg_text: str, html: str, el) -> dict | None:
     }
 
     # ===== LINE 1: ROM NAME + VERSION + ANDROID + DEVICE =====
-    parts = re.split(r'based\s+on\s+android', first, maxsplit=1, flags=re.IGNORECASE)
-    if len(parts) < 2:
-        return None
-    left_raw, right_raw = parts
-    left_str = left_raw.strip()
-    right_str = right_raw.strip()
+    # Try old format first: "... based on Android ..."
+    old_parts = re.split(r'\s+based\s+on\s+android\s+', first, maxsplit=1, flags=re.IGNORECASE)
+    if len(old_parts) >= 2:
+        left_raw, right_raw = old_parts[0].strip(), old_parts[1].strip()
+        rom_name = left_raw
+        # Extract version from left side
+        version_pats = [
+            r'\s+(v*\d[\d.]*(?:\s+\w[\w\s]*?)?)\s*$',
+            r'\s+(Alpha|Beta|RC\d+|Stable)\s*$',
+        ]
+        rom_version = ''
+        for pat in version_pats:
+            m = re.search(pat, left_raw, re.IGNORECASE)
+            if m:
+                candidate = m.group(1).strip()
+                if not re.match(r'^\d{4}\b', candidate):
+                    rom_name = left_raw[:m.start()].strip()
+                    rom_version = candidate
+                    break
+        if not rom_version and re.search(r'\s+v\s*$', rom_name, re.IGNORECASE):
+            rom_name = re.sub(r'\s+v\s*$', '', rom_name, flags=re.IGNORECASE)
+        result['romVersion'] = rom_version
 
-    rom_name = left_str
-    rom_version = ''
-    version_pats = [
-        r'\s+(v*\d[\d.]*(?:\s+\w[\w\s]*?)?)\s*$',
-        r'\s+(Alpha|Beta|RC\d+|Stable)\s*$',
-    ]
-    for pat in version_pats:
-        m = re.search(pat, left_str, re.IGNORECASE)
-        if m:
-            candidate = m.group(1).strip()
-            if not re.match(r'^\d{4}\b', candidate):
-                rom_name = left_str[:m.start()].strip()
-                rom_version = candidate
-                break
-
-    android_ver = 'Android 16'
-    device_part = ''
-    if ' for ' in right_str:
-        android_ver = 'Android ' + right_str.split(' for ')[0].strip()
-        device_part = right_str.split(' for ', 1)[1].strip()
+        android_ver = 'Android 16'
+        device_part = ''
+        if ' for ' in right_raw:
+            android_ver = 'Android ' + right_raw.split(' for ')[0].strip()
+            device_part = right_raw.split(' for ', 1)[1].strip()
+        else:
+            m_av = re.match(r'(\d+)', right_raw)
+            if m_av:
+                android_ver = 'Android ' + m_av.group(1)
+            device_part = right_raw
     else:
-        m_av = re.match(r'(\d+)', right_str)
-        if m_av:
-            android_ver = 'Android ' + m_av.group(1)
-        device_part = right_str
+        # New format: {name} Android {ver} for {device} ({codename})
+        first_lower = first.lower()
+        android_idx = re.search(r'\bandroid\b', first_lower)
+        if not android_idx:
+            return None
+        left_raw = first[:android_idx.start()].strip()
+        right_raw = first[android_idx.end():].strip()
+        rom_name = left_raw
+        result['romVersion'] = ''
+
+        # Check for "official"/"unofficial" status in name
+        for s in ('official', 'unofficial'):
+            ms = re.search(r'\b' + s + r'\b', rom_name, re.IGNORECASE)
+            if ms:
+                result['status'] = s
+                rom_name = (rom_name[:ms.start()].strip() + ' ' + rom_name[ms.end():].strip()).strip()
+
+        android_ver = 'Android 16'
+        device_part = ''
+        if ' for ' in right_raw:
+            android_ver = 'Android ' + right_raw.split(' for ')[0].strip()
+            device_part = right_raw.split(' for ', 1)[1].strip()
+        else:
+            m_av = re.match(r'(\d+[\w\s]*)', right_raw)
+            if m_av:
+                android_ver = 'Android ' + m_av.group(1).strip()
+            device_part = right_raw
 
     device_name = device_part
     device_codename = ''
@@ -186,64 +221,76 @@ def parse_structured(msg_text: str, html: str, el) -> dict | None:
         device_name = device_part[:paren].strip()
         device_codename = device_part[paren + 1:-1].strip().lower()
 
-    if not rom_version and re.search(r'\s+v\s*$', rom_name, re.IGNORECASE):
-        rom_name = re.sub(r'\s+v\s*$', '', rom_name, flags=re.IGNORECASE)
-
     result['romName'] = rom_name
-    result['romVersion'] = rom_version
     result['androidVersion'] = android_ver
     result['deviceName'] = device_name or device_part
     result['deviceCodename'] = device_codename
 
+    # ===== EXTRACT VERSION, MAINTAINER, AND LABELED LINES =====
+    line_data = _get_line_data(html)
     links_found = False
 
-    # ===== LINE 2: MAINTAINER =====
-    if len(lines) > 1 and lines[1].startswith('By '):
-        m = re.match(r'By\s+(.+?)\s+\((.+?)\)', lines[1])
-        if m:
-            result['maintainerName'] = m.group(1).strip()
-            result['maintainerUrl'] = m.group(2).strip()
-
-    # ===== EXTRACT LABELED URLs VIA LINE-LEVEL PARSING =====
-    line_data = _get_line_data(html)
     for ld in line_data:
-        t = ld['text'].lower()
+        t_lower = ld['text'].lower()
+        t_full = ld['text']
         urls = ld['urls']
 
-        # Build date / type are plain text, handle before URL guard
-        if 'build date' in t:
-            m = re.search(r':\s*(.+?)$', ld['text'])
+        # Version on a separate line (new format)
+        if not result['romVersion'] and re.search(r'\b(?:rom\s+)?version\s*:', t_lower):
+            m = re.search(r':\s*v*([\d.]+)', t_full)
+            if m:
+                result['romVersion'] = m.group(1).strip()
+
+        # Maintainer: "By Name"
+        if t_lower.startswith('by ') and not result['maintainerName']:
+            result['maintainerName'] = t_full[3:].strip()
+            if urls:
+                result['maintainerUrl'] = urls[0]
+            continue
+
+        # Build date / type (plain text)
+        if 'build date' in t_lower:
+            m = re.search(r':\s*(.+?)$', t_full)
             result['buildDate'] = parse_date(m.group(1).strip()) if m else ''
             continue
-        if 'build type' in t:
-            m = re.search(r':\s*(.+?)$', ld['text'])
+        if 'build type' in t_lower:
+            m = re.search(r':\s*(.+?)$', t_full)
             result['buildType'] = m.group(1).strip() if m else ''
             continue
 
         if not urls:
             continue
 
-        if 'download' in t:
-            result['downloadLink'] = urls[0]
+        # Only accept real URLs, reject "HERE" placeholders
+        real_urls = [u for u in urls if not u.lower().strip() in ('here', 'link')]
+        if not real_urls:
+            continue
+
+        # Strict label matching — match after bullet/whitespace prefix
+        label_clean = re.sub(r'^[\s▫️\-•*]+', '', t_lower)
+        label_first_word = label_clean.split(':')[0].split()[0].strip() if label_clean else ''
+
+        if label_first_word == 'download':
+            result['downloadLink'] = real_urls[0]
             links_found = True
-        elif 'recovery' in t:
-            result['recoveryLink'] = urls[0]
+        elif 'recovery' in t_lower:
+            result['recoveryLink'] = real_urls[0]
             links_found = True
-        elif 'donate' in t:
-            result['donateLink'] = urls[0]
+        elif 'donate' in t_lower:
+            result['donateLink'] = real_urls[0]
             links_found = True
-        elif 'ksu' in t or ('kernel' in t and 'manager' not in t):
-            result['ksuLink'] = urls[0]
+        elif 'ksu' in t_lower or ('kernel' in t_lower and 'manager' not in t_lower):
+            result['ksuLink'] = real_urls[0]
             links_found = True
-        elif 'source changelog' in t:
-            result['changelogSource'] = urls[0]
-        elif 'device changelog' in t:
-            result['changelogDevice'] = urls[0]
-        elif 'screenshot' in t or '\u2b50' in ld['text']:
-            result['screenshotsLink'] = urls[0]
+        elif 'source changelog' in t_lower:
+            result['changelogSource'] = real_urls[0]
+        elif 'device changelog' in t_lower:
+            result['changelogDevice'] = real_urls[0]
+        elif 'screenshot' in t_lower or '\u2b50' in t_full:
+            result['screenshotsLink'] = real_urls[0]
             links_found = True
-        elif 'support' in t or '\U0001f4ac' in ld['text']:
-            result['supportLink'] = urls[0]
+        elif 'support' in t_lower or '\U0001f4ac' in t_full:
+            result['supportLink'] = real_urls[0]
             links_found = True
 
     # ===== CHANGELOG TEXT =====
@@ -342,7 +389,7 @@ def parse_messages(html: str) -> list[dict]:
             continue
         post_ids.add(post_id)
 
-        if not re.search(r'based\s+on\s+android', msg_text, re.IGNORECASE):
+        if not re.search(r'\bandroid\b', msg_text, re.IGNORECASE):
             continue
 
         # Detect edited posts
@@ -431,7 +478,7 @@ def merge_into_roms(parsed: list[dict], roms_path: str) -> tuple[int, int, int, 
             # Check for duplicate version
             dup = None
             for v in existing.get('versions', []):
-                if v.get('rom') == new_ver['rom'] or v.get('romVer') == new_ver['romVer']:
+                if v.get('romVer') == new_ver['romVer'] and (new_ver['romVer'] or v.get('rom') == new_ver['rom']):
                     dup = v
                     break
 
@@ -579,7 +626,7 @@ def main():
 
     log.info('Found %d structured ROM posts', len(parsed))
     for p in parsed:
-        log.info('  - %s v%s | %s | %s (%s) | dl=%s',
+        log.info('  - %s | %s | %s | %s (%s) | dl=%s',
                  p['romName'], p['romVersion'], p['androidVersion'],
                  p['deviceName'], p['deviceCodename'], bool(p['downloadLink']))
 

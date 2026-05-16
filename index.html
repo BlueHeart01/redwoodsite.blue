@@ -291,27 +291,6 @@
             letter-spacing: 0.1em;
         }
         .tag-chip.active { border-color: var(--os-accent-line); background: rgba(68,97,255,0.12); color: var(--os-text); }
-        .build-type-badge {
-            display: inline-flex;
-            padding: 3px 8px;
-            border-radius: 6px;
-            background: rgba(68,97,255,0.1);
-            color: var(--os-accent);
-            font-family: 'Space Mono', monospace;
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-        }
-        .and-version-chip {
-            display: inline-flex;
-            padding: 2px 8px;
-            border-radius: 6px;
-            background: rgba(125, 211, 252, 0.12);
-            color: var(--os-success);
-            font-family: 'Space Mono', monospace;
-            font-size: 10px;
-            font-weight: 700;
-        }
         .support-link { color: var(--os-accent); text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
 
         .hero-spatial {
@@ -607,19 +586,6 @@
                 radial-gradient(circle at 20% 0%, rgba(68,97,255,0.35), transparent 40%),
                 #08080a;
         }
-        .card-banner img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            filter: saturate(0.82) contrast(1.06);
-        }
-        .card-banner::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,0.72));
-        }
         .card-header {
             display: flex;
             justify-content: space-between;
@@ -665,8 +631,7 @@
             color: var(--os-text-dim);
             font-size: 13px;
         }
-        .card-dev span,
-        .download-icon { color: var(--os-text); font-weight: 700; }
+        .card-dev span { color: var(--os-text); font-weight: 700; }
 
         .skeleton-card::after {
             content: '';
@@ -907,10 +872,7 @@
             color: #88888e;
             line-height: 1.6;
         }
-        .rom-section .card-dev span,
-        .rom-section .download-icon {
-            color: #fff;
-        }
+        .rom-section .card-dev span { color: #fff; }
 
         .modal-overlay {
             position: fixed;
@@ -1609,37 +1571,25 @@
 
             grid.innerHTML = filtered.map(r => {
                 const idx = roms.indexOf(r);
-                const banner = r.banner ? `<img src="${esc(r.banner)}" alt="${esc(cleanName(r.name))} banner" loading="lazy" fetchpriority="low" onerror="this.remove()">` : '';
                 const lastVer = r.versions?.[0];
                 const androidVer = lastVer ? (lastVer.andVer || lastVer.ver || '') : '';
-                const buildDate = lastVer?.date || '';
-                const formattedDate = buildDate ? new Date(buildDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-                const tagsHtml = r.tags && r.tags.length > 0 ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${r.tags.slice(0, 3).map(t => `<span class="tag-chip">${esc(t)}</span>`).join('')}${r.tags.length > 3 ? `<span class="tag-chip">+${r.tags.length - 3}</span>` : ''}</div>` : '';
+                const verStr = lastVer?.romVer ? 'v' + lastVer.romVer.replace(/^v+/i, '') : '';
+                const maintainer = r.dev && r.dev !== 'Unknown' ? r.dev : 'Unknown';
                 return `
                 <article class="rom-card module" onclick="showDetail(${idx})">
-                    <div class="card-banner">${banner}</div>
+                    <div class="card-banner"></div>
                     <div class="card-header">
                         <div class="card-info">
-                            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-                                <h3 class="card-name">${esc(cleanName(r.name))}</h3>
-                                ${androidVer ? `<span class="and-version-chip">${esc(androidVer.replace('Android ', 'A'))}</span>` : ''}
-                                ${r.buildType ? `<span class="build-type-badge">${esc(r.buildType)}</span>` : ''}
-                            </div>
-                            <div style="display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap">
-                                <span class="card-status status-${esc(r.status || 'unofficial')}">● ${esc(r.status || 'unofficial')}</span>
-                                ${lastVer?.romVer ? `<span style="color:var(--text-dim);font-size:11px;font-family:'Space Mono',monospace">${esc(lastVer.romVer)}</span>` : ''}
-                                ${formattedDate ? `<span style="color:var(--text-dim);font-size:11px">Updated ${esc(formattedDate)}</span>` : ''}
-                            </div>
+                            <h3 class="card-name">${esc(cleanName(r.name))}</h3>
+                            <span class="card-status status-${esc(r.status || 'unofficial')}">● ${esc(r.status || 'unofficial')}</span>
                         </div>
                     </div>
-                    ${tagsHtml}
-                    <p class="card-desc">${esc(r.desc || 'No description provided.')}</p>
+                    <p class="card-desc">${verStr}${verStr ? ' • ' : ''}Android ${esc(androidVer.replace(/^Android\s*/i, ''))} • ${esc(maintainer)}</p>
                     <div class="card-footer">
                         <div>
-                            ${r.dev && r.dev !== 'Unknown' ? `<span class="card-dev">Maintainer <span>${esc(r.dev)}</span></span>` : `<span class="card-dev">Maintainer Unknown</span>`}
-                            ${r.devInfo && r.dev && r.dev !== 'Unknown' ? `<div style="font-size:10px;color:var(--text-dim);margin-top:4px">${esc(r.devInfo)}</div>` : ''}
+                            <span class="card-dev">Maintainer <span>${esc(maintainer)}</span></span>
                         </div>
-                        <span class="card-stats"><span class="download-icon">⬇</span> ${Number(r.downloads || 0).toLocaleString()}</span>
+                        <span class="card-stats"><span>⬇</span> ${r.versions ? r.versions.length : 0} versions</span>
                     </div>
                 </article>`;
             }).join('');
@@ -1809,13 +1759,6 @@
                     ${dlBtn ? `<a href="${esc(v.rom)}" target="_blank" class="btn btn-primary" style="flex:1;padding:16px">⬇ Download</a>` : ''}
                 </div>
                 ${clHtml}
-                ${r.screenshots && r.screenshots.length > 0 ? `
-                <div style="margin-top:20px">
-                    <h4 class="tech-label" style="margin-bottom:12px">Screenshots</h4>
-                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">
-                        ${r.screenshots.map(s => `<div style="border-radius:14px;overflow:hidden;border:1px solid var(--os-border);background:rgba(255,255,255,0.035)"><img src="${esc(s)}" alt="screenshot" loading="lazy" fetchpriority="low" style="width:100%;display:block" onerror="this.parentElement.innerHTML='<div style=\\'padding:30px;text-align:center;color:var(--text-dim);font-size:13px\\'>Screenshot unavailable</div>'"></div>`).join('')}
-                    </div>
-                </div>` : ''}
                 ${r.tags && r.tags.length > 0 ? `
                 <div style="margin-top:20px">
                     <h4 class="tech-label" style="margin-bottom:8px">Tags</h4>
