@@ -1,4 +1,4 @@
-"""GitHub Actions auto-import: fetch t.me/s/pocox5proin, parse ROM posts, merge into roms.json"""
+"""GitHub Actions auto-import: parse t.me/pocox5proin using strict structured format."""
 
 import json
 import os
@@ -9,100 +9,252 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from extract_rom_version import extract_rom_version, ROM_NAME_ALIASES
-
 CHANNEL = 'pocox5proin'
 CHANNEL_URL = f'https://t.me/s/{CHANNEL}'
-KNOWN_HOSTS = [
-    'pixeldrain.com', 'sourceforge.net', 'gofile.io', 'mega.nz',
-    'drive.google.com', 'mediafire.com', 'androidfilehost.com',
-    'devuploads.com', 'sf.net',
-]
-KNOWN_ROMS = sorted(set(ROM_NAME_ALIASES.values()), key=len, reverse=True)
-
-
-def extract_links_from_html(html: str) -> list[str]:
-    soup = BeautifulSoup(html, 'lxml')
-    links = []
-    for a in soup.find_all('a'):
-        href = a.get('href', '')
-        if href and not href.startswith('tg://') and 't.me/' not in href:
-            links.append(href)
-    return links
-
-
-def extract_download_from_telegram(html: str, all_links: list[str]) -> str:
-    soup = BeautifulSoup(html, 'lxml')
-    text = soup.get_text(separator=' ', strip=True)
-
-    # CASE A: "DOWNLOAD:" then keyword lines
-    m = re.search(r'download\s*:\s*([\s\S]*?)(?=\n[#A-Z]|$)', text, re.IGNORECASE)
-    if m:
-        block = m.group(1)
-        for kw in ['ROM', 'GAPPS', 'Gapps', 'HERE']:
-            kwm = re.search(rf'{re.escape(kw)}\s*:\s*(https?://\S+)', block, re.IGNORECASE)
-            if kwm:
-                return kwm.group(1)
-
-    # CASE B: inline "Download ROM:", "Download Gapps:", "Download HERE:"
-    m = re.search(r'download\s+(rom|gapps|here)\s*:\s*(https?://\S+)', text, re.IGNORECASE)
-    if m:
-        return m.group(2)
-
-    # CASE C: <a> whose text is exactly "DOWNLOAD" or "Download"
-    for a in soup.find_all('a'):
-        txt = (a.get_text(strip=True) or '')
-        href = a.get('href', '')
-        if txt.upper() == 'DOWNLOAD' or re.match(r'^download\b', txt, re.IGNORECASE):
-            if href and not href.startswith('tg://'):
-                return href
-
-    # CASE D: <a> whose text contains "download" and href matches known host
-    for a in soup.find_all('a'):
-        txt = (a.get_text(strip=True) or '')
-        href = a.get('href', '')
-        if re.search(r'download', txt, re.IGNORECASE):
-            for host in KNOWN_HOSTS:
-                if host in href:
-                    return href
-
-    return find_download_link(all_links)
-
-
-def find_download_link(links: list[str]) -> str:
-    if not links:
-        return ''
-    direct = next((h for h in links if re.search(r'\.(zip|img|tar\.gz|tar\.xz|tgz)$', h, re.IGNORECASE) or '/download' in h), None)
-    if direct:
-        return direct
-    by_host = next((h for h in links if any(dh in h for dh in KNOWN_HOSTS)), None)
-    if by_host:
-        return by_host
-    gh_rel = next((h for h in links if re.search(r'github\.com/[^/]+/[^/]+/(?:releases|raw)', h, re.IGNORECASE)), None)
-    if gh_rel:
-        return gh_rel
-    other = next((h for h in links if not re.match(r'github\.com/[^/]+/?$', h) and 't.me/' not in h), None)
-    return other or (links[0] if links else '')
-
-
-def detect_build_type(text: str) -> str:
-    lower = text.lower()
-    has_gapps = bool(re.search(r'\bgapps\b', lower))
-    has_vanilla = 'vanilla' in lower
-    if has_gapps and not has_vanilla:
-        return 'GApps'
-    if has_vanilla and not has_gapps:
-        return 'Vanilla'
-    return ''
 
 
 def fetch_channel_page() -> str:
     resp = requests.get(CHANNEL_URL, timeout=30, headers={
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
     })
     resp.raise_for_status()
     return resp.text
+
+
+def parse_date(raw: str) -> str:
+    """Convert various date formats to YYYY-MM-DD."""
+    raw = raw.strip().replace('\u2013', '-')
+    for fmt in ['%Y-%m-%d', '%Y/%m/%d', '%d %B %Y', '%d %b %Y', '%B %d %Y',
+                '%b %d %Y', '%d-%m-%Y', '%m-%d-%Y']:
+        try:
+            return datetime.strptime(raw, fmt).strftime('%Y-%m-%d')
+        except ValueError:
+            continue
+    # Try ISO-style with months like "05 March 2026"
+    m = re.search(r'(\d{1,2})\s+(\w+)\s+(\d{4})', raw)
+    if m:
+        day, mon, yr = m.group(1), m.group(2), m.group(3)
+        try:
+            dt = datetime.strptime(f'{day} {mon} {yr}', '%d %B %Y')
+            return dt.strftime('%Y-%m-%d')
+        except ValueError:
+            try:
+                dt = datetime.strptime(f'{day} {mon} {yr}', '%d %b %Y')
+                return dt.strftime('%Y-%m-%d')
+            except ValueError:
+                pass
+    return raw  # return as-is if can't parse
+
+
+def _get_line_data(html: str) -> list[dict]:
+    """Split raw HTML by <br> and extract label + URLs per line."""
+    lines_raw = re.split(r'<br\s*/?>', html, flags=re.IGNORECASE)
+    data = []
+    for raw in lines_raw:
+        raw = raw.strip()
+        if not raw:
+            continue
+        soup = BeautifulSoup(raw, 'lxml')
+        text = soup.get_text(separator=' ', strip=True)
+        label = ''
+        b = soup.find('b')
+        if b:
+            label = b.get_text(strip=True)
+        urls = []
+        for a in soup.find_all('a'):
+            href = a.get('href', '')
+            if href and not href.startswith('tg://'):
+                urls.append(href)
+        data.append({'text': text, 'label': label, 'urls': urls})
+    return data
+
+
+def parse_structured(msg_text: str, html: str, el) -> dict | None:
+    """Parse a single Telegram post using the strict structured format.
+
+    Returns None if the post does not match the format.
+    """
+    lines = [l.strip() for l in msg_text.split('\n') if l.strip()]
+    if not lines:
+        return None
+
+    first = lines[0]
+    if not re.search(r'based\s+on\s+android', first, re.IGNORECASE):
+        return None
+
+    result = {
+        'postId': '', 'romName': '', 'romVersion': '',
+        'androidVersion': 'Android 16', 'deviceName': '', 'deviceCodename': '',
+        'maintainerName': '', 'maintainerUrl': '',
+        'downloadLink': '', 'recoveryLink': '', 'donateLink': '', 'ksuLink': '',
+        'buildDate': '', 'buildType': '',
+        'changelogSource': '', 'changelogDevice': '', 'changelogText': '',
+        'screenshotsLink': '', 'supportLink': '',
+        'tags': [], 'channelMentions': [],
+        'hasPhoto': False, 'screenshots': [], 'banner': '',
+        'desc': '', 'status': 'unofficial',
+    }
+
+    # ===== LINE 1: ROM NAME + VERSION + ANDROID + DEVICE =====
+    parts = re.split(r'based\s+on\s+android', first, maxsplit=1, flags=re.IGNORECASE)
+    if len(parts) < 2:
+        return None
+    left_raw, right_raw = parts
+    left_str = left_raw.strip()
+    right_str = right_raw.strip()
+
+    rom_name = left_str
+    rom_version = ''
+    version_pats = [
+        r'\s+(v*\d[\d.]*(?:\s+\w[\w\s]*?)?)\s*$',
+        r'\s+(Alpha|Beta|RC\d+|Stable)\s*$',
+    ]
+    for pat in version_pats:
+        m = re.search(pat, left_str, re.IGNORECASE)
+        if m:
+            candidate = m.group(1).strip()
+            if not re.match(r'^\d{4}\b', candidate):
+                rom_name = left_str[:m.start()].strip()
+                rom_version = candidate
+                break
+
+    android_ver = 'Android 16'
+    device_part = ''
+    if ' for ' in right_str:
+        android_ver = 'Android ' + right_str.split(' for ')[0].strip()
+        device_part = right_str.split(' for ', 1)[1].strip()
+    else:
+        m_av = re.match(r'(\d+)', right_str)
+        if m_av:
+            android_ver = 'Android ' + m_av.group(1)
+        device_part = right_str
+
+    device_name = device_part
+    device_codename = ''
+    paren = device_part.rfind('(')
+    if paren >= 0 and device_part.endswith(')'):
+        device_name = device_part[:paren].strip()
+        device_codename = device_part[paren + 1:-1].strip().lower()
+
+    # Clean up trailing " v" if no version captured (e.g. "Clover v based on...")
+    if not rom_version and re.search(r'\s+v\s*$', rom_name, re.IGNORECASE):
+        rom_name = re.sub(r'\s+v\s*$', '', rom_name, flags=re.IGNORECASE)
+
+    result['romName'] = rom_name
+    result['romVersion'] = rom_version
+    result['androidVersion'] = android_ver
+    result['deviceName'] = device_name or device_part
+    result['deviceCodename'] = device_codename
+
+    # Require at least one labeled link to qualify as structured post
+    links_found = False
+
+    # ===== LINE 2: MAINTAINER =====
+    if len(lines) > 1 and lines[1].startswith('By '):
+        m = re.match(r'By\s+(.+?)\s+\((.+?)\)', lines[1])
+        if m:
+            result['maintainerName'] = m.group(1).strip()
+            result['maintainerUrl'] = m.group(2).strip()
+
+    # ===== EXTRACT LABELED URLs VIA LINE-LEVEL PARSING =====
+    line_data = _get_line_data(html)
+    for ld in line_data:
+        t = ld['text'].lower()
+        urls = ld['urls']
+        if not urls:
+            continue
+
+        if 'download' in t:
+            result['downloadLink'] = urls[0]
+            links_found = True
+        elif 'recovery' in t:
+            result['recoveryLink'] = urls[0]
+            links_found = True
+        elif 'donate' in t:
+            result['donateLink'] = urls[0]
+            links_found = True
+        elif 'ksu' in t or ('kernel' in t and 'manager' not in t):
+            result['ksuLink'] = urls[0]
+            links_found = True
+        elif 'build date' in t:
+            m = re.search(r':\s*(.+?)$', ld['text'])
+            result['buildDate'] = parse_date(m.group(1).strip()) if m else ''
+        elif 'build type' in t:
+            m = re.search(r':\s*(.+?)$', ld['text'])
+            result['buildType'] = m.group(1).strip() if m else ''
+        elif 'source changelog' in t:
+            result['changelogSource'] = urls[0]
+        elif 'device changelog' in t:
+            result['changelogDevice'] = urls[0]
+        elif 'screenshot' in t or '\u2b50' in ld['text']:
+            result['screenshotsLink'] = urls[0]
+            links_found = True
+        elif 'support' in t or '\U0001f4ac' in ld['text']:
+            result['supportLink'] = urls[0]
+            links_found = True
+
+    # ===== CHANGELOG TEXT =====
+    changelog_parts = []
+    if result['changelogSource']:
+        changelog_parts.append(f'Source Changelog: {result["changelogSource"]}')
+    if result['changelogDevice']:
+        changelog_parts.append(f'Device Changelog: {result["changelogDevice"]}')
+    result['changelogText'] = '\n'.join(changelog_parts)
+
+    # ===== HASHTAGS & MENTIONS (last line) =====
+    last_line = lines[-1] if lines else ''
+    for word in last_line.split():
+        if word.startswith('#') and len(word) > 1:
+            result['tags'].append(word[1:])
+        elif word.startswith('@') and len(word) > 1:
+            result['channelMentions'].append(word[1:])
+
+    # ===== HAS PHOTO =====
+    result['hasPhoto'] = bool(el.select_one('.tgme_widget_message_photo_wrap, .tgme_widget_message_photo'))
+
+    # ===== SCREENSHOTS FROM HTML =====
+    screenshots = []
+    seen = set()
+    for photo in el.select('.tgme_widget_message_photo_wrap'):
+        style = photo.get('style', '')
+        u = re.search(r"url\(['\"]?([^'\"]+)['\"]?\)", style)
+        if u and u.group(1) not in seen:
+            seen.add(u.group(1))
+            screenshots.append(u.group(1))
+    for img in el.select('.tgme_widget_message_text img'):
+        src = img.get('src', '')
+        if src.startswith('http') and src not in seen:
+            seen.add(src)
+            screenshots.append(src)
+    result['screenshots'] = screenshots
+    result['banner'] = screenshots[0] if screenshots else ''
+
+    # ===== STATUS =====
+    lower = msg_text.lower()
+    if '#official' in lower and '#unofficial' not in lower:
+        result['status'] = 'official'
+    if '#unofficial' in lower or '#unoffical' in lower:
+        result['status'] = 'unofficial'
+
+    # ===== DESCRIPTION =====
+    desc = ''
+    for line in lines[2:]:
+        line = line.replace('\ufe0f', '')
+        clean = re.sub(r'^[•\-*>#\u25aa\u25ab\u25b6\u25c0]\s*', '', line).strip()
+        if (clean and not clean.startswith('#')
+                and not clean.startswith('\u25ab') and not clean.startswith('\u25aa')
+                and not re.match(r'^(Download|Recovery|Build|By|@|\u2b50|\U0001f4ac)', clean, re.IGNORECASE)
+                and not any(k in clean.lower() for k in ['changelog', 'screenshot', 'support'])
+                and len(clean) > 15):
+            desc = clean[:200]
+            break
+    if not desc:
+        desc = f'{rom_name} for {device_codename or "Redwood"}'
+    result['desc'] = desc
+
+    if not links_found:
+        return None
+    return result
 
 
 def parse_messages(html: str) -> list[dict]:
@@ -110,168 +262,37 @@ def parse_messages(html: str) -> list[dict]:
     results = []
     post_ids = set()
 
-    msg_wraps = soup.select('.tgme_widget_message_wrap, .tgme_widget_message')
-
-    for el in msg_wraps:
+    for el in soup.select('.tgme_widget_message_wrap, .tgme_widget_message'):
         post_el = el.select_one('.tgme_widget_message_text') or el
         inner_h = str(post_el)
-        # Reconstruct inner HTML without the wrapper tags
         inner_h = re.sub(r'^<[^>]+>', '', inner_h)
         inner_h = re.sub(r'</[^>]+>$', '', inner_h)
 
-        txt = post_el.get_text(strip=True)
-        lower = txt.lower()
-
-        has_keyword = any(k in lower for k in ['#rom', '#redwood', 'android', 'rom', 'build', 'gapps', 'kernel'])
-        if not has_keyword or 'redwood' not in lower:
-            continue
-        if any(k in lower for k in ['zkui', 'turboos']):
-            continue
-        if 'miui' in lower and 'custom' not in lower and 'aosp' not in lower and 'port' not in lower:
-            continue
+        msg_text = inner_h
+        msg_text = re.sub(r'<br\s*/?>', '\n', msg_text, flags=re.IGNORECASE)
+        msg_text = re.sub(r'<[^>]+>', '', msg_text).strip()
 
         # Extract post ID
         post_link = el.get('data-post', '')
         id_match = re.search(r'/(\d+)$', post_link)
         if not id_match:
-            id_match = re.search(r't\.me/(?:\w+)/(\d+)', txt)
+            id_match = re.search(r't\.me/(?:\w+)/(\d+)', msg_text)
         post_id = id_match.group(1) if id_match else ''
         if not post_id or post_id in post_ids:
             continue
         post_ids.add(post_id)
 
-        # Convert inner HTML to plain text with newlines
-        msg_text = inner_h
-        msg_text = re.sub(r'<br\s*/?>', '\n', msg_text, flags=re.IGNORECASE)
-        msg_text = re.sub(r'<[^>]+>', '', msg_text).strip()
+        # Only process structured format
+        if not re.search(r'based\s+on\s+android', msg_text, re.IGNORECASE):
+            continue
 
-        # Clean emojis for matching
-        clean_text = re.sub(r'[\U0001F300-\U0001FAFF\U00002700-\U000027BF\u25AA\u25B6\u25C0\u2B50\u2022\u2013\u2043]', '', msg_text)
-        clean_text = re.sub(r'\s+', ' ', clean_text).strip()
-        clean_lower = clean_text.lower().replace('-', '').replace(' ', '')
+        parsed = parse_structured(msg_text, inner_h, el)
+        if parsed is None:
+            continue
 
-        # ROM name detection
-        rom_name = 'New ROM'
-        for key, val in ROM_NAME_ALIASES.items():
-            if key in clean_lower:
-                rom_name = val
-                break
-        if rom_name == 'New ROM':
-            for n in KNOWN_ROMS:
-                if n.lower().replace('-', '').replace(' ', '') in clean_lower:
-                    rom_name = n
-                    break
-        if rom_name == 'New ROM':
-            bold = re.search(r'\*\*(.+?)\*\*', msg_text)
-            if bold:
-                rom_name = bold.group(1).strip()
-            else:
-                rom_name = msg_text.split('\n')[0].strip()
-                rom_name = re.sub(r'^[\s#\u2022\-*]+', '', rom_name).strip()
-
-        # Developer detection
-        dev = 'Unknown'
-        by_link = re.search(r'[Bb]y[^<]*(?:<[^>]*>)*\s*<a[^>]*href="https://t\.me/(\w+)[^>]*>', inner_h)
-        if by_link:
-            dev = '@' + by_link.group(1)
-        else:
-            by_match = re.search(r'[Bb]y\s*(?:</?[^>]+>)*\s*@?(\w[\w.]*)', inner_h)
-            if by_match:
-                dev = by_match.group(1)
-                if not dev.startswith('@'):
-                    dev = '@' + dev
-        if dev in ('Unknown', '@', ''):
-            fwd = el.select_one('.tgme_widget_message_forwarded_from_name')
-            if fwd:
-                fwd_text = fwd.get_text(strip=True)
-                at = re.search(r'@(\w+)', fwd_text)
-                if at:
-                    dev = '@' + at.group(1)
-                elif fwd_text and len(fwd_text) < 30:
-                    dev = fwd_text
-        if dev in ('Unknown', '@'):
-            at_match = re.search(r'@(\w[\w.]*)', msg_text)
-            if at_match:
-                dev = '@' + at_match.group(1)
-
-        # Status detection
-        status = 'unofficial'
-        if '#official' in lower and '#unofficial' not in lower:
-            status = 'official'
-        if '#unofficial' in lower or '#unoffical' in lower:
-            status = 'unofficial'
-
-        # Version extraction
-        and_ver, rom_ver = extract_rom_version(msg_text, list(KNOWN_ROMS))
-        if not and_ver:
-            and_ver = 'Android 16'
-
-        # Download link extraction
-        all_links = extract_links_from_html(inner_h)
-        dl = extract_download_from_telegram(inner_h, all_links)
-
-        # Changelog extraction
-        changelog = ''
-        cl_match = re.search(r'Changelog[:\s]*([\s\S]*?)(?=Notes|Credits|Join|Donate|⭐|💬|$)', msg_text, re.IGNORECASE)
-        if cl_match:
-            changelog = cl_match.group(1).strip()
-        else:
-            cl_lines = [l for l in msg_text.split('\n') if re.match(r'^[\u25aa\u2022\-*]\s*.*\S', l)]
-            if len(cl_lines) > 1:
-                changelog = '\n'.join(l.strip() for l in cl_lines)
-        changelog = re.sub(r'[\U0001F300-\U0001FAFF\u2700-\u27BF]\s*', '', changelog).strip()
-
-        # Description extraction
-        desc = ''
-        clean_lines = [
-            re.sub(r'^[•\-*>#]\s*', '', l).strip()
-            for l in msg_text.split('\n')
-            if l.strip()
-        ]
-        for line in clean_lines:
-            if (line and not line.startswith('#')
-                    and not re.match(r'^(Download|Recovery|Build|By|@)', line, re.IGNORECASE)
-                    and len(line) > 15):
-                desc = line[:200]
-                break
-        if not desc:
-            desc = f'{rom_name} for Redwood'
-
-        # Screenshots extraction
-        screenshots = []
-        seen = set()
-        for photo in el.select('.tgme_widget_message_photo_wrap'):
-            style = photo.get('style', '')
-            u = re.search(r'url\([\'"]?([^\'"]+)[\'"]?\)', style)
-            if u and u.group(1) not in seen:
-                seen.add(u.group(1))
-                screenshots.append(u.group(1))
-        for img in post_el.select('img'):
-            src = img.get('src', '')
-            if src.startswith('http') and src not in seen:
-                seen.add(src)
-                screenshots.append(src)
-
-        banner = screenshots[0] if screenshots else ''
-
-        # Build type detection
-        build_type = detect_build_type(msg_text)
-
-        results.append({
-            'postId': post_id,
-            'romName': rom_name,
-            'dev': dev,
-            'downloadUrl': dl,
-            'status': status,
-            'andVer': and_ver,
-            'romVer': rom_ver,
-            'changelog': changelog,
-            'desc': desc,
-            'banner': banner,
-            'screenshots': screenshots,
-            'link': f'https://t.me/{CHANNEL}/{post_id}',
-            'buildType': build_type,
-        })
+        parsed['postId'] = post_id
+        parsed['link'] = f'https://t.me/{CHANNEL}/{post_id}'
+        results.append(parsed)
 
     return results
 
@@ -287,26 +308,45 @@ def merge_into_roms(parsed: list[dict], roms_path: str) -> tuple[int, int, int]:
     updated = 0
     skipped = 0
 
+    def _normalize(name: str) -> str:
+        n = name.lower()
+        n = re.sub(r'[#]\w+', '', n)
+        n = re.sub(r'[^\w\s]', '', n)
+        n = re.sub(r'\s+', '', n)
+        return n
+
     for p in parsed:
-        # Normalize ROM name
         matched_name = p['romName']
+        p_norm = _normalize(p['romName'])
         for existing in roms:
-            if existing['name'].lower().replace('-', '').replace(' ', '') == p['romName'].lower().replace('-', '').replace(' ', ''):
+            e_norm = _normalize(existing['name'])
+            if e_norm == p_norm or e_norm in p_norm or p_norm in e_norm:
                 matched_name = existing['name']
                 break
 
+        dev_name = p['maintainerName'] or 'Unknown'
+        dev_username = dev_name
+        if not dev_username.startswith('@') and dev_username != 'Unknown':
+            url = p['maintainerUrl']
+            at = re.search(r't\.me/(\w+)', url)
+            if at:
+                dev_username = '@' + at.group(1)
+
+        # Parse build date or use today
+        build_date = p['buildDate'] or datetime.now().strftime('%Y-%m-%d')
+
         new_ver = {
-            'ver': p['andVer'],
-            'andVer': p['andVer'],
-            'date': datetime.now().strftime('%Y-%m-%d'),
-            'rom': p['downloadUrl'] or p['link'],
+            'ver': p['androidVersion'],
+            'andVer': p['androidVersion'],
+            'date': build_date,
+            'rom': p['downloadLink'] or '#',
             'boot': '#',
             'vendor_boot': '#',
             'dtbo': '#',
-            'romVer': p['romVer'] or '',
-            'vDev': p['dev'] if p['dev'] != 'Unknown' else '',
-            'vDevInfo': ('Telegram: ' + p['dev']) if p['dev'] != 'Unknown' else '',
-            'vChangelog': p['changelog'] or '',
+            'romVer': p['romVersion'] or '',
+            'vDev': dev_username if dev_username != 'Unknown' else '',
+            'vDevInfo': f'Telegram: {dev_username}' if dev_username != 'Unknown' else '',
+            'vChangelog': p['changelogText'] or '',
         }
 
         existing = next((r for r in roms if r['name'] == matched_name), None)
@@ -317,17 +357,39 @@ def merge_into_roms(parsed: list[dict], roms_path: str) -> tuple[int, int, int]:
                 skipped += 1
                 continue
             existing.setdefault('versions', []).append(new_ver)
-            if p['dev'] and p['dev'] != 'Unknown':
-                existing['dev'] = p['dev']
-                existing['devInfo'] = f'Telegram: {p["dev"]}'
-            if p['changelog']:
-                existing['changelog'] = p['changelog']
+            if dev_name != 'Unknown':
+                existing['dev'] = dev_name
+                existing['devInfo'] = f'Telegram: {dev_username}' if dev_username != 'Unknown' else ''
+            if p['changelogText']:
+                existing['changelog'] = p['changelogText']
             if p['banner']:
                 existing['banner'] = p['banner']
-            if p['desc'] and 'for Redwood' not in p['desc']:
+            if p['desc'] and 'for Redwood' not in p['desc'] and 'for redwood' not in p['desc'].lower():
                 existing['desc'] = p['desc']
             if p['buildType']:
                 existing['buildType'] = p['buildType']
+            if p['deviceName']:
+                existing['device'] = p['deviceName']
+            if p['deviceCodename']:
+                existing['codename'] = p['deviceCodename']
+            if p['recoveryLink']:
+                existing['recoveryLink'] = p['recoveryLink']
+            if p['donateLink']:
+                existing['donateLink'] = p['donateLink']
+            if p['ksuLink']:
+                existing['ksuLink'] = p['ksuLink']
+            if p['changelogSource']:
+                existing['changelogSource'] = p['changelogSource']
+            if p['changelogDevice']:
+                existing['changelogDevice'] = p['changelogDevice']
+            if p['screenshotsLink']:
+                existing['screenshotsLink'] = p['screenshotsLink']
+            if p['supportLink']:
+                existing['supportGroup'] = p['supportLink']
+            if p['tags']:
+                existing['tags'] = p['tags']
+            if p['channelMentions']:
+                existing['channelMentions'] = p['channelMentions']
             if p['screenshots']:
                 existing.setdefault('screenshots', [])
                 for s in p['screenshots']:
@@ -335,31 +397,39 @@ def merge_into_roms(parsed: list[dict], roms_path: str) -> tuple[int, int, int]:
                         existing['screenshots'].append(s)
             updated += 1
         else:
+            dev_info = f'Telegram: {dev_username}' if dev_username != 'Unknown' else ''
             entry = {
                 'name': matched_name,
                 'status': p['status'],
-                'dev': p['dev'],
-                'devInfo': f'Telegram: {p["dev"]}' if p['dev'] != 'Unknown' else '',
-                'desc': p['desc'] or f'{matched_name} for Redwood',
+                'dev': dev_name,
+                'devInfo': dev_info,
+                'desc': p['desc'] or f'{matched_name} for {p["deviceCodename"] or "Redwood"}',
                 'downloads': 0,
                 'banner': p['banner'],
                 'screenshots': p['screenshots'],
-                'changelog': p['changelog'] or '',
+                'changelog': p['changelogText'] or '',
                 'buildType': p['buildType'] or '',
-                'tags': [],
-                'supportGroup': '',
+                'device': p['deviceName'],
+                'codename': p['deviceCodename'],
+                'recoveryLink': p['recoveryLink'],
+                'donateLink': p['donateLink'],
+                'ksuLink': p['ksuLink'],
+                'changelogSource': p['changelogSource'],
+                'changelogDevice': p['changelogDevice'],
+                'screenshotsLink': p['screenshotsLink'],
+                'supportGroup': p['supportLink'],
+                'tags': p['tags'],
+                'channelMentions': p['channelMentions'],
                 'xdaLink': '',
                 'firmwareLink': '',
-                'recoveryLink': '',
                 'sourceCode': '',
-                'donateLink': '',
                 'knownIssues': '',
                 'requirements': 'Unlocked bootloader, latest firmware',
                 'isActive': True,
                 'versions': [new_ver],
             }
-            if p['dev'] != 'Unknown':
-                entry['icon'] = p['dev'][1:2].upper() if p['dev'].startswith('@') else p['dev'][:1].upper()
+            if dev_username != 'Unknown':
+                entry['icon'] = dev_username[1:2].upper() if dev_username.startswith('@') else dev_username[:1].upper()
             else:
                 entry['icon'] = matched_name[0].upper()
             roms.insert(0, entry)
@@ -398,12 +468,14 @@ def main():
     print(f'[{CHANNEL}] Parsing messages...')
     parsed = parse_messages(html)
 
-    print(f'[{CHANNEL}] Found {len(parsed)} ROM posts')
+    print(f'[{CHANNEL}] Found {len(parsed)} structured ROM posts')
     for p in parsed:
-        print(f'  - {p["romName"]} ({p["andVer"]}) by {p["dev"]} | ver={p["romVer"]} | status={p["status"]} | dl={bool(p["downloadUrl"])}')
+        print(f'  - {p["romName"]} v{p["romVersion"]} | {p["androidVersion"]} | '
+              f'{p["deviceName"]} ({p["deviceCodename"]}) | by {p["maintainerName"]} | '
+              f'dl={bool(p["downloadLink"])}')
 
     if not parsed:
-        print('No new ROMs found. Exiting.')
+        print('No matching posts found. Exiting.')
         return
 
     print(f'[{CHANNEL}] Merging into roms.json...')
