@@ -1,5 +1,45 @@
 [
   {
+    "name": "VoltageOS #redwood",
+    "status": "unofficial",
+    "dev": "@Tashar02",
+    "devInfo": "Telegram: @Tashar02",
+    "desc": "VoltageOS #redwood",
+    "downloads": 0,
+    "banner": "https://cdn5.telesco.pe/file/mv3dXPFk3wo76T7Tg_5uOXX9Ypku0eKUiLTkmNVhP25gqGPrTxUkTUP_ZN1-KwaETGefE2Pm7dj-DmMh01tXFukTG9Avu8JBZuHHqWg809mCG66h23osBYiFwb0G76dg8uLApAlnel2Hg16-GYosAwZENhWnfTKdsIizGicG5olATvWUoDvNoSGXhgTAyWN-QXFcbCbjGMReP0Fg3bf4edmm5tVCKgTpCLa4xFFaNO9gxYQ9qTRuisDRka8lSFWZsXxgREZBGkxbzC5jAgmGAxkdepbNddC2MYXW6nEMaB6lIvmVxY9jRl4T6cKQ_UvitfHAuGYrk8bVHyeZdkAtjw.jpg",
+    "screenshots": [
+      "https://cdn5.telesco.pe/file/mv3dXPFk3wo76T7Tg_5uOXX9Ypku0eKUiLTkmNVhP25gqGPrTxUkTUP_ZN1-KwaETGefE2Pm7dj-DmMh01tXFukTG9Avu8JBZuHHqWg809mCG66h23osBYiFwb0G76dg8uLApAlnel2Hg16-GYosAwZENhWnfTKdsIizGicG5olATvWUoDvNoSGXhgTAyWN-QXFcbCbjGMReP0Fg3bf4edmm5tVCKgTpCLa4xFFaNO9gxYQ9qTRuisDRka8lSFWZsXxgREZBGkxbzC5jAgmGAxkdepbNddC2MYXW6nEMaB6lIvmVxY9jRl4T6cKQ_UvitfHAuGYrk8bVHyeZdkAtjw.jpg"
+    ],
+    "changelog": "",
+    "buildType": "Vanilla",
+    "tags": [],
+    "supportGroup": "",
+    "xdaLink": "",
+    "firmwareLink": "",
+    "recoveryLink": "",
+    "sourceCode": "",
+    "donateLink": "",
+    "knownIssues": "",
+    "requirements": "Unlocked bootloader, latest firmware",
+    "isActive": true,
+    "versions": [
+      {
+        "ver": "Android 16",
+        "andVer": "Android 16",
+        "date": "2026-05-16",
+        "rom": "https://sourceforge.net/projects/thereache/files/voltageos/20260321/",
+        "boot": "#",
+        "vendor_boot": "#",
+        "dtbo": "#",
+        "romVer": "v5.7",
+        "vDev": "@Tashar02",
+        "vDevInfo": "Telegram: @Tashar02",
+        "vChangelog": ""
+      }
+    ],
+    "icon": "T"
+  },
+  {
     "name": "Pixel OS",
     "status": "unofficial",
     "dev": "Harshit",
@@ -10,7 +50,10 @@
     "screenshots": [],
     "changelog": "• Source Changelog\n• Device Changelog",
     "buildType": "GApps",
-    "tags": ["GApps", "Pixel"],
+    "tags": [
+      "GApps",
+      "Pixel"
+    ],
     "supportGroup": "https://t.me/redwood_aosp",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",
@@ -24,20 +67,6 @@
       {
         "ver": "Android 16",
         "andVer": "Android 16",
-        "date": "2026-02-21",
-        "rom": "https://sourceforge.net/projects/redwood-roms/files/pixelos/A16/PixelOS_redwood-16.2-20260221-1543.zip",
-        "boot": "#",
-        "vendor_boot": "#",
-        "dtbo": "#",
-        "romVer": "16.2",
-        "vDev": "@itsraiharshit",
-        "vDevInfo": "Telegram: @itsraiharshit",
-        "filename": "PixelOS_redwood-16.2-20260221-1543.zip",
-        "md5": ""
-      },
-      {
-        "ver": "Android 16",
-        "andVer": "Android 16",
         "date": "2026-03-17",
         "rom": "https://sourceforge.net/projects/redwood-roms/files/pixelos/A16/PixelOS_redwood-16.2-20260317-0851.zip",
         "boot": "#",
@@ -48,21 +77,41 @@
         "vDevInfo": "Telegram: @itsraiharshit",
         "filename": "PixelOS_redwood-16.2-20260317-0851.zip",
         "md5": ""
+      },
+      {
+        "ver": "Android 16",
+        "andVer": "Android 16",
+        "date": "2026-02-21",
+        "rom": "https://sourceforge.net/projects/redwood-roms/files/pixelos/A16/PixelOS_redwood-16.2-20260221-1543.zip",
+        "boot": "#",
+        "vendor_boot": "#",
+        "dtbo": "#",
+        "romVer": "16.2",
+        "vDev": "@itsraiharshit",
+        "vDevInfo": "Telegram: @itsraiharshit",
+        "filename": "PixelOS_redwood-16.2-20260221-1543.zip",
+        "md5": ""
       }
     ]
   },
   {
     "name": "LineageOS",
     "status": "unofficial",
-    "dev": "thepriyanshujangid",
-    "devInfo": "Telegram: @thepriyanshujangid",
-    "desc": "LineageOS 23.2 for POCO X5 Pro (Redwood). UNOFFICIAL build with QPR2 features.",
+    "dev": "⚝BlueHeart 💙「ᴘʟᴇxᴜꜱ」",
+    "devInfo": "Telegram: ⚝BlueHeart 💙「ᴘʟᴇxᴜꜱ」",
+    "desc": "Halcyon 16.2 Bloom Alpha is now available for POCO X5 PRO 5G (redwood)!",
     "downloads": 1800,
-    "banner": "",
-    "screenshots": [],
-    "changelog": "• LineageOS 23.2\n• Android 16 QPR2\n• KSU Legacy support",
-    "buildType": "Vanilla",
-    "tags": ["Vanilla", "KSU"],
+    "banner": "https://cdn5.telesco.pe/file/DH40eXvHtAKqtt_AmrYdhA4msLDPKfExDzHRWZyY43wtIVJX79fblYHzV6bBrrJ_iquVfV6SH7sSZD-B6PZaByTQ2sbNDyoapZ1SGv324r_eAamynmD4LKSGCmFATkm6XGJ7WFw-ELGMe4NzOLquNaqUo4-002IdO39337HqSkORCFokCbv8dDAldrcMi7agZD_iE-srlujckGdnp3bfrCZXbhAsF7o6ecmSDj_pPhIOrptNWVDOmkEIh-W8INrfVDlZm88Gg_uCvIjBpfRCxHUfuyUgr1cEfkEB9j-LA_EziR2py9FLAXXcAcVQXH_jri10wP8x7O2P7VDMUFzqOg.jpg",
+    "screenshots": [
+      "https://cdn5.telesco.pe/file/Ev0L5b8exi5nSWGOGIFhLLAHtx0Y-PnXkjICHKxT1GQdRhjtlHvFqvdf44LUJefO5kMgIPDPx7B3dyHtBsDkut_51Tmi4PNjiGwtLVupEZZzJDeowe8J7W581LvymFpaE8prymejQMchXScKrleH6QJUJ5-QwD_zIh5u3epO6rf2TyTlCyDhZH_Pzm7Z9b2UDMerbAqWDRcOdDNfjgQiwgp5yZi9yPVVjiioyo80bMowQTpDU2BXchwzpSP1tyotyMKuP8VT59MxJa3KM7dWpn5kGIlvzTq1kiFTLw6lZsR0kEGWf8iuUKr11HdALwZ49hIfewS8uoGr-vyKiLtHbw.jpg",
+      "https://cdn5.telesco.pe/file/DH40eXvHtAKqtt_AmrYdhA4msLDPKfExDzHRWZyY43wtIVJX79fblYHzV6bBrrJ_iquVfV6SH7sSZD-B6PZaByTQ2sbNDyoapZ1SGv324r_eAamynmD4LKSGCmFATkm6XGJ7WFw-ELGMe4NzOLquNaqUo4-002IdO39337HqSkORCFokCbv8dDAldrcMi7agZD_iE-srlujckGdnp3bfrCZXbhAsF7o6ecmSDj_pPhIOrptNWVDOmkEIh-W8INrfVDlZm88Gg_uCvIjBpfRCxHUfuyUgr1cEfkEB9j-LA_EziR2py9FLAXXcAcVQXH_jri10wP8x7O2P7VDMUFzqOg.jpg"
+    ],
+    "changelog": "s: \n▪️ initial Build\n▪️ QPR2\n▪️ Sony Dolby\n▪️ Mi Dirac\n▪️ Tuned dax-default \n▪️ Leica \n▪️ KSU Legacy Scarlet 4.1\n▪️ Switched to lineagepower-libperfmgr\n▪️ Disabled VSync for CPU rendered apps",
+    "buildType": "GApps",
+    "tags": [
+      "Vanilla",
+      "KSU"
+    ],
     "supportGroup": "https://t.me/redwood_aosp",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",
@@ -73,6 +122,32 @@
     "requirements": "Unlocked bootloader, latest firmware",
     "isActive": true,
     "versions": [
+      {
+        "ver": "Android 16",
+        "andVer": "Android 16",
+        "date": "2026-05-16",
+        "rom": "https://afterlifeos.com/download/?search=redwood",
+        "boot": "#",
+        "vendor_boot": "#",
+        "dtbo": "#",
+        "romVer": "v8.3 lastblood",
+        "vDev": "@AtiPLokerr",
+        "vDevInfo": "Telegram: @AtiPLokerr",
+        "vChangelog": ""
+      },
+      {
+        "ver": "Android 16",
+        "andVer": "Android 16",
+        "date": "2026-05-16",
+        "rom": "https://pixeldrain.com/u/jYTcYPVA",
+        "boot": "#",
+        "vendor_boot": "#",
+        "dtbo": "#",
+        "romVer": "16.2 B",
+        "vDev": "⚝BlueHeart 💙「ᴘʟᴇxᴜꜱ」",
+        "vDevInfo": "Telegram: ⚝BlueHeart 💙「ᴘʟᴇxᴜꜱ」",
+        "vChangelog": "s: \n▪️ initial Build\n▪️ QPR2\n▪️ Sony Dolby\n▪️ Mi Dirac\n▪️ Tuned dax-default \n▪️ Leica \n▪️ KSU Legacy Scarlet 4.1\n▪️ Switched to lineagepower-libperfmgr\n▪️ Disabled VSync for CPU rendered apps"
+      },
       {
         "ver": "Android 16",
         "andVer": "Android 16",
@@ -94,13 +169,19 @@
     "status": "official",
     "dev": "thepriyanshujangid",
     "devInfo": "Telegram: @thepriyanshujangid",
-    "desc": "Pixel-like experience with custom features. Elegant UI and rock-solid performance for Redwood.",
+    "desc": "EvolutionX 11.7 | 2026/05/14",
     "downloads": 4200,
-    "banner": "https://raw.githubusercontent.com/Evolution-X/manifest/bq2/Banner.png",
-    "screenshots": [],
+    "banner": "https://cdn4.telesco.pe/file/Euj4jXTtzSyH-FdLqQpg4dmCRRfmcTEpVyJY5o9WN0fETABc9dCnpkySPHPfQtE-1Hq2nU7z5CAmAUWn_IgurHaz6Bvf3DxlK29Me5X5YlhaVzF9uLY8S355ehfKGkJd9mchlF7cEAFRw9DkQy9kE2mRRi-0yzDFFFmBU8sX-UwAIq83d598BnL0H_2RyxXL_kpcYoqq0skJgFyNuxhOrNTxdLmJ76Ny_25ZWy-lbNy7QDTc2kWJBRBCpyJ3rh8bhq5P0dTfXranryQUOcmF2rsvmm-tyjQyXMviP105y8q5haVFKxe7_XTKDYzPbhggVelCxjmCpFLrIzP9DF-nkA.jpg",
+    "screenshots": [
+      "https://cdn4.telesco.pe/file/Euj4jXTtzSyH-FdLqQpg4dmCRRfmcTEpVyJY5o9WN0fETABc9dCnpkySPHPfQtE-1Hq2nU7z5CAmAUWn_IgurHaz6Bvf3DxlK29Me5X5YlhaVzF9uLY8S355ehfKGkJd9mchlF7cEAFRw9DkQy9kE2mRRi-0yzDFFFmBU8sX-UwAIq83d598BnL0H_2RyxXL_kpcYoqq0skJgFyNuxhOrNTxdLmJ76Ny_25ZWy-lbNy7QDTc2kWJBRBCpyJ3rh8bhq5P0dTfXranryQUOcmF2rsvmm-tyjQyXMviP105y8q5haVFKxe7_XTKDYzPbhggVelCxjmCpFLrIzP9DF-nkA.jpg"
+    ],
     "changelog": "• Latest Evolution X sources\n• Android 16\n• Pixel features included",
     "buildType": "GApps",
-    "tags": ["GApps", "Pixel", "Official"],
+    "tags": [
+      "GApps",
+      "Pixel",
+      "Official"
+    ],
     "supportGroup": "https://t.me/EvolutionX_redwood",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",
@@ -114,16 +195,15 @@
       {
         "ver": "Android 16",
         "andVer": "Android 16",
-        "date": "2026-02-25",
-        "rom": "https://cdn.evolution-x.org/redwood/16",
+        "date": "2026-05-16",
+        "rom": "?q=%23EvolutionX",
         "boot": "#",
         "vendor_boot": "#",
         "dtbo": "#",
-        "romVer": "11.6.1",
-        "vDev": "@thepriyanshujangid",
-        "vDevInfo": "Telegram: @thepriyanshujangid",
-        "filename": "EvolutionX-16.0-20260224-redwood-11.6.1-Official.zip",
-        "md5": ""
+        "romVer": "11.7",
+        "vDev": "",
+        "vDevInfo": "",
+        "vChangelog": ""
       },
       {
         "ver": "Android 16",
@@ -137,6 +217,20 @@
         "vDev": "@thepriyanshujangid",
         "vDevInfo": "Telegram: @thepriyanshujangid",
         "filename": "EvolutionX-16.0-20260310-redwood-11.6.2-Official.zip",
+        "md5": ""
+      },
+      {
+        "ver": "Android 16",
+        "andVer": "Android 16",
+        "date": "2026-02-25",
+        "rom": "https://cdn.evolution-x.org/redwood/16",
+        "boot": "#",
+        "vendor_boot": "#",
+        "dtbo": "#",
+        "romVer": "11.6.1",
+        "vDev": "@thepriyanshujangid",
+        "vDevInfo": "Telegram: @thepriyanshujangid",
+        "filename": "EvolutionX-16.0-20260224-redwood-11.6.1-Official.zip",
         "md5": ""
       }
     ]
@@ -152,7 +246,10 @@
     "screenshots": [],
     "changelog": "• AfterlifeOS v8.3 lastblood\n• Android 16\n• Gapps Build\n• Clean flash recommended",
     "buildType": "GApps",
-    "tags": ["GApps", "Official"],
+    "tags": [
+      "GApps",
+      "Official"
+    ],
     "supportGroup": "https://t.me/thereachebuildchat",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",
@@ -190,7 +287,11 @@
     "screenshots": [],
     "changelog": "• Sync with latest Source\n• Android 16 QPR2 Build\n• Readjusted Blur intensity\n• Switched to KSU Next\n• Includes BCR, MIUI Camera, Dolby",
     "buildType": "GApps",
-    "tags": ["GApps", "KSU", "Official"],
+    "tags": [
+      "GApps",
+      "KSU",
+      "Official"
+    ],
     "supportGroup": "https://t.me/ascp_marble",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",
@@ -204,20 +305,6 @@
       {
         "ver": "Android 16",
         "andVer": "Android 16",
-        "date": "2026-03-09",
-        "rom": "https://sourceforge.net/projects/project-ascp/files/redwood/ASCP-v5.2-redwood-OFFICIAL-20260308-1711.zip/download",
-        "boot": "#",
-        "vendor_boot": "#",
-        "dtbo": "#",
-        "romVer": "5.2",
-        "vDev": "@Rushitz",
-        "vDevInfo": "Telegram: @Rushitz",
-        "filename": "ASCP-v5.2-redwood-OFFICIAL-20260308-1711.zip",
-        "md5": ""
-      },
-      {
-        "ver": "Android 16",
-        "andVer": "Android 16",
         "date": "2026-05-07",
         "rom": "https://pixeldrain.com/u/JoJwwTnY",
         "boot": "#",
@@ -228,21 +315,40 @@
         "vDevInfo": "Telegram: @bluehearts_Builds016",
         "filename": "",
         "md5": ""
+      },
+      {
+        "ver": "Android 16",
+        "andVer": "Android 16",
+        "date": "2026-03-09",
+        "rom": "https://sourceforge.net/projects/project-ascp/files/redwood/ASCP-v5.2-redwood-OFFICIAL-20260308-1711.zip/download",
+        "boot": "#",
+        "vendor_boot": "#",
+        "dtbo": "#",
+        "romVer": "5.2",
+        "vDev": "@Rushitz",
+        "vDevInfo": "Telegram: @Rushitz",
+        "filename": "ASCP-v5.2-redwood-OFFICIAL-20260308-1711.zip",
+        "md5": ""
       }
     ]
   },
   {
     "name": "Infinity X",
     "status": "official",
-    "dev": "Harshit",
+    "dev": "@itsraiharshit",
     "devInfo": "Telegram: @itsraiharshit",
-    "desc": "A feature-packed ROM with endless customization options. Smooth, stable, and refined for Redwood.",
+    "desc": "Project Infinity X v3.8 based on Android 16 QPR2 for Xiaomi POCO X5 Pro 5G (redwood)",
     "downloads": 3000,
-    "banner": "https://raw.githubusercontent.com/ProjectInfinity-X/.github/main/profile/Infinity.png",
-    "screenshots": [],
+    "banner": "https://cdn5.telesco.pe/file/cqCy4ppEuXEeSxJSmaiVf-EarUGklF5-kfKGUfYc5jvl9E_BRJH8DLTyEdPlPSyYV2-2FwDnVlZsjRMYJQKTPY9b49ava0x8slK2gsoXAlniWot8gxeNOX1MQzAAD8UkJTipVrKhORnYqZKgYSEvxmGg7nF-s8OJCq768cPLvk-EGsQxPorx3OPnLhtaHGdd1b2hZgjz6LquK7tSJ1vzvSitQ9iDSvPzqaJZXrpFlZBUMwQbS_sirCQOMo6iXrJGcejPFgw4PG23A_9TjY79JKCeklsbA3VJVvyTHG94jGQvfwxqvMPdxHveD7WSr_7cDnb3-gHnImWYHvlqCOtF7g.jpg",
+    "screenshots": [
+      "https://cdn5.telesco.pe/file/cqCy4ppEuXEeSxJSmaiVf-EarUGklF5-kfKGUfYc5jvl9E_BRJH8DLTyEdPlPSyYV2-2FwDnVlZsjRMYJQKTPY9b49ava0x8slK2gsoXAlniWot8gxeNOX1MQzAAD8UkJTipVrKhORnYqZKgYSEvxmGg7nF-s8OJCq768cPLvk-EGsQxPorx3OPnLhtaHGdd1b2hZgjz6LquK7tSJ1vzvSitQ9iDSvPzqaJZXrpFlZBUMwQbS_sirCQOMo6iXrJGcejPFgw4PG23A_9TjY79JKCeklsbA3VJVvyTHG94jGQvfwxqvMPdxHveD7WSr_7cDnb3-gHnImWYHvlqCOtF7g.jpg"
+    ],
     "changelog": "• Source Changelog\n• Device Changelog",
     "buildType": "GApps",
-    "tags": ["GApps", "Official"],
+    "tags": [
+      "GApps",
+      "Official"
+    ],
     "supportGroup": "https://t.me/redwood_aosp",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",
@@ -256,15 +362,28 @@
       {
         "ver": "Android 16",
         "andVer": "Android 16",
-        "date": "2026-03-10",
-        "rom": "https://sourceforge.net/projects/infinity-x/files/redwood/16/recovery/",
+        "date": "2026-05-16",
+        "rom": "https://projectinfinity-x.com/downloads/redwood",
         "boot": "#",
         "vendor_boot": "#",
         "dtbo": "#",
-        "romVer": "3.8",
+        "romVer": "",
         "vDev": "@itsraiharshit",
         "vDevInfo": "Telegram: @itsraiharshit",
-        "filename": "Infinity-X-3.8-redwood-OFFICIAL-20260310.zip",
+        "vChangelog": "• Source Changelog\n• Device Changelog"
+      },
+      {
+        "ver": "Android 16",
+        "andVer": "Android 16",
+        "date": "2026-05-11",
+        "rom": "#",
+        "boot": "#",
+        "vendor_boot": "#",
+        "dtbo": "#",
+        "romVer": "3.10",
+        "vDev": "@itsraiharshit",
+        "vDevInfo": "Telegram: @itsraiharshit",
+        "filename": "",
         "md5": ""
       },
       {
@@ -280,20 +399,6 @@
         "vDevInfo": "Telegram: @itsraiharshit",
         "filename": "Infinity-X-3.9-redwood-OFFICIAL-20260403.zip",
         "md5": ""
-      },
-      {
-        "ver": "Android 16",
-        "andVer": "Android 16",
-        "date": "2026-05-11",
-        "rom": "#",
-        "boot": "#",
-        "vendor_boot": "#",
-        "dtbo": "#",
-        "romVer": "3.10",
-        "vDev": "@itsraiharshit",
-        "vDevInfo": "Telegram: @itsraiharshit",
-        "filename": "",
-        "md5": ""
       }
     ]
   },
@@ -308,7 +413,10 @@
     "screenshots": [],
     "changelog": "• VoltageOS v5.7\n• Android 16\n• Vanilla Build\n• Scarlet V4.1 kernel\n• Clean flash recommended",
     "buildType": "Vanilla",
-    "tags": ["Vanilla", "KSU"],
+    "tags": [
+      "Vanilla",
+      "KSU"
+    ],
     "supportGroup": "https://t.me/thereachebuildchat",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",
@@ -338,15 +446,20 @@
   {
     "name": "AxionOS",
     "status": "unofficial",
-    "dev": "BlueHeart016",
-    "devInfo": "Telegram: @bluehearts_Builds016",
-    "desc": "A smooth AOSP-based ROM focused on performance, battery life, and minimalism for Redwood.",
+    "dev": "@itsraiharshit",
+    "devInfo": "Telegram: @itsraiharshit",
+    "desc": "Axion OS QUASIS v2.6  is now up for POCO X5 PRO 5G (redwood)!💫",
     "downloads": 3200,
-    "banner": "",
-    "screenshots": [],
-    "changelog": "• QPR2 Stable\n• Sony Dolby\n• Mi Dirac\n• Leica Camera\n• KSU Support\n• USB tethering fixed",
+    "banner": "https://cdn5.telesco.pe/file/CxnIHw_LXv9De2XdsN5rl60LeiNfdotEeuf5N8PWMrVT_UKbUIEhXzRlSnXugryOJyBmF9AqWfbbYr0vIdJfhpo0G4eGz9Nc_m41fBcnbFnStKl_Qkbob-fOKtBxUSqL5EdNdIsp3fDQNtcJPHRBNhDDo67iaIbqCpfbNzH-IMmMjjdiCQdZOzm6cBhgUHta16IbERm2DbWwH1NP3vedbfCX85GvMQDb1KlwjLMMzfIiZg42O387GO0A7KbP2QAdbVnGz6oDkgOYgyk8tX5IpbIfucbSwlyMp-1EOn3A0i_kDqCHdfSz92bsmPKR9QIAy3j8hRq0XUwi4ysoYba84Q.jpg",
+    "screenshots": [
+      "https://cdn5.telesco.pe/file/CxnIHw_LXv9De2XdsN5rl60LeiNfdotEeuf5N8PWMrVT_UKbUIEhXzRlSnXugryOJyBmF9AqWfbbYr0vIdJfhpo0G4eGz9Nc_m41fBcnbFnStKl_Qkbob-fOKtBxUSqL5EdNdIsp3fDQNtcJPHRBNhDDo67iaIbqCpfbNzH-IMmMjjdiCQdZOzm6cBhgUHta16IbERm2DbWwH1NP3vedbfCX85GvMQDb1KlwjLMMzfIiZg42O387GO0A7KbP2QAdbVnGz6oDkgOYgyk8tX5IpbIfucbSwlyMp-1EOn3A0i_kDqCHdfSz92bsmPKR9QIAy3j8hRq0XUwi4ysoYba84Q.jpg"
+    ],
+    "changelog": "s: \n▪️ QPR2 Stable \n▪️ Switched to Lunaris Dolby\n▪️ Switched to miui cam\n▪️ KSU Next\n▪️ USB tethering fixed",
     "buildType": "GApps",
-    "tags": ["GApps", "KSU"],
+    "tags": [
+      "GApps",
+      "KSU"
+    ],
     "supportGroup": "https://t.me/bluehearts_Builds016",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",
@@ -360,15 +473,28 @@
       {
         "ver": "Android 16",
         "andVer": "Android 16",
-        "date": "2026-03-26",
-        "rom": "https://sourceforge.net/projects/redwood-axion/files/ROM/A16/axion-2.4-SOLACE-20260326-UNOFFICIAL-GMS-redwood.zip/download",
+        "date": "2026-05-16",
+        "rom": "https://sourceforge.net/projects/redwood-axion/files/Recovery/boot.img/download",
         "boot": "#",
         "vendor_boot": "#",
         "dtbo": "#",
-        "romVer": "2.4",
+        "romVer": "",
+        "vDev": "@itsraiharshit",
+        "vDevInfo": "Telegram: @itsraiharshit",
+        "vChangelog": "s: \n▪️ QPR2 Stable \n▪️ Switched to Lunaris Dolby\n▪️ Switched to miui cam\n▪️ KSU Next\n▪️ USB tethering fixed"
+      },
+      {
+        "ver": "Android 16",
+        "andVer": "Android 16",
+        "date": "2026-05-08",
+        "rom": "https://pixeldrain.com/u/7dEFRFa2",
+        "boot": "#",
+        "vendor_boot": "#",
+        "dtbo": "#",
+        "romVer": "2.6",
         "vDev": "@BlueHeart016",
         "vDevInfo": "Telegram: @bluehearts_Builds016",
-        "filename": "axion-2.4-SOLACE-20260326-UNOFFICIAL-GMS-redwood.zip",
+        "filename": "",
         "md5": ""
       },
       {
@@ -384,35 +510,26 @@
         "vDevInfo": "Telegram: @bluehearts_Builds016",
         "filename": "axion-2.5-REVERIE-20260407-UNOFFICIAL-GMS-redwood.zip",
         "md5": ""
-      },
-      {
-        "ver": "Android 16",
-        "andVer": "Android 16",
-        "date": "2026-05-08",
-        "rom": "https://pixeldrain.com/u/7dEFRFa2",
-        "boot": "#",
-        "vendor_boot": "#",
-        "dtbo": "#",
-        "romVer": "2.6",
-        "vDev": "@BlueHeart016",
-        "vDevInfo": "Telegram: @bluehearts_Builds016",
-        "filename": "",
-        "md5": ""
       }
     ]
   },
   {
     "name": "LunarisAOSP",
     "status": "unofficial",
-    "dev": "BlueHeart016",
-    "devInfo": "Telegram: @bluehearts_Builds016",
-    "desc": "LunarisAOSP builds for POCO X5 Pro (Redwood). Multiple variants from different maintainers.",
+    "dev": "@Tashar02",
+    "devInfo": "Telegram: @Tashar02",
+    "desc": "Lunaris-aosp #redwood",
     "downloads": 1800,
-    "banner": "",
-    "screenshots": [],
+    "banner": "https://cdn5.telesco.pe/file/aPqHPcw-h8pNHFpNSH1sI7lr5AQyWCayLCcbOKix7ikBUg5J24jkO91Ua73b5PKx1UuxY_-VTwuCmiCbAzqm0eX8njCTp-c4OICI66uDnTFUbBl5A8tKrMjV3JPPXFv_5tHNG5nWmlG4O3TMb54SwXW7bJ8vpL55qq3gQLJCNvV8JoqUxw9E-QBwUeChbSfhc13FKlNUhUY_NkpAFjbOEu7gQIyoi2Ed7ztcBDvvW9GlUHZMGDLf3RE4Q3ixh4e45arPCoyBjKDwiTwTnYPfxPHmzy90NyNvYtsE_vP0EyImP8Y_SFH1xEQx2mDJaZZLFKCZwGRwlqvtj73dZHcAhw.jpg",
+    "screenshots": [
+      "https://cdn5.telesco.pe/file/aPqHPcw-h8pNHFpNSH1sI7lr5AQyWCayLCcbOKix7ikBUg5J24jkO91Ua73b5PKx1UuxY_-VTwuCmiCbAzqm0eX8njCTp-c4OICI66uDnTFUbBl5A8tKrMjV3JPPXFv_5tHNG5nWmlG4O3TMb54SwXW7bJ8vpL55qq3gQLJCNvV8JoqUxw9E-QBwUeChbSfhc13FKlNUhUY_NkpAFjbOEu7gQIyoi2Ed7ztcBDvvW9GlUHZMGDLf3RE4Q3ixh4e45arPCoyBjKDwiTwTnYPfxPHmzy90NyNvYtsE_vP0EyImP8Y_SFH1xEQx2mDJaZZLFKCZwGRwlqvtj73dZHcAhw.jpg"
+    ],
     "changelog": "• QPR2 Stable\n• Switched to Lunaris Dolby\n• Switched to miui cam\n• KSU Next\n• Readjusted Blur radius",
     "buildType": "GApps",
-    "tags": ["GApps", "KSU"],
+    "tags": [
+      "GApps",
+      "KSU"
+    ],
     "supportGroup": "https://t.me/thereachebuildchat",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",
@@ -426,16 +543,15 @@
       {
         "ver": "Android 16",
         "andVer": "Android 16",
-        "date": "2026-04-03",
-        "rom": "https://pixeldrain.com/u/XEkfbEif",
+        "date": "2026-05-16",
+        "rom": "https://sourceforge.net/projects/thereache/files/lunaris-aosp/",
         "boot": "#",
         "vendor_boot": "#",
         "dtbo": "#",
-        "romVer": "3.9",
-        "vDev": "@Thereache",
-        "vDevInfo": "Telegram: @Thereache",
-        "filename": "",
-        "md5": ""
+        "romVer": "v3.9",
+        "vDev": "@Tashar02",
+        "vDevInfo": "Telegram: @Tashar02",
+        "vChangelog": ""
       },
       {
         "ver": "Android 16",
@@ -448,6 +564,20 @@
         "romVer": "3.10",
         "vDev": "@BlueHeart016",
         "vDevInfo": "Telegram: @bluehearts_Builds016",
+        "filename": "",
+        "md5": ""
+      },
+      {
+        "ver": "Android 16",
+        "andVer": "Android 16",
+        "date": "2026-04-03",
+        "rom": "https://pixeldrain.com/u/XEkfbEif",
+        "boot": "#",
+        "vendor_boot": "#",
+        "dtbo": "#",
+        "romVer": "3.9",
+        "vDev": "@Thereache",
+        "vDevInfo": "Telegram: @Thereache",
         "filename": "",
         "md5": ""
       }
@@ -464,7 +594,11 @@
     "screenshots": [],
     "changelog": "• Initial Build\n• QPR2\n• Sony Dolby\n• Mi Dirac\n• Leica Camera\n• KSU Legacy Scarlet 4.1",
     "buildType": "GApps",
-    "tags": ["GApps", "KSU", "Alpha"],
+    "tags": [
+      "GApps",
+      "KSU",
+      "Alpha"
+    ],
     "supportGroup": "https://t.me/bluehearts_Builds016",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",
@@ -502,7 +636,11 @@
     "screenshots": [],
     "changelog": "• QPR2\n• Sony Dolby\n• Dropped Mi Dirac\n• Tuned dax-default\n• Leica Camera\n• KSU Legacy Scarlet 4.1",
     "buildType": "GApps",
-    "tags": ["GApps", "KSU", "Beta"],
+    "tags": [
+      "GApps",
+      "KSU",
+      "Beta"
+    ],
     "supportGroup": "https://t.me/bluehearts_Builds016",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",
@@ -540,7 +678,10 @@
     "screenshots": [],
     "changelog": "• Sync with latest Source\n• Android 16 QPR2 Build\n• Switched to KSU Next\n• Includes BCR, MIUI Camera, Dolby",
     "buildType": "GApps",
-    "tags": ["GApps", "KSU"],
+    "tags": [
+      "GApps",
+      "KSU"
+    ],
     "supportGroup": "https://t.me/bluehearts_Builds016",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",

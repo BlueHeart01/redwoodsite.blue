@@ -1,0 +1,52 @@
+name: Auto Import ROMs from Telegram
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  auto-import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install requests beautifulsoup4 lxml
+
+      - name: Run auto-import script
+        id: import
+        run: |
+          python scripts/gh_auto_import.py 2>&1 | tee import_output.txt
+          echo "output=$(cat import_output.txt)" >> $GITHUB_OUTPUT
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet roms.json; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "diff=$(git diff roms.json --stat)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "opencode-bot"
+          git config user.email "bot@redwoodsite.blue"
+          git add roms.json
+          git commit -m "auto: update roms from t.me/pocox5proin"
+          git push
