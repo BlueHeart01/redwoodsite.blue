@@ -1,20 +1,45 @@
 """GitHub Actions auto-import: parse t.me/pocox5proin using strict structured format."""
 
 import json
+import logging
 import os
 import re
 import sys
+import tempfile
 from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from extract_rom_version import ROM_NAME_ALIASES  # noqa: E402
 
 CHANNEL = 'pocox5proin'
 CHANNEL_URL = f'https://t.me/s/{CHANNEL}'
+KNOWN_POSTS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '.known_posts.json')
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    datefmt='%H:%M:%S',
+)
+log = logging.getLogger('autoimport')
+
+
+def _write_summary(text: str):
+    path = os.environ.get('GITHUB_STEP_SUMMARY')
+    if path:
+        with open(path, 'a') as f:
+            f.write(text + '\n')
 
 
 def fetch_channel_page() -> str:
-    resp = requests.get(CHANNEL_URL, timeout=30, headers={
+    session = requests.Session()
+    retry = Retry(total=3, backoff_factor=2, status_forcelist=[500, 502, 503, 504])
+    session.mount('https://', HTTPAdapter(max_retries=retry))
+    resp = session.get(CHANNEL_URL, timeout=30, headers={
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
     })
     resp.raise_for_status()
@@ -30,20 +55,15 @@ def parse_date(raw: str) -> str:
             return datetime.strptime(raw, fmt).strftime('%Y-%m-%d')
         except ValueError:
             continue
-    # Try ISO-style with months like "05 March 2026"
     m = re.search(r'(\d{1,2})\s+(\w+)\s+(\d{4})', raw)
     if m:
         day, mon, yr = m.group(1), m.group(2), m.group(3)
-        try:
-            dt = datetime.strptime(f'{day} {mon} {yr}', '%d %B %Y')
-            return dt.strftime('%Y-%m-%d')
-        except ValueError:
+        for fmt in ['%d %B %Y', '%d %b %Y']:
             try:
-                dt = datetime.strptime(f'{day} {mon} {yr}', '%d %b %Y')
-                return dt.strftime('%Y-%m-%d')
+                return datetime.strptime(f'{day} {mon} {yr}', fmt).strftime('%Y-%m-%d')
             except ValueError:
-                pass
-    return raw  # return as-is if can't parse
+                continue
+    return raw
 
 
 def _get_line_data(html: str) -> list[dict]:
@@ -67,6 +87,36 @@ def _get_line_data(html: str) -> list[dict]:
                 urls.append(href)
         data.append({'text': text, 'label': label, 'urls': urls})
     return data
+
+
+def _validate_post(result: dict) -> str:
+    """Validate extracted fields. Return error message or empty string."""
+    if not result.get('romName'):
+        return 'romName is empty'
+    if not result.get('downloadLink') or result['downloadLink'] in ('', '#'):
+        return 'downloadLink is missing or placeholder'
+    dl = result['downloadLink']
+    if not dl.startswith('http://') and not dl.startswith('https://'):
+        return f'downloadLink is not a valid URL: {dl}'
+    bd = result.get('buildDate', '')
+    if bd and bd != datetime.now().strftime('%Y-%m-%d'):
+        parsed = parse_date(bd)
+        if parsed != bd:
+            return f'buildDate could not be parsed: {bd}'
+    return ''
+
+
+def load_known_posts() -> dict:
+    if os.path.exists(KNOWN_POSTS_PATH):
+        with open(KNOWN_POSTS_PATH, 'r') as f:
+            return json.load(f)
+    return {}
+
+
+def save_known_posts(posts: dict):
+    with open(KNOWN_POSTS_PATH, 'w') as f:
+        json.dump(posts, f, indent=2)
+        f.write('\n')
 
 
 def parse_structured(msg_text: str, html: str, el) -> dict | None:
@@ -136,7 +186,6 @@ def parse_structured(msg_text: str, html: str, el) -> dict | None:
         device_name = device_part[:paren].strip()
         device_codename = device_part[paren + 1:-1].strip().lower()
 
-    # Clean up trailing " v" if no version captured (e.g. "Clover v based on...")
     if not rom_version and re.search(r'\s+v\s*$', rom_name, re.IGNORECASE):
         rom_name = re.sub(r'\s+v\s*$', '', rom_name, flags=re.IGNORECASE)
 
@@ -146,7 +195,6 @@ def parse_structured(msg_text: str, html: str, el) -> dict | None:
     result['deviceName'] = device_name or device_part
     result['deviceCodename'] = device_codename
 
-    # Require at least one labeled link to qualify as structured post
     links_found = False
 
     # ===== LINE 2: MAINTAINER =====
@@ -161,6 +209,17 @@ def parse_structured(msg_text: str, html: str, el) -> dict | None:
     for ld in line_data:
         t = ld['text'].lower()
         urls = ld['urls']
+
+        # Build date / type are plain text, handle before URL guard
+        if 'build date' in t:
+            m = re.search(r':\s*(.+?)$', ld['text'])
+            result['buildDate'] = parse_date(m.group(1).strip()) if m else ''
+            continue
+        if 'build type' in t:
+            m = re.search(r':\s*(.+?)$', ld['text'])
+            result['buildType'] = m.group(1).strip() if m else ''
+            continue
+
         if not urls:
             continue
 
@@ -176,12 +235,6 @@ def parse_structured(msg_text: str, html: str, el) -> dict | None:
         elif 'ksu' in t or ('kernel' in t and 'manager' not in t):
             result['ksuLink'] = urls[0]
             links_found = True
-        elif 'build date' in t:
-            m = re.search(r':\s*(.+?)$', ld['text'])
-            result['buildDate'] = parse_date(m.group(1).strip()) if m else ''
-        elif 'build type' in t:
-            m = re.search(r':\s*(.+?)$', ld['text'])
-            result['buildType'] = m.group(1).strip() if m else ''
         elif 'source changelog' in t:
             result['changelogSource'] = urls[0]
         elif 'device changelog' in t:
@@ -254,6 +307,13 @@ def parse_structured(msg_text: str, html: str, el) -> dict | None:
 
     if not links_found:
         return None
+
+    # Validation
+    err = _validate_post(result)
+    if err:
+        log.warning('Post validation failed for %s: %s', rom_name, err)
+        return None
+
     return result
 
 
@@ -261,6 +321,7 @@ def parse_messages(html: str) -> list[dict]:
     soup = BeautifulSoup(html, 'lxml')
     results = []
     post_ids = set()
+    known = load_known_posts()
 
     for el in soup.select('.tgme_widget_message_wrap, .tgme_widget_message'):
         post_el = el.select_one('.tgme_widget_message_text') or el
@@ -272,7 +333,6 @@ def parse_messages(html: str) -> list[dict]:
         msg_text = re.sub(r'<br\s*/?>', '\n', msg_text, flags=re.IGNORECASE)
         msg_text = re.sub(r'<[^>]+>', '', msg_text).strip()
 
-        # Extract post ID
         post_link = el.get('data-post', '')
         id_match = re.search(r'/(\d+)$', post_link)
         if not id_match:
@@ -282,8 +342,13 @@ def parse_messages(html: str) -> list[dict]:
             continue
         post_ids.add(post_id)
 
-        # Only process structured format
         if not re.search(r'based\s+on\s+android', msg_text, re.IGNORECASE):
+            continue
+
+        # Detect edited posts
+        content_hash = str(hash(msg_text))
+        known_entry = known.get(post_id, {})
+        if known_entry.get('hash') == content_hash:
             continue
 
         parsed = parse_structured(msg_text, inner_h, el)
@@ -292,12 +357,16 @@ def parse_messages(html: str) -> list[dict]:
 
         parsed['postId'] = post_id
         parsed['link'] = f'https://t.me/{CHANNEL}/{post_id}'
+        known[post_id] = {'hash': content_hash, 'postId': post_id}
         results.append(parsed)
+
+    if known:
+        save_known_posts(known)
 
     return results
 
 
-def merge_into_roms(parsed: list[dict], roms_path: str) -> tuple[int, int, int]:
+def merge_into_roms(parsed: list[dict], roms_path: str) -> tuple[int, int, int, int]:
     if os.path.exists(roms_path):
         with open(roms_path, 'r', encoding='utf-8') as f:
             roms = json.load(f)
@@ -306,6 +375,7 @@ def merge_into_roms(parsed: list[dict], roms_path: str) -> tuple[int, int, int]:
 
     added = 0
     updated = 0
+    resynced = 0
     skipped = 0
 
     def _normalize(name: str) -> str:
@@ -315,12 +385,19 @@ def merge_into_roms(parsed: list[dict], roms_path: str) -> tuple[int, int, int]:
         n = re.sub(r'\s+', '', n)
         return n
 
+    def _match(parsed_name: str, existing_name: str) -> bool:
+        p = _normalize(parsed_name)
+        e = _normalize(existing_name)
+        if e == p or e in p or p in e:
+            return True
+        if p in ROM_NAME_ALIASES and _normalize(ROM_NAME_ALIASES[p]) == e:
+            return True
+        return False
+
     for p in parsed:
         matched_name = p['romName']
-        p_norm = _normalize(p['romName'])
         for existing in roms:
-            e_norm = _normalize(existing['name'])
-            if e_norm == p_norm or e_norm in p_norm or p_norm in e_norm:
+            if _match(p['romName'], existing['name']):
                 matched_name = existing['name']
                 break
 
@@ -332,7 +409,6 @@ def merge_into_roms(parsed: list[dict], roms_path: str) -> tuple[int, int, int]:
             if at:
                 dev_username = '@' + at.group(1)
 
-        # Parse build date or use today
         build_date = p['buildDate'] or datetime.now().strftime('%Y-%m-%d')
 
         new_ver = {
@@ -352,11 +428,22 @@ def merge_into_roms(parsed: list[dict], roms_path: str) -> tuple[int, int, int]:
         existing = next((r for r in roms if r['name'] == matched_name), None)
 
         if existing:
-            has_ver = any(v.get('rom') == new_ver['rom'] or v.get('romVer') == new_ver['romVer'] for v in existing.get('versions', []))
-            if has_ver:
-                skipped += 1
-                continue
-            existing.setdefault('versions', []).append(new_ver)
+            # Check for duplicate version
+            dup = None
+            for v in existing.get('versions', []):
+                if v.get('rom') == new_ver['rom'] or v.get('romVer') == new_ver['romVer']:
+                    dup = v
+                    break
+
+            if dup:
+                # Update existing entry metadata (re-sync)
+                dup['date'] = build_date
+                if p['changelogText']:
+                    dup['vChangelog'] = p['changelogText']
+                resynced += 1
+            else:
+                existing.setdefault('versions', []).append(new_ver)
+
             if dev_name != 'Unknown':
                 existing['dev'] = dev_name
                 existing['devInfo'] = f'Telegram: {dev_username}' if dev_username != 'Unknown' else ''
@@ -395,7 +482,8 @@ def merge_into_roms(parsed: list[dict], roms_path: str) -> tuple[int, int, int]:
                 for s in p['screenshots']:
                     if s not in existing['screenshots']:
                         existing['screenshots'].append(s)
-            updated += 1
+            if not dup:
+                updated += 1
         else:
             dev_info = f'Telegram: {dev_username}' if dev_username != 'Unknown' else ''
             entry = {
@@ -447,41 +535,74 @@ def merge_into_roms(parsed: list[dict], roms_path: str) -> tuple[int, int, int]:
             new_versions.extend(vers[:3])
         rom['versions'] = new_versions
 
-    with open(roms_path, 'w', encoding='utf-8') as f:
-        json.dump(roms, f, indent=2, ensure_ascii=False)
-        f.write('\n')
+    # Backup + atomic write with rollback
+    backup_path = None
+    if os.path.exists(roms_path):
+        fd, backup_path = tempfile.mkstemp(suffix='.json', prefix='roms_backup_')
+        os.close(fd)
+        with open(roms_path, 'r') as src, open(backup_path, 'w') as dst:
+            dst.write(src.read())
 
-    return added, updated, skipped
+    try:
+        with open(roms_path, 'w', encoding='utf-8') as f:
+            json.dump(roms, f, indent=2, ensure_ascii=False)
+            f.write('\n')
+    except Exception:
+        log.critical('Write to roms.json failed, rolling back')
+        if backup_path and os.path.exists(backup_path):
+            with open(backup_path, 'r') as src, open(roms_path, 'w') as dst:
+                dst.write(src.read())
+            log.info('Rollback complete')
+        raise
+    finally:
+        if backup_path and os.path.exists(backup_path):
+            os.remove(backup_path)
+
+    return added, updated, resynced, skipped
 
 
 def main():
+    start = datetime.now()
     roms_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'roms.json')
     roms_path = os.path.normpath(roms_path)
 
-    print(f'[{CHANNEL}] Fetching channel page...')
+    log.info('Fetching channel page...')
     try:
         html = fetch_channel_page()
     except Exception as e:
-        print(f'ERROR: Failed to fetch channel: {e}')
+        log.critical('Failed to fetch channel after retries: %s', e)
+        _write_summary(f'## ❌ Auto-Import Failed\n\nFailed to fetch channel: {e}')
         sys.exit(1)
 
-    print(f'[{CHANNEL}] Parsing messages...')
+    log.info('Parsing messages...')
     parsed = parse_messages(html)
 
-    print(f'[{CHANNEL}] Found {len(parsed)} structured ROM posts')
+    log.info('Found %d structured ROM posts', len(parsed))
     for p in parsed:
-        print(f'  - {p["romName"]} v{p["romVersion"]} | {p["androidVersion"]} | '
-              f'{p["deviceName"]} ({p["deviceCodename"]}) | by {p["maintainerName"]} | '
-              f'dl={bool(p["downloadLink"])}')
+        log.info('  - %s v%s | %s | %s (%s) | dl=%s',
+                 p['romName'], p['romVersion'], p['androidVersion'],
+                 p['deviceName'], p['deviceCodename'], bool(p['downloadLink']))
 
     if not parsed:
-        print('No matching posts found. Exiting.')
+        msg = 'No matching posts found. Exiting.'
+        log.info(msg)
+        _write_summary(f'## ✅ Auto-Import Complete\n\nNo new posts to process.')
         return
 
-    print(f'[{CHANNEL}] Merging into roms.json...')
-    added, updated, skipped = merge_into_roms(parsed, roms_path)
+    log.info('Merging into roms.json...')
+    added, updated, resynced, skipped = merge_into_roms(parsed, roms_path)
 
-    print(f'Done: {added} added, {updated} updated, {skipped} skipped')
+    elapsed = (datetime.now() - start).total_seconds()
+    summary = (
+        f'## ✅ Auto-Import Complete\n\n'
+        f'- **Added:** {added} new ROMs\n'
+        f'- **Updated:** {updated} existing versions\n'
+        f'- **Resynced:** {resynced} existing entries\n'
+        f'- **Skipped:** {skipped} duplicates\n'
+        f'- **Duration:** {elapsed:.1f}s\n'
+    )
+    log.info(summary.replace('\n', ' | '))
+    _write_summary(summary)
 
 
 if __name__ == '__main__':
