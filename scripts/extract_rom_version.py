@@ -16,6 +16,9 @@ ROM_NAME_ALIASES = {
     'fluidos': 'Fluid OS', 'fluid': 'Fluid OS',
     'crDroid': 'crDroid',
     'lineageos': 'LineageOS', 'lineage': 'LineageOS',
+    'voltageos': 'VoltageOS', 'voltage': 'VoltageOS',
+    'afterlifeos': 'AfterlifeOS', 'afterlife': 'AfterlifeOS',
+    'projectmatrixx': 'Matrixx',
 }
 
 
