@@ -44,22 +44,25 @@
     "status": "unofficial",
     "dev": "Harshit",
     "devInfo": "Telegram: @itsraiharshit",
-    "desc": "Pixel Experience with optimizations for POCO X5 Pro (Redwood). Unofficial builds with latest Pixel features.",
+    "desc": "MD5: dd4dd72946867bf45e82441e1393584c",
     "downloads": 2500,
-    "banner": "",
-    "screenshots": [],
-    "changelog": "• Source Changelog\n• Device Changelog",
-    "buildType": "GApps",
+    "banner": "https://cdn5.telesco.pe/file/LGB8aAtCLbTMyJxWHXzG0XIWKyCVN3_iRCXV74SxKT2fp7RtPP0xiNwleHrQzFeyrfj5XsB_WEDN6rkuSDhIvGqiDxvJaJz3Ojhuq_JNvs13x2lMNng4Cit1diONKXOel8o_5u4SvSuzkCLko2ZyPs9kCPwuSkMKNHjFEmz9hjNd9itZkHfkYbSPK9QErTEnb6nkPPI_moUhD25QUQaJ3KYeYwhTHGLCs0BiMkHXDccKXQ6KpQzRTXk1TsP7kp8hjRQuRXYrEWLiUTMXWbFscWIFAykavo2RqGKykXltSGwLsFfiRAoDKyQZK7I08wusO0jEZbFgu4bACr8IqKCo6w.jpg",
+    "screenshots": [
+      "https://cdn5.telesco.pe/file/LGB8aAtCLbTMyJxWHXzG0XIWKyCVN3_iRCXV74SxKT2fp7RtPP0xiNwleHrQzFeyrfj5XsB_WEDN6rkuSDhIvGqiDxvJaJz3Ojhuq_JNvs13x2lMNng4Cit1diONKXOel8o_5u4SvSuzkCLko2ZyPs9kCPwuSkMKNHjFEmz9hjNd9itZkHfkYbSPK9QErTEnb6nkPPI_moUhD25QUQaJ3KYeYwhTHGLCs0BiMkHXDccKXQ6KpQzRTXk1TsP7kp8hjRQuRXYrEWLiUTMXWbFscWIFAykavo2RqGKykXltSGwLsFfiRAoDKyQZK7I08wusO0jEZbFgu4bACr8IqKCo6w.jpg"
+    ],
+    "changelog": "Source Changelog: https://blog.pixelos.net/changelogs\nDevice Changelog: https://github.com/heyharshitrai/OTA/blob/master/PixelOS/changelog/redwood.md",
+    "buildType": "userdebug",
     "tags": [
-      "GApps",
-      "Pixel"
+      "PixelOS",
+      "A16",
+      "Unofficial"
     ],
     "supportGroup": "https://t.me/redwood_aosp",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",
-    "recoveryLink": "https://sourceforge.net/projects/poco-x5-pro-roms/files/Aosp_Recovery_Fts%2BGoodix/",
+    "recoveryLink": "https://sourceforge.net/projects/redwood-roms/files/pixelos/A16/recovery/",
     "sourceCode": "https://github.com/itsraiharshit",
-    "donateLink": "",
+    "donateLink": "https://linktr.ee/heyharshitrai",
     "knownIssues": "",
     "requirements": "Unlocked bootloader, latest firmware",
     "isActive": true,
@@ -76,7 +79,8 @@
         "vDev": "@itsraiharshit",
         "vDevInfo": "Telegram: @itsraiharshit",
         "filename": "PixelOS_redwood-16.2-20260317-0851.zip",
-        "md5": ""
+        "md5": "",
+        "vChangelog": "Source Changelog: https://blog.pixelos.net/changelogs\nDevice Changelog: https://github.com/heyharshitrai/OTA/blob/master/PixelOS/changelog/redwood.md"
       },
       {
         "ver": "Android 16",
@@ -92,7 +96,12 @@
         "filename": "PixelOS_redwood-16.2-20260221-1543.zip",
         "md5": ""
       }
-    ]
+    ],
+    "device": "Xiaomi Poco X5 Pro 5G",
+    "codename": "redwood",
+    "ksuLink": "https://t.me/redwood_aosp/26/3098",
+    "changelogSource": "https://blog.pixelos.net/changelogs",
+    "changelogDevice": "https://github.com/heyharshitrai/OTA/blob/master/PixelOS/changelog/redwood.md"
   },
   {
     "name": "LineageOS",
@@ -337,24 +346,26 @@
     "status": "official",
     "dev": "@itsraiharshit",
     "devInfo": "Telegram: @itsraiharshit",
-    "desc": "Project Infinity X v3.8 based on Android 16 QPR2 for Xiaomi POCO X5 Pro 5G (redwood)",
+    "desc": "KSU-Manager: APK",
     "downloads": 3000,
-    "banner": "https://cdn5.telesco.pe/file/cqCy4ppEuXEeSxJSmaiVf-EarUGklF5-kfKGUfYc5jvl9E_BRJH8DLTyEdPlPSyYV2-2FwDnVlZsjRMYJQKTPY9b49ava0x8slK2gsoXAlniWot8gxeNOX1MQzAAD8UkJTipVrKhORnYqZKgYSEvxmGg7nF-s8OJCq768cPLvk-EGsQxPorx3OPnLhtaHGdd1b2hZgjz6LquK7tSJ1vzvSitQ9iDSvPzqaJZXrpFlZBUMwQbS_sirCQOMo6iXrJGcejPFgw4PG23A_9TjY79JKCeklsbA3VJVvyTHG94jGQvfwxqvMPdxHveD7WSr_7cDnb3-gHnImWYHvlqCOtF7g.jpg",
+    "banner": "https://cdn5.telesco.pe/file/DLeSkj5VD_IEDtBq-fc4LBZWQpwZS6YjVbYQLr4sgT5vlqN1zzofxdsf37oFaRNQFXDHdrCZ0DVl-LjwLr7EQnGLMY_kLJHzdDw0D1tD4fvGLzxV80V9z9uylU_PGtF9005QuyrDLKJicC9GBB1zOJehzz9ToMl1lc9qFCpzbnNNj6XfsY2JMzlWJ6OTv80JZ1zq5X74rba18LSWYlqw1IzE5dk1ZGFzb6CRMjt5agptmmKog46LQW6Fhq6RqeqWcbhOQJRx26sA8RIwqwa89GbWbYKdjQY39Czaec4Z6cphhCOSPF7ms9rVJPVcPNxypghUIJzhQk7AqfN37y6I9A.jpg",
     "screenshots": [
-      "https://cdn5.telesco.pe/file/cqCy4ppEuXEeSxJSmaiVf-EarUGklF5-kfKGUfYc5jvl9E_BRJH8DLTyEdPlPSyYV2-2FwDnVlZsjRMYJQKTPY9b49ava0x8slK2gsoXAlniWot8gxeNOX1MQzAAD8UkJTipVrKhORnYqZKgYSEvxmGg7nF-s8OJCq768cPLvk-EGsQxPorx3OPnLhtaHGdd1b2hZgjz6LquK7tSJ1vzvSitQ9iDSvPzqaJZXrpFlZBUMwQbS_sirCQOMo6iXrJGcejPFgw4PG23A_9TjY79JKCeklsbA3VJVvyTHG94jGQvfwxqvMPdxHveD7WSr_7cDnb3-gHnImWYHvlqCOtF7g.jpg"
+      "https://cdn5.telesco.pe/file/cqCy4ppEuXEeSxJSmaiVf-EarUGklF5-kfKGUfYc5jvl9E_BRJH8DLTyEdPlPSyYV2-2FwDnVlZsjRMYJQKTPY9b49ava0x8slK2gsoXAlniWot8gxeNOX1MQzAAD8UkJTipVrKhORnYqZKgYSEvxmGg7nF-s8OJCq768cPLvk-EGsQxPorx3OPnLhtaHGdd1b2hZgjz6LquK7tSJ1vzvSitQ9iDSvPzqaJZXrpFlZBUMwQbS_sirCQOMo6iXrJGcejPFgw4PG23A_9TjY79JKCeklsbA3VJVvyTHG94jGQvfwxqvMPdxHveD7WSr_7cDnb3-gHnImWYHvlqCOtF7g.jpg",
+      "https://cdn5.telesco.pe/file/KXJc9pdcf0EHqbwNZvEuTgb2JSnGNzy_lA00WfXQNq7DJ1waBpIRaLkVdlf0bG-khWV0m8YfMwCXtrCyjyRMqW5RjqTugssfXzTGyGpOEskjqY6motC2QGKTIltMVDoV60IaxJIawEfUXT85-uLn_Xm_N3oZb_UEAsiUS76OcCR45Mv3B57qXWdS3Rqy3b748mZhpN5LaloKmSbRvgQPcl7akBAEuuZ-3VoRPksKjyd6yQxYOwT3h5Yl-BQ1nkDSLPtNxdfYvwjLPtPl6oqgTsZOQOKVW2fCRkdjY4ewna8DOy_sWjx3QdnKZRL5GJyvWkAQMSrVFJaSQCmqzJIN5Q.jpg",
+      "https://cdn5.telesco.pe/file/DLeSkj5VD_IEDtBq-fc4LBZWQpwZS6YjVbYQLr4sgT5vlqN1zzofxdsf37oFaRNQFXDHdrCZ0DVl-LjwLr7EQnGLMY_kLJHzdDw0D1tD4fvGLzxV80V9z9uylU_PGtF9005QuyrDLKJicC9GBB1zOJehzz9ToMl1lc9qFCpzbnNNj6XfsY2JMzlWJ6OTv80JZ1zq5X74rba18LSWYlqw1IzE5dk1ZGFzb6CRMjt5agptmmKog46LQW6Fhq6RqeqWcbhOQJRx26sA8RIwqwa89GbWbYKdjQY39Czaec4Z6cphhCOSPF7ms9rVJPVcPNxypghUIJzhQk7AqfN37y6I9A.jpg"
     ],
-    "changelog": "• Source Changelog\n• Device Changelog",
-    "buildType": "GApps",
+    "changelog": "Source Changelog: https://t.me/ProjectInfinityX/1877\nDevice Changelog: https://raw.githubusercontent.com/ProjectInfinity-X/official_devices/refs/heads/16/changelog/redwood.txt",
+    "buildType": "userdebug",
     "tags": [
-      "GApps",
-      "Official"
+      "Android16",
+      "redwood"
     ],
     "supportGroup": "https://t.me/redwood_aosp",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",
-    "recoveryLink": "https://sourceforge.net/projects/poco-x5-pro-roms/files/Aosp_Recovery_Fts%2BGoodix/",
+    "recoveryLink": "https://sourceforge.net/projects/infinity-x/files/redwood/16/recovery/",
     "sourceCode": "https://github.com/ProjectInfinity-X",
-    "donateLink": "",
+    "donateLink": "https://linktr.ee/heyharshitrai",
     "knownIssues": "",
     "requirements": "Unlocked bootloader",
     "isActive": true,
@@ -362,7 +373,7 @@
       {
         "ver": "Android 16",
         "andVer": "Android 16",
-        "date": "2026-05-16",
+        "date": "2026-05-11",
         "rom": "https://projectinfinity-x.com/downloads/redwood",
         "boot": "#",
         "vendor_boot": "#",
@@ -370,7 +381,7 @@
         "romVer": "",
         "vDev": "@itsraiharshit",
         "vDevInfo": "Telegram: @itsraiharshit",
-        "vChangelog": "• Source Changelog\n• Device Changelog"
+        "vChangelog": "Source Changelog: https://t.me/ProjectInfinityX/1877\nDevice Changelog: https://raw.githubusercontent.com/ProjectInfinity-X/official_devices/refs/heads/16/changelog/redwood.txt"
       },
       {
         "ver": "Android 16",
@@ -400,6 +411,15 @@
         "filename": "Infinity-X-3.9-redwood-OFFICIAL-20260403.zip",
         "md5": ""
       }
+    ],
+    "device": "Xiaomi POCO X5 Pro 5G",
+    "codename": "redwood",
+    "ksuLink": "https://t.me/redwood_aosp/26/5150",
+    "changelogSource": "https://t.me/ProjectInfinityX/1877",
+    "changelogDevice": "https://raw.githubusercontent.com/ProjectInfinity-X/official_devices/refs/heads/16/changelog/redwood.txt",
+    "screenshotsLink": "https://t.me/ProjectInfinityX/1697?single",
+    "channelMentions": [
+      "ProjectInfinityX"
     ]
   },
   {
@@ -672,22 +692,24 @@
     "status": "unofficial",
     "dev": "BlueHeart016",
     "devInfo": "Telegram: @bluehearts_Builds016",
-    "desc": "The Clover Project 3.9 based on Android 16 QPR2 for POCO X5 Pro (Redwood). Lightweight and efficient.",
+    "desc": "Sync with latest Source",
     "downloads": 450,
-    "banner": "https://raw.githubusercontent.com/The-Clover-Project/.github/main/banner5.png",
-    "screenshots": [],
-    "changelog": "• Sync with latest Source\n• Android 16 QPR2 Build\n• Switched to KSU Next\n• Includes BCR, MIUI Camera, Dolby",
-    "buildType": "GApps",
-    "tags": [
-      "GApps",
-      "KSU"
+    "banner": "https://cdn5.telesco.pe/file/nQ2a3SGm-qIw4Y-Wn9hq0CLDgh2kaA0A4CqgtG0NVTku_Th_peeaqGjR0i3cQNVb1M1XNlL-yzuiqIctu-0fswmYL2rWsiSwGx_QybADrG09mTBjytUBVneUleI_M5_PG9A4vaFzLSfTHXwaLy3ClLh3KEtBLJMdRZd6LPIqq62iL2mGCi8qUGOLg-2s2huPO3ryPkO90YhwmQdEmwKReKuE9khr-VAx4nxSo0VIQOtcXS1yCsstsdxW5zzWrneh2fXJyPg3ud-Gw-pMM-FdN-Dpt-l5_MJTYpH6zv4yIACtf0Vo6S-lxni5x9o0rhFx9lrwvty3Nv7-rmQUL89Vjw.jpg",
+    "screenshots": [
+      "https://cdn5.telesco.pe/file/nQ2a3SGm-qIw4Y-Wn9hq0CLDgh2kaA0A4CqgtG0NVTku_Th_peeaqGjR0i3cQNVb1M1XNlL-yzuiqIctu-0fswmYL2rWsiSwGx_QybADrG09mTBjytUBVneUleI_M5_PG9A4vaFzLSfTHXwaLy3ClLh3KEtBLJMdRZd6LPIqq62iL2mGCi8qUGOLg-2s2huPO3ryPkO90YhwmQdEmwKReKuE9khr-VAx4nxSo0VIQOtcXS1yCsstsdxW5zzWrneh2fXJyPg3ud-Gw-pMM-FdN-Dpt-l5_MJTYpH6zv4yIACtf0Vo6S-lxni5x9o0rhFx9lrwvty3Nv7-rmQUL89Vjw.jpg"
     ],
-    "supportGroup": "https://t.me/bluehearts_Builds016",
+    "changelog": "• Sync with latest Source\n• Android 16 QPR2 Build\n• Switched to KSU Next\n• Includes BCR, MIUI Camera, Dolby",
+    "buildType": "userdebug",
+    "tags": [
+      "TheCloverProject",
+      "Unofficial#redwood"
+    ],
+    "supportGroup": "https://t.me/bluehearts_Builds016/1",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",
-    "recoveryLink": "https://sourceforge.net/projects/poco-x5-pro-roms/files/Aosp_Recovery_Fts%2BGoodix/",
+    "recoveryLink": "https://sourceforge.net/projects/project-clover/files/Recovery-Clover/A16/",
     "sourceCode": "https://github.com/The-Clover-Project",
-    "donateLink": "",
+    "donateLink": "https://paypal.me/blueheart016",
     "knownIssues": "",
     "requirements": "Unlocked bootloader",
     "isActive": true,
@@ -695,7 +717,7 @@
       {
         "ver": "Android 16",
         "andVer": "Android 16",
-        "date": "2026-04-12",
+        "date": "12th April 2026",
         "rom": "https://sourceforge.net/projects/project-clover/files/Clover/A16/CloverProject-v3.9-redwood-UNOFFICIAL-20260411-1902.zip",
         "boot": "#",
         "vendor_boot": "#",
@@ -706,6 +728,10 @@
         "filename": "CloverProject-v3.9-redwood-UNOFFICIAL-20260411-1902.zip",
         "md5": ""
       }
-    ]
+    ],
+    "device": "Xiaomi Poco X5 Pro",
+    "codename": "redwood",
+    "ksuLink": "https://t.me/itsraiharshit",
+    "screenshotsLink": "https://t.me/bluehearts_Builds016/55/265?single"
   }
 ]
