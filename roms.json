@@ -178,25 +178,26 @@
     "status": "official",
     "dev": "thepriyanshujangid",
     "devInfo": "Telegram: @thepriyanshujangid",
-    "desc": "EvolutionX 11.7 | 2026/05/14",
+    "desc": "Android16 #redwood #evox",
     "downloads": 4200,
-    "banner": "https://cdn4.telesco.pe/file/Euj4jXTtzSyH-FdLqQpg4dmCRRfmcTEpVyJY5o9WN0fETABc9dCnpkySPHPfQtE-1Hq2nU7z5CAmAUWn_IgurHaz6Bvf3DxlK29Me5X5YlhaVzF9uLY8S355ehfKGkJd9mchlF7cEAFRw9DkQy9kE2mRRi-0yzDFFFmBU8sX-UwAIq83d598BnL0H_2RyxXL_kpcYoqq0skJgFyNuxhOrNTxdLmJ76Ny_25ZWy-lbNy7QDTc2kWJBRBCpyJ3rh8bhq5P0dTfXranryQUOcmF2rsvmm-tyjQyXMviP105y8q5haVFKxe7_XTKDYzPbhggVelCxjmCpFLrIzP9DF-nkA.jpg",
+    "banner": "https://cdn5.telesco.pe/file/Lm1EeHVIcbbCH1FQC9GgTtMXH_7LTfwPzsHK64E4tG9AFkmMYnkPFCN1jL5fRbqHNRTeL_wj9YBtqbulRaGj7Cqt5InIeEu4xRy5gncAEidKMFEgKpPqHZDnb0TF7QhIu7Cnb_pTSot8nOJ_yjIGeVp8Rh8JfFdad04mNqVWsQS4aN4qF5GSR0Sw3VVnseIyiQ39VJmenNEG1TpCNkfgGb6qzi_z47oENkn6_HY5lRFZbg_DP8GNqcYSIDnYqYrOpgmqerpsjLe0bTVGmRbs7A0MDlcSb34LONmfi8UmkvBw8fRT207rZgCqt1vkCh9P7Ae_BS5iahMf7n0H_UlsBA.jpg",
     "screenshots": [
-      "https://cdn4.telesco.pe/file/Euj4jXTtzSyH-FdLqQpg4dmCRRfmcTEpVyJY5o9WN0fETABc9dCnpkySPHPfQtE-1Hq2nU7z5CAmAUWn_IgurHaz6Bvf3DxlK29Me5X5YlhaVzF9uLY8S355ehfKGkJd9mchlF7cEAFRw9DkQy9kE2mRRi-0yzDFFFmBU8sX-UwAIq83d598BnL0H_2RyxXL_kpcYoqq0skJgFyNuxhOrNTxdLmJ76Ny_25ZWy-lbNy7QDTc2kWJBRBCpyJ3rh8bhq5P0dTfXranryQUOcmF2rsvmm-tyjQyXMviP105y8q5haVFKxe7_XTKDYzPbhggVelCxjmCpFLrIzP9DF-nkA.jpg"
+      "https://cdn4.telesco.pe/file/Euj4jXTtzSyH-FdLqQpg4dmCRRfmcTEpVyJY5o9WN0fETABc9dCnpkySPHPfQtE-1Hq2nU7z5CAmAUWn_IgurHaz6Bvf3DxlK29Me5X5YlhaVzF9uLY8S355ehfKGkJd9mchlF7cEAFRw9DkQy9kE2mRRi-0yzDFFFmBU8sX-UwAIq83d598BnL0H_2RyxXL_kpcYoqq0skJgFyNuxhOrNTxdLmJ76Ny_25ZWy-lbNy7QDTc2kWJBRBCpyJ3rh8bhq5P0dTfXranryQUOcmF2rsvmm-tyjQyXMviP105y8q5haVFKxe7_XTKDYzPbhggVelCxjmCpFLrIzP9DF-nkA.jpg",
+      "https://cdn5.telesco.pe/file/Lm1EeHVIcbbCH1FQC9GgTtMXH_7LTfwPzsHK64E4tG9AFkmMYnkPFCN1jL5fRbqHNRTeL_wj9YBtqbulRaGj7Cqt5InIeEu4xRy5gncAEidKMFEgKpPqHZDnb0TF7QhIu7Cnb_pTSot8nOJ_yjIGeVp8Rh8JfFdad04mNqVWsQS4aN4qF5GSR0Sw3VVnseIyiQ39VJmenNEG1TpCNkfgGb6qzi_z47oENkn6_HY5lRFZbg_DP8GNqcYSIDnYqYrOpgmqerpsjLe0bTVGmRbs7A0MDlcSb34LONmfi8UmkvBw8fRT207rZgCqt1vkCh9P7Ae_BS5iahMf7n0H_UlsBA.jpg"
     ],
     "changelog": "• Latest Evolution X sources\n• Android 16\n• Pixel features included",
-    "buildType": "GApps",
+    "buildType": "userdebug",
     "tags": [
-      "GApps",
-      "Pixel",
-      "Official"
+      "Android16",
+      "redwood",
+      "evox"
     ],
     "supportGroup": "https://t.me/EvolutionX_redwood",
     "xdaLink": "",
     "firmwareLink": "https://xmfirmwareupdater.com/firmware/redwood/",
-    "recoveryLink": "https://sourceforge.net/projects/poco-x5-pro-roms/files/Aosp_Recovery_Fts%2BGoodix/",
+    "recoveryLink": "https://cdn.evolution-x.org/redwood/16/recovery",
     "sourceCode": "https://github.com/Evolution-X",
-    "donateLink": "https://www.paypal.com/paypalme/EvolutionX",
+    "donateLink": "https://paypal.me/thepriyanshujangid",
     "knownIssues": "",
     "requirements": "Unlocked bootloader, latest firmware",
     "isActive": true,
@@ -217,7 +218,7 @@
       {
         "ver": "Android 16",
         "andVer": "Android 16",
-        "date": "2026-03-10",
+        "date": "2026-05-15",
         "rom": "https://cdn.evolution-x.org/redwood/16",
         "boot": "#",
         "vendor_boot": "#",
@@ -242,7 +243,9 @@
         "filename": "EvolutionX-16.0-20260224-redwood-11.6.1-Official.zip",
         "md5": ""
       }
-    ]
+    ],
+    "device": "Xiaomi POCO X5 Pro 5G",
+    "codename": "redwood"
   },
   {
     "name": "AfterlifeOS",
