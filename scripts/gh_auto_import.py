@@ -485,6 +485,8 @@ def merge_into_roms(parsed: list[dict], roms_path: str) -> tuple[int, int, int, 
             if dup:
                 # Update existing entry metadata (re-sync)
                 dup['date'] = build_date
+                if new_ver['rom'] and new_ver['rom'] != '#':
+                    dup['rom'] = new_ver['rom']
                 if p['changelogText']:
                     dup['vChangelog'] = p['changelogText']
                 resynced += 1

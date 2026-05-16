@@ -101,7 +101,7 @@
     "icon": "B"
   },
   {
-    "name": "\ud83c\udf40 The Clover Project",
+    "name": "🍀 The Clover Project",
     "status": "unofficial",
     "dev": "BlueHeart016",
     "devInfo": "Telegram: BlueHeart016",
@@ -153,13 +153,14 @@
   {
     "name": "PixelOS",
     "status": "unofficial",
-    "dev": "\ud835\ude77\ud835\ude70\ud835\ude81\ud835\ude82\ud835\ude77\ud835\ude78\ud835\ude83",
+    "dev": "𝙷𝙰𝚁𝚂𝙷𝙸𝚃",
     "devInfo": "Telegram: @itsraiharshit",
-    "desc": "MD5: dd4dd72946867bf45e82441e1393584c",
+    "desc": "MD5: d77e50a3d09f96beb5d9e1c6570643bf",
     "downloads": 0,
-    "banner": "https://cdn5.telesco.pe/file/LGB8aAtCLbTMyJxWHXzG0XIWKyCVN3_iRCXV74SxKT2fp7RtPP0xiNwleHrQzFeyrfj5XsB_WEDN6rkuSDhIvGqiDxvJaJz3Ojhuq_JNvs13x2lMNng4Cit1diONKXOel8o_5u4SvSuzkCLko2ZyPs9kCPwuSkMKNHjFEmz9hjNd9itZkHfkYbSPK9QErTEnb6nkPPI_moUhD25QUQaJ3KYeYwhTHGLCs0BiMkHXDccKXQ6KpQzRTXk1TsP7kp8hjRQuRXYrEWLiUTMXWbFscWIFAykavo2RqGKykXltSGwLsFfiRAoDKyQZK7I08wusO0jEZbFgu4bACr8IqKCo6w.jpg",
+    "banner": "https://cdn5.telesco.pe/file/CcVgBUPfW1lGOZO0MguW2DshbV8mXSLMZ9_7VblvEDhDfVAZrJpIfqmsdPsEwB4RfO4BsCJt8_HUJGS0EV7IN1ZJxRmBEYeyYmqH6zZavjYthHM_cPpYbg4Oq3-nJPfY10IQD9ExidVqzfhxrKiHMviK1C3pWStHccYvyzh23tsmQvOpsghKBqXt3Cd_kkrUIiyf9E-QLMcwRDLDA2H-ixLNKXYmMJy35QP2YqGhj8ZjTbkaRrBpoXBbEnjmjHpdkWwo05dB2AdVgWmr6Itm96AOdiwUMznF92T1a2IgIqhYOavejvBVSIA49e9IoqDcVn9_o99zQVeAz3w6KWkbig.jpg",
     "screenshots": [
-      "https://cdn5.telesco.pe/file/LGB8aAtCLbTMyJxWHXzG0XIWKyCVN3_iRCXV74SxKT2fp7RtPP0xiNwleHrQzFeyrfj5XsB_WEDN6rkuSDhIvGqiDxvJaJz3Ojhuq_JNvs13x2lMNng4Cit1diONKXOel8o_5u4SvSuzkCLko2ZyPs9kCPwuSkMKNHjFEmz9hjNd9itZkHfkYbSPK9QErTEnb6nkPPI_moUhD25QUQaJ3KYeYwhTHGLCs0BiMkHXDccKXQ6KpQzRTXk1TsP7kp8hjRQuRXYrEWLiUTMXWbFscWIFAykavo2RqGKykXltSGwLsFfiRAoDKyQZK7I08wusO0jEZbFgu4bACr8IqKCo6w.jpg"
+      "https://cdn5.telesco.pe/file/LGB8aAtCLbTMyJxWHXzG0XIWKyCVN3_iRCXV74SxKT2fp7RtPP0xiNwleHrQzFeyrfj5XsB_WEDN6rkuSDhIvGqiDxvJaJz3Ojhuq_JNvs13x2lMNng4Cit1diONKXOel8o_5u4SvSuzkCLko2ZyPs9kCPwuSkMKNHjFEmz9hjNd9itZkHfkYbSPK9QErTEnb6nkPPI_moUhD25QUQaJ3KYeYwhTHGLCs0BiMkHXDccKXQ6KpQzRTXk1TsP7kp8hjRQuRXYrEWLiUTMXWbFscWIFAykavo2RqGKykXltSGwLsFfiRAoDKyQZK7I08wusO0jEZbFgu4bACr8IqKCo6w.jpg",
+      "https://cdn5.telesco.pe/file/CcVgBUPfW1lGOZO0MguW2DshbV8mXSLMZ9_7VblvEDhDfVAZrJpIfqmsdPsEwB4RfO4BsCJt8_HUJGS0EV7IN1ZJxRmBEYeyYmqH6zZavjYthHM_cPpYbg4Oq3-nJPfY10IQD9ExidVqzfhxrKiHMviK1C3pWStHccYvyzh23tsmQvOpsghKBqXt3Cd_kkrUIiyf9E-QLMcwRDLDA2H-ixLNKXYmMJy35QP2YqGhj8ZjTbkaRrBpoXBbEnjmjHpdkWwo05dB2AdVgWmr6Itm96AOdiwUMznF92T1a2IgIqhYOavejvBVSIA49e9IoqDcVn9_o99zQVeAz3w6KWkbig.jpg"
     ],
     "changelog": "Source Changelog: https://blog.pixelos.net/changelogs\nDevice Changelog: https://github.com/heyharshitrai/OTA/blob/master/PixelOS/changelog/redwood.md",
     "buildType": "userdebug",
@@ -167,7 +168,7 @@
     "codename": "redwood",
     "recoveryLink": "https://sourceforge.net/projects/redwood-roms/files/pixelos/A16/recovery/",
     "donateLink": "https://linktr.ee/heyharshitrai",
-    "ksuLink": "https://t.me/redwood_aosp/26/3098",
+    "ksuLink": "https://t.me/redwood_aosp/26/5150",
     "changelogSource": "https://blog.pixelos.net/changelogs",
     "changelogDevice": "https://github.com/heyharshitrai/OTA/blob/master/PixelOS/changelog/redwood.md",
     "screenshotsLink": "",
@@ -188,8 +189,8 @@
       {
         "ver": "Android 16 QPR2",
         "andVer": "Android 16 QPR2",
-        "date": "2026-03-17",
-        "rom": "https://sourceforge.net/projects/redwood-roms/files/pixelos/A16/PixelOS_redwood-16.2-20260317-0851.zip",
+        "date": "2026-05-11",
+        "rom": "https://sourceforge.net/projects/redwood-roms/files/pixelos/A16/PixelOS_redwood-16.2-20260511-1523.zip",
         "boot": "#",
         "vendor_boot": "#",
         "dtbo": "#",
@@ -204,7 +205,7 @@
   {
     "name": "Project Infinity X",
     "status": "official",
-    "dev": "\ud835\ude77\ud835\ude70\ud835\ude81\ud835\ude82\ud835\ude77\ud835\ude78\ud835\ude83",
+    "dev": "𝙷𝙰𝚁𝚂𝙷𝙸𝚃",
     "devInfo": "Telegram: @itsraiharshit",
     "desc": "KSU-Manager: APK",
     "downloads": 0,
