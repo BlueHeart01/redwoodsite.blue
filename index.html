@@ -2625,6 +2625,15 @@ sudo $(which fastboot) flash vendor_boot vendor_boot.img</pre></div>
                 }
                 if (deduped.length !== roms.length) console.log(`Deduped ${roms.length - deduped.length} duplicate ROMs`);
                 roms = deduped.length ? deduped : fallbackROMs;
+                // Sort versions by date descending (latest first)
+                for (const rom of roms) {
+                    if (rom.versions) {
+                        rom.versions.sort((a, b) => {
+                            const da = a.date || '', db = b.date || '';
+                            return db.localeCompare(da);
+                        });
+                    }
+                }
                 _unsavedChanges = false;
                 updateSaveIndicator();
             } catch (e) {
