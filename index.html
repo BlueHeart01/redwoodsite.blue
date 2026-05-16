@@ -19,7 +19,6 @@
     <link rel="preconnect" href="https://github.com">
     <link rel="preconnect" href="https://avatars.githubusercontent.com">
     <link rel="preconnect" href="https://raw.githubusercontent.com">
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&family=Space+Mono:wght@400;700&display=swap');
 
@@ -2602,10 +2601,8 @@ sudo $(which fastboot) flash vendor_boot vendor_boot.img</pre></div>
             }
             try {
                 const ts = Date.now();
-                let data = await tryFetch('https://cdn.jsdelivr.net/gh/BlueHeart01/redwoodsite.blue/roms.json?_=' + ts);
+                let data = await tryFetch('roms.json?_=' + ts);
                 if (!data) data = await tryFetch('https://raw.githubusercontent.com/BlueHeart01/redwoodsite.blue/main/roms.json?_=' + ts);
-                if (!data) data = await tryFetch('roms.json?_=' + ts);
-                if (!data) data = await tryFetch('roms.json?retry=' + ts);
                 roms = data || fallbackROMs;
 
                 const deduped = [];
